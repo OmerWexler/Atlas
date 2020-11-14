@@ -43,7 +43,7 @@ void Logger::SetLogFileName(string Path, string Name)
 
     if (!LogFile) 
     {
-        this->Error("Couldn't create logfile - " + FullName);
+        this->Warning("Couldn't create logfile - " + FullName);
     } 
     else 
     {

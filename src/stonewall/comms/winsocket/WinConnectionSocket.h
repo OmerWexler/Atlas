@@ -20,20 +20,21 @@ using namespace std;
 class WinConnectionSocket: public IConnectionSocket
 {
 private:
-    string Name;
     WSADATA wsaData;
     SOCKET Socket = INVALID_SOCKET;
-    struct addrinfo *result = NULL, *ptr = NULL, hints;
-    const char *sendbuf = "this is a test";
-    int iResult;
+    struct addrinfo ServerAddressHints;
+
+    string Name = "";
+    string ServerAddress = "";
+    bool Connected = false;
 
 public:
     WinConnectionSocket(string Name, SOCKET Socket);
     WinConnectionSocket(string Name);
     
-    int Connect(string Host, int Port);
+    int Connect(string Host, string Port);
     int Send(string Msg);
-    string Recv(int Size);
+    int Recv(string &Buffer, int Size);
     int Disconnect();
 
     ~WinConnectionSocket();

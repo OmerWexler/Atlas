@@ -4,26 +4,19 @@ project(Atlas VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-include_directories(${CMAKE_SOURCE_DIR}/src/utils)
-include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
 
-if (WIN32) 
+if (WIN32)
+    include_directories(${CMAKE_SOURCE_DIR}/src/utils)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/winsocket)
+
+
     file(GLOB SOURCES 
+        "src/utils/*.cpp"
+        "src/stonewall/comms/*.cpp"
         "src/stonewall/comms/winsocket/*.cpp"
     )
-
-endif (WIN32)
-
-if (UNIX)
-
-endif (UNIX)
-
-
-file(GLOB SOURCES 
-    "src/utils/*.cpp"
-    "src/stonewall/comms/*.cpp"
-)
+ENDIF(WIN32)
 
 add_executable(Atlas
     main.cpp 

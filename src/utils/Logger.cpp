@@ -10,7 +10,7 @@
 
 using namespace std;
 
-Logger* Logger::Instance = nullptr;
+// Logger* Logger::Instance = nullptr;
 
 string Logger::GetTime()
 {
@@ -93,15 +93,15 @@ void Logger::Warning(string Msg)
     Log("WARNING, " + Msg, LogLevel::L_WARNING);
 }
 
-Logger* Logger::GetInstance()
-{
-    if (Instance == nullptr) 
-    {
-        Instance = new Logger();
-    }
+// Logger* Logger::GetInstance()
+// {
+//     if (Instance == nullptr) 
+//     {
+//         Instance = new Logger();
+//     }
 
-    return Instance;
-}
+//     return Instance;
+// }
 
 Logger::~Logger()
 {

@@ -7,14 +7,18 @@ enable_testing()
 
 if (WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/src/utils)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket/winsocket)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
-    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/winsocket)
 
 
     file(GLOB SOURCES 
         "src/utils/*.cpp"
+        "src/stonewall/socket/*.cpp"
+        "src/stonewall/socket/winsocket/*.cpp"
+        "src/stonewall/messages/*.cpp"
         "src/stonewall/comms/*.cpp"
-        "src/stonewall/comms/winsocket/*.cpp"
     )
 ENDIF(WIN32)
 

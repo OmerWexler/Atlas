@@ -38,7 +38,8 @@
         "xstring": "cpp",
         "chrono": "cpp",
         "fstream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "unordered_map": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

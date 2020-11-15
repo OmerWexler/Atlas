@@ -33,7 +33,7 @@ public:
     WinConnectionSocket(string Name, SOCKET Socket, string ServerAddress);
     WinConnectionSocket(string Name);
     WinConnectionSocket();
-    
+
     int Connect(string Host, string Port);
     int Send(string Msg);
     int Recv(string &Buffer, int Size);

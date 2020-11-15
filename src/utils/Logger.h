@@ -14,16 +14,12 @@ enum LogLevel {
 
 class Logger
 {
-protected:
-    static Logger* Instance;
-    Logger() 
-    {
-    }
-
 private:
     ofstream LogFile;
     LogLevel Level = L_ERROR;
 
+    Logger() {}
+    
     string FormatMessage(string Msg); 
     string GetTime();
     void Log(string Msg, LogLevel Level);
@@ -40,7 +36,12 @@ public:
     void Error(string Msg);
     void Warning(string Msg);
 
-    static Logger* GetInstance();
+    inline static Logger& GetInstance() 
+    {
+        static Logger Instance;
+        return Instance;
+    }
 
+    int Clean();
     ~Logger();
 };

@@ -30,7 +30,7 @@ private:
 public:
     WinServerSocket(string Name, SOCKET Socket);
     WinServerSocket(string Name);
-    
+        
     int Bind(string Host, string Port);
     int Listen();
     IConnectionSocket* AcceptConnection(string ConnectionName);

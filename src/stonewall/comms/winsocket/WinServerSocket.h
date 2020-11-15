@@ -20,18 +20,18 @@ using namespace std;
 class WinServerSocket: public IServerSocket
 {
 private:
-    string Name;
     WSADATA wsaData;
     SOCKET Socket = INVALID_SOCKET;
-    struct addrinfo *result = NULL, *ptr = NULL, hints;
-    const char *sendbuf = "this is a test";
-    int iResult;
+    struct addrinfo HomeHints;
+
+    string Name = "";
+    string HomeAddress = "";
 
 public:
     WinServerSocket(string Name, SOCKET Socket);
     WinServerSocket(string Name);
     
-    int Bind(string Host, int Port);
+    int Bind(string Host, string Port);
     int Listen();
     IConnectionSocket* AcceptConnection(string ConnectionName);
 

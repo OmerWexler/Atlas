@@ -7,8 +7,7 @@
 
 using namespace std;
 
-
-WinConnectionSocket::WinConnectionSocket(string Name) 
+void WinConnectionSocket::Construct(string Name)
 {
     this->Name = Name;
 
@@ -27,10 +26,22 @@ WinConnectionSocket::WinConnectionSocket(string Name)
     ServerAddressHints.ai_protocol = IPPROTO_TCP;
 }
 
-WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket) 
+WinConnectionSocket::WinConnectionSocket()
 {
+    Construct("");
+}
+
+WinConnectionSocket::WinConnectionSocket(string Name) 
+{
+    Construct(Name);
+}
+
+WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket, string ServerAddress) 
+{  
+    this->Connected = true;
     this->Socket = Socket;
-    WinConnectionSocket::WinConnectionSocket(Name);
+    this->ServerAddress = ServerAddress;
+    Construct(Name);
 }
 
 int WinConnectionSocket::Connect(string Host, string Port) 
@@ -94,12 +105,13 @@ int WinConnectionSocket::Send(string Msg)
     }
 
     const char* CMsg = Msg.c_str();
+    int len = (int)strlen(CMsg);
 
-    int Result = send(Socket, CMsg, (int)strlen(CMsg), 0);
+    
+    int Result = send(Socket, CMsg, len, 0);
     if (Result == SOCKET_ERROR)
     {
-        Logger::GetInstance()->Error(Name + " failed to send: \"" + Msg + "\" to " + ServerAddress);
-
+        Logger::GetInstance()->Error(Name + " failed to send: \"" + Msg + "\" to " + ServerAddress + " with error: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
         return -1;
@@ -150,12 +162,12 @@ int WinConnectionSocket::Disconnect()
         return -1;
     }
 
+    Logger::GetInstance()->Info(Name + " shutdown");
     return 0;
 }
 
 WinConnectionSocket::~WinConnectionSocket()
 {
-    Disconnect();
     closesocket(Socket);
     WSACleanup();
 }

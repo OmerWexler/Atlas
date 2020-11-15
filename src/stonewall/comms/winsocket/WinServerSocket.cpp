@@ -10,73 +10,92 @@ using namespace std;
 WinServerSocket::WinServerSocket(string Name) 
 {
     // Initialize Winsock
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0)
+    int Result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (Result != 0)
     {
-        printf("WSAStartup failed with error: %d\n", iResult);
+        Logger::GetInstance()->Error(Name + " - WSAStartup failed with error: " + to_string(Result));
     }
 
-    ZeroMemory(&hints, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
+    ZeroMemory(&HomeHints, sizeof(HomeHints));
+    HomeHints.ai_family = AF_UNSPEC;
+    HomeHints.ai_socktype = SOCK_STREAM;
+    HomeHints.ai_protocol = IPPROTO_TCP;
+
+    this->Name = Name;
 }
 
-int WinServerSocket::Bind(string Host, int Port) 
+int WinServerSocket::Bind(string Host, string Port) 
 {
-    Socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    HomeAddress = Host + ":" + Port;
+    addrinfo* ResolvedAddress = NULL;
+
+    // Resolve the server address and port
+    int Result = getaddrinfo(Host.c_str(), Port.c_str(), &HomeHints, &ResolvedAddress);
+    if (Result != 0)
+    {
+        Logger::GetInstance()->Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
+        WSACleanup();
+        return 1;
+    }
+
+    Socket = socket(ResolvedAddress->ai_family, ResolvedAddress->ai_socktype, ResolvedAddress->ai_protocol);
     if (Socket == INVALID_SOCKET)
     {
-        printf("socket failed with error: %ld\n", WSAGetLastError());
-        freeaddrinfo(result);
+        Logger::GetInstance()->Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
+        freeaddrinfo(ResolvedAddress);
         WSACleanup();
         return -1;
     }
 
+    Result = bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
+    if (Result == SOCKET_ERROR)
+    {
+        Logger::GetInstance()->Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
+        freeaddrinfo(ResolvedAddress);
+        closesocket(Socket);
+        WSACleanup();
+        return 1;
+    }
+
+    freeaddrinfo(ResolvedAddress);
+
+    Logger::GetInstance()->Info(Name + " bound to " + HomeAddress);
     return 0;
 }
 
 int WinServerSocket::Listen() 
 {
-    iResult = bind(Socket, result->ai_addr, (int)result->ai_addrlen);
-    if (iResult == SOCKET_ERROR)
+    int Result = listen(Socket, SOMAXCONN);
+    if (Result == SOCKET_ERROR)
     {
-        printf("bind failed with error: %d\n", WSAGetLastError());
-        freeaddrinfo(result);
+        Logger::GetInstance()->Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
         return -1;
     }
 
-    freeaddrinfo(result);
-
-    iResult = listen(Socket, SOMAXCONN);
-    if (iResult == SOCKET_ERROR)
-    {
-        printf("listen failed with error: %d\n", WSAGetLastError());
-        closesocket(Socket);
-        WSACleanup();
-        return -1;
-    }
-
+    Logger::GetInstance()->Info(Name + " listening on " + HomeAddress);
     return 0;
 }
 
 IConnectionSocket* WinServerSocket::AcceptConnection(string ConnectionName)
 {
     IConnectionSocket* ReturnSocket;
-    
-    SOCKET ClientSocket = accept(Socket, NULL, NULL);
+    sockaddr* ClientAddress = &sockaddr();
+    int addrlen = (int) (sizeof(ClientAddress));
+
+    SOCKET ClientSocket = INVALID_SOCKET;
+    ClientSocket = accept(Socket, NULL, NULL);
     if (ClientSocket == INVALID_SOCKET)
     {
-        printf("accept failed with error: %d\n", WSAGetLastError());
+        Logger::GetInstance()->Error(Name + " had error while accepting client: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
-        ReturnSocket = nullptr;
     } else {
-        ReturnSocket = (IConnectionSocket*) &WinConnectionSocket(ConnectionName, ClientSocket);
+        ReturnSocket = (IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress);
     }
     
+    Logger::GetInstance()->Info(Name + " accepted new connection " + ConnectionName + " from ");// + ClientAddress->sa_data);
     return ReturnSocket;
 }
 

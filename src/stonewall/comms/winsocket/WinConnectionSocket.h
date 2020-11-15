@@ -28,9 +28,11 @@ private:
     string ServerAddress = "";
     bool Connected = false;
 
+    void Construct(string Name);
 public:
-    WinConnectionSocket(string Name, SOCKET Socket);
+    WinConnectionSocket(string Name, SOCKET Socket, string ServerAddress);
     WinConnectionSocket(string Name);
+    WinConnectionSocket();
     
     int Connect(string Host, string Port);
     int Send(string Msg);

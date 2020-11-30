@@ -93,16 +93,6 @@ void Logger::Warning(string Msg)
     Log("WARNING, " + Msg, LogLevel::L_WARNING);
 }
 
-// Logger* Logger::GetInstance()
-// {
-//     if (Instance == nullptr) 
-//     {
-//         Instance = new Logger();
-//     }
-
-//     return Instance;
-// }
-
 Logger::~Logger()
 {
     if (LogFile) 

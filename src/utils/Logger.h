@@ -42,6 +42,5 @@ public:
         return Instance;
     }
 
-    int Clean();
     ~Logger();
 };

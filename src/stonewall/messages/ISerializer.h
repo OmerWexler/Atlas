@@ -9,7 +9,7 @@ using namespace std;
 class ISerializer
 {
 public:
-    virtual string GetType() = 0;
-    virtual string Serialize(IMessage* Message) = 0;
+    virtual string GetType() const = 0;
+    virtual string Serialize(const IMessage& Message) const = 0;
 
 };

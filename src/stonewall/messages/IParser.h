@@ -9,7 +9,7 @@ using namespace std;
 class IParser
 {
 public:
-    virtual string GetType() = 0;
-    virtual void Parse(string SMsg, IMessage& OutMessage) = 0;
-
+    virtual string GetType() const = 0;
+    virtual IMessage* Parse(const string& SMsg) = 0;
+    virtual bool CanParse(const string& SMsg) const = 0;
 };

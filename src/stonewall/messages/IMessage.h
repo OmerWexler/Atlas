@@ -7,6 +7,6 @@ using namespace std;
 class IMessage
 {
 public:
-    virtual string GetType() = 0;
+    virtual string GetType() const = 0;
 
 };

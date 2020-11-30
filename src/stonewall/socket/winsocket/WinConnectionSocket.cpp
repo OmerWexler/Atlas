@@ -44,6 +44,22 @@ WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket, string Serv
     Construct(Name);
 }
 
+IConnectionSocket* WinConnectionSocket::operator= (const IConnectionSocket* Other)
+{
+    WinConnectionSocket* OtherAsWCS = (WinConnectionSocket*) Other;
+    this->Socket = OtherAsWCS->Socket;
+    this->Name = OtherAsWCS->Name;
+    this->ServerAddress = OtherAsWCS->ServerAddress;
+    this->Connected = OtherAsWCS->Connected;
+
+    return this;
+}
+
+string WinConnectionSocket::GetName() const
+{
+    return this->Name;
+}
+
 
 int WinConnectionSocket::Connect(string Host, string Port) 
 {

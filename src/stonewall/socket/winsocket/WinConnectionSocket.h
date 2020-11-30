@@ -34,6 +34,10 @@ public:
     WinConnectionSocket(string Name);
     WinConnectionSocket();
 
+    IConnectionSocket* operator= (const IConnectionSocket* Other);
+
+    string GetName() const;
+
     int Connect(string Host, string Port);
     int Send(string Msg);
     int Recv(string &Buffer, int Size);

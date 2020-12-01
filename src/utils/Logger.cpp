@@ -18,7 +18,7 @@ string Logger::GetTime()
     tm *LocalTime = &tm();
     localtime_s(LocalTime, &Now);
 
-    return to_string(LocalTime->tm_hour) + "." + to_string(LocalTime->tm_min) + "." + to_string(LocalTime->tm_sec);
+    return to_string(LocalTime->tm_hour) + ":" + to_string(LocalTime->tm_min) + ":" + to_string(LocalTime->tm_sec);
 }
 
 void Logger::SetLogFileName(string Name)

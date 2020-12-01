@@ -39,7 +39,21 @@
         "chrono": "cpp",
         "fstream": "cpp",
         "string": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "*.rh": "cpp",
+        "algorithm": "cpp",
+        "atomic": "cpp",
+        "deque": "cpp",
+        "functional": "cpp",
+        "hash_map": "cpp",
+        "map": "cpp",
+        "mutex": "cpp",
+        "ratio": "cpp",
+        "regex": "cpp",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmon": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

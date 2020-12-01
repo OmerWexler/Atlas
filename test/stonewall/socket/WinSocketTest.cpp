@@ -33,7 +33,6 @@ int TestWinSocketCommunicationSequence() {
         
         ServerClient->Send(Msg);
         Connection.Recv(Msg, 5);
-        Msg = "H";
         if (Msg != "Hello")
         {   
             Logger::GetInstance().Error("Received unexpected message");

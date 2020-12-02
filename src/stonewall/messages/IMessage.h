@@ -8,5 +8,5 @@ class IMessage
 {
 public:
     virtual string GetType() const = 0;
-
+    virtual ~IMessage() {};
 };

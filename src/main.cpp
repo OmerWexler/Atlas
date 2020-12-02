@@ -12,16 +12,19 @@ using namespace std;
 
 int main() {
     {
-        Logger.SetLogLevel(L_DEBUG);
+        Logger::GetInstance().SetLogLevel(L_DEBUG);
         BasicConnection Connection("Connection");
 
-        Connection.AddParser((IParser*) &SimpleStringParser());
-        Connection.AddSerializer((ISerializer*) &SimpleStringSerializer());
+        Connection.AddParser((IParser*) new SimpleStringParser());
+        Connection.AddSerializer((ISerializer*) new SimpleStringSerializer());
 
         Connection.Connect("127.0.0.1", "17000");
 
         IMessage* Msg = Connection.Recv();
         Connection.Send(Msg);
+
+        Connection.Disconnect();
+        delete Msg;
     }
 
     if (_CrtDumpMemoryLeaks()) 

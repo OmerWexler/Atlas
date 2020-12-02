@@ -35,15 +35,23 @@ void BasicConnection::AddSerializer(ISerializer* Serializer)
     Serializers[Serializer->GetType()] = Serializer;
 }
 
-int BasicConnection::Send(const IMessage& Msg)
+int BasicConnection::Send(const IMessage* Msg)
 {
-    if (Serializers.find(Msg.GetType()) == Serializers.end())
+    if (Serializers.find(Msg->GetType()) == Serializers.end())
     {
-        Logger::GetInstance().Error(Name + " couldn't parse message of type " + Msg.GetType() + " because a corresponding serializer wasn't defined.");
+        Logger::GetInstance().Error(Name + " couldn't parse message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
         return -1;
     }
 
-    return ConnectionSocket->Send(Serializers[Msg.GetType()]->Serialize(Msg));
+    string SMsg = Serializers[Msg->GetType()]->Serialize(Msg);
+    string SMsgSize = to_string(SMsg.length());
+
+    for(int i = SMsgSize.length(); i <= NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
+    {
+        SMsgSize = "0" + SMsgSize;
+    }
+    
+    return ConnectionSocket->Send(SMsgSize + SMsg);
 }
 
 IMessage* BasicConnection::Recv()

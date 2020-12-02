@@ -23,7 +23,7 @@ public:
     int Connect(string Host, string Port);
     void AddParser(IParser* Parser);
     void AddSerializer(ISerializer* Serializer);
-    int Send(const IMessage& Msg);
+    int Send(const IMessage* Msg);
     IMessage* Recv();
     int Disconnect();
     

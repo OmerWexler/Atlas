@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "WinConnectionSocket.h"
 #include "WinServerSocket.h"
 #include "Logger.h"
@@ -78,25 +79,22 @@ int WinServerSocket::Listen()
     return 0;
 }
 
-IConnectionSocket* WinServerSocket::AcceptConnection(string ConnectionName)
+int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket)
 {
-    IConnectionSocket* ReturnSocket;
-    sockaddr* ClientAddress = &sockaddr();
-    int addrlen = (int) (sizeof(ClientAddress));
-
     SOCKET ClientSocket = INVALID_SOCKET;
     ClientSocket = accept(Socket, NULL, NULL);
+
     if (ClientSocket == INVALID_SOCKET)
     {
         Logger::GetInstance().Error(Name + " had error while accepting client: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
+        return WSAGetLastError();
     } else {
-        ReturnSocket = (IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress);
+        ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
+        Logger::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
+        return 0;
     }
-    
-    Logger::GetInstance().Info(Name + " accepted new connection " + ConnectionName + " from ");// + ClientAddress.sa_data);
-    return ReturnSocket;
 }
 
 WinServerSocket::~WinServerSocket()

@@ -34,8 +34,6 @@ public:
     WinConnectionSocket(string Name);
     WinConnectionSocket();
 
-    IConnectionSocket* operator= (const IConnectionSocket* Other);
-
     string GetName() const;
 
     int Connect(string Host, string Port);
@@ -43,5 +41,5 @@ public:
     int Recv(string &Buffer, int Size);
     int Disconnect();
 
-    ~WinConnectionSocket();
+    virtual ~WinConnectionSocket();
 };

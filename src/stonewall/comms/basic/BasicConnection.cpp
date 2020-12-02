@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "BasicConnection.h"
 #include "Logger.h"
 
@@ -10,14 +12,14 @@
 
 BasicConnection::BasicConnection(IConnectionSocket* Socket)
 {
-    this->ConnectionSocket = Socket;
-    this->Name = Socket->GetName();
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Socket);
+    this->Name = ConnectionSocket->GetName();
 }
 
 BasicConnection::BasicConnection(string Name)
 {
     this->Name = Name;
-    this->ConnectionSocket = (IConnectionSocket*) new ConnectionSocketType(Name);
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name));
 }
 
 int BasicConnection::Connect(string Host, string Port)
@@ -27,7 +29,7 @@ int BasicConnection::Connect(string Host, string Port)
 
 void BasicConnection::AddParser(IParser* Parser)
 {
-    Parsers[Parser->GetType()] = Parser;
+    Parsers.push_back(Parser);
 }
 
 void BasicConnection::AddSerializer(ISerializer* Serializer)
@@ -35,7 +37,7 @@ void BasicConnection::AddSerializer(ISerializer* Serializer)
     Serializers[Serializer->GetType()] = Serializer;
 }
 
-int BasicConnection::Send(const IMessage* Msg)
+int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
 {
     if (Serializers.find(Msg->GetType()) == Serializers.end())
     {
@@ -43,7 +45,7 @@ int BasicConnection::Send(const IMessage* Msg)
         return -1;
     }
 
-    string SMsg = Serializers[Msg->GetType()]->Serialize(Msg);
+    string SMsg = Serializers[Msg->GetType()]->Serialize(Msg.get());
     string SMsgSize = to_string(SMsg.length());
 
     for(size_t i = SMsgSize.length(); i < NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
@@ -54,22 +56,23 @@ int BasicConnection::Send(const IMessage* Msg)
     return ConnectionSocket->Send(SMsgSize + SMsg);
 }
 
-IMessage* BasicConnection::Recv()
+int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
 {
     string SMsg;
     ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
     ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
 
-    for (std::pair<std::string, IParser*> element : Parsers)
+    for (IParser* parser : Parsers)
     {
-        if (element.second->CanParse(SMsg))
+        if (parser->CanParse(SMsg))
         {
-            return element.second->Parse(SMsg);
+            OutMsg.reset(parser->Parse(SMsg));
+            return 0;
         }
     }
     
     Logger::GetInstance().Error(Name + " couldn't parse message " + SMsg + " because a corresponding parser wasn't found.");
-    return nullptr;
+    return -1;
 }
 
 int BasicConnection::Disconnect()
@@ -79,15 +82,13 @@ int BasicConnection::Disconnect()
 
 BasicConnection::~BasicConnection()
 {
-    for (std::pair<std::string, IParser*> element : Parsers)
+    for (IParser* parser : Parsers)
     {
-        delete element.second;
+        delete parser;
     }
 
     for (std::pair<std::string, ISerializer*> element : Serializers)
     {
         delete element.second;
     }
-
-    delete (ConnectionSocketType*) ConnectionSocket;
 }

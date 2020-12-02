@@ -19,7 +19,8 @@ int TestWinSocketCommunicationSequence() {
         Server.Listen();
 
         Connection.Connect("127.0.0.1", "17000");
-        IConnectionSocket* ServerClient = Server.AcceptConnection("ServerClient");
+        unique_ptr<IConnectionSocket> ServerClient;
+        Server.AcceptConnection("ServerClient", ServerClient);
 
         string Msg;
         Connection.Send("Hello");
@@ -29,7 +30,6 @@ int TestWinSocketCommunicationSequence() {
         {
             return -1;
         }
-        
         
         ServerClient->Send(Msg);
         Connection.Recv(Msg, 5);
@@ -41,8 +41,6 @@ int TestWinSocketCommunicationSequence() {
 
         Connection.Disconnect();
         ServerClient->Disconnect();
-        
-        delete (WinConnectionSocket*) ServerClient;
     }
 
     if (_CrtDumpMemoryLeaks()) 

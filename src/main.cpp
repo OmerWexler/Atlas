@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "BasicConnection.h"
 #include "SimpleStringParser.h"
 #include "SimpleStringSerializer.h"
@@ -20,11 +22,11 @@ int main() {
 
         Connection.Connect("127.0.0.1", "17000");
 
-        IMessage* Msg = Connection.Recv();
+        unique_ptr<IMessage> Msg;
+        Connection.Recv(Msg);
         Connection.Send(Msg);
 
         Connection.Disconnect();
-        delete Msg;
     }
 
     if (_CrtDumpMemoryLeaks()) 

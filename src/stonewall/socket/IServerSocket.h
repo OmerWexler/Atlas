@@ -10,5 +10,7 @@ class IServerSocket
 public:
     virtual int Bind(string Host, string Port) = 0;
     virtual int Listen() = 0;
-    virtual IConnectionSocket* AcceptConnection(string ConnectionName) = 0;
+    virtual int AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket) = 0;
+
+    virtual ~IServerSocket() {};
 };

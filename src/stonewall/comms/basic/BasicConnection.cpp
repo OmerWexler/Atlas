@@ -22,6 +22,13 @@ BasicConnection::BasicConnection(string Name)
     this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name));
 }
 
+BasicConnection& BasicConnection::operator=(BasicConnection& Other)
+{
+    this->Name = Other.Name;
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
+    return *this;
+}
+
 int BasicConnection::Connect(string Host, string Port)
 {
     return ConnectionSocket->Connect(Host, Port);

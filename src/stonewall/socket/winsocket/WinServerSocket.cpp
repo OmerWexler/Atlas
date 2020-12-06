@@ -64,9 +64,9 @@ int WinServerSocket::Bind(string Host, string Port)
     return 0;
 }
 
-int WinServerSocket::Listen() 
+int WinServerSocket::Listen(int Backlog) 
 {
-    int Result = listen(Socket, SOMAXCONN);
+    int Result = listen(Socket, Backlog);
     if (Result == SOCKET_ERROR)
     {
         Logger::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
@@ -86,10 +86,11 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
 
     if (ClientSocket == INVALID_SOCKET)
     {
-        Logger::GetInstance().Error(Name + " had error while accepting client: " + to_string(WSAGetLastError()));
+        int LastError = WSAGetLastError();
+        Logger::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
         closesocket(Socket);
         WSACleanup();
-        return WSAGetLastError();
+        return LastError;
     } else {
         ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
         Logger::GetInstance().Info(Name + " accepted new connection " + ConnectionName);

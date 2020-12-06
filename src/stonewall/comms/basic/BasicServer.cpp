@@ -10,28 +10,68 @@
 #include <unordered_map>
 #include <unordered_map>
 
-void AddParser(IParser& Parser)
+#ifdef _WIN32
+#include "WinServerSocket.h"
+#define ServerSocketType WinServerSocket
+#endif
+
+BasicServer::BasicServer(string Name)
 {
-    
+    this->Name = Name;
+    this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) new ServerSocketType(Name));
 }
 
-void AddSerializer(ISerializer& Serializer)
+void BasicServer::AddParser(IParser* Parser)
 {
-    
+    Parsers.push_back(Parser);
 }
 
-
-int Bind(string Host, string Port)
+void BasicServer::AddSerializer(ISerializer* Serializer)
 {
-    return 0;
+    Serializers[Serializer->GetType()] = Serializer;
 }
 
-int Listen()
+int BasicServer::Bind(string Host, string Port)
 {
-    return 0;
+    return ServerSocket->Bind(Host, Port);
 }
 
-int AcceptConnection(BasicConnection& OutConnection)
+int BasicServer::Listen(int Backlog)
 {
-    return 0;
+    return ServerSocket->Listen(Backlog);
+}
+
+int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
+{
+    unique_ptr<IConnectionSocket> NewConnectionSocket;
+    int Result = ServerSocket->AcceptConnection(Name, NewConnectionSocket);
+    if (Result == 0)
+    {
+        OutConnection = BasicConnection(NewConnectionSocket.release());
+        for (IParser* Parser : Parsers)
+        {
+            OutConnection.AddParser(Parser->Clone());
+        }
+
+        for (pair<string, ISerializer*> element: Serializers)
+        {
+            OutConnection.AddSerializer(element.second->Clone());
+        }
+        return 0;
+    }
+
+    return -1;
+}
+
+BasicServer::~BasicServer()
+{
+    for (IParser* parser : Parsers)
+    {
+        delete parser;
+    }
+
+    for (std::pair<std::string, ISerializer*> element : Serializers)
+    {
+        delete element.second;
+    }
 }

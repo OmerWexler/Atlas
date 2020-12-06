@@ -27,5 +27,10 @@ public:
         return ((SimpleStringMessage*) Message)->GetValue();
     };
 
+    virtual ISerializer* Clone() override
+    {
+        return (ISerializer*) new SimpleStringSerializer();
+    };
+
     virtual ~SimpleStringSerializer() {};
 };

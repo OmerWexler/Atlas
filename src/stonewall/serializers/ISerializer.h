@@ -12,5 +12,7 @@ public:
     virtual string GetType() const = 0;
     virtual string Serialize(const IMessage* Message) const = 0;
 
+    virtual ISerializer* Clone() = 0;
+
     virtual ~ISerializer() {};
 };

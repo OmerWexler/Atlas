@@ -19,6 +19,9 @@ private:
 public:
     BasicConnection(IConnectionSocket* Socket);
     BasicConnection(string Name);
+    BasicConnection() {};
+
+    BasicConnection& operator= (BasicConnection& Other);
     
     int Connect(string Host, string Port);
     void AddParser(IParser* Parser);

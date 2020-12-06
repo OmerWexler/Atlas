@@ -44,6 +44,10 @@ WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket, string Serv
     Construct(Name);
 }
 
+string WinConnectionSocket::GetName() const
+{
+    return this->Name;
+}
 
 int WinConnectionSocket::Connect(string Host, string Port) 
 {

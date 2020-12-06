@@ -18,7 +18,7 @@ string Logger::GetTime()
     tm *LocalTime = &tm();
     localtime_s(LocalTime, &Now);
 
-    return to_string(LocalTime->tm_hour) + "." + to_string(LocalTime->tm_min) + "." + to_string(LocalTime->tm_sec);
+    return to_string(LocalTime->tm_hour) + ":" + to_string(LocalTime->tm_min) + ":" + to_string(LocalTime->tm_sec);
 }
 
 void Logger::SetLogFileName(string Name)
@@ -92,16 +92,6 @@ void Logger::Warning(string Msg)
 {
     Log("WARNING, " + Msg, LogLevel::L_WARNING);
 }
-
-// Logger* Logger::GetInstance()
-// {
-//     if (Instance == nullptr) 
-//     {
-//         Instance = new Logger();
-//     }
-
-//     return Instance;
-// }
 
 Logger::~Logger()
 {

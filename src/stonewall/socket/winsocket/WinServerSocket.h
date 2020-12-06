@@ -32,8 +32,8 @@ public:
     WinServerSocket(string Name);
         
     int Bind(string Host, string Port);
-    int Listen();
-    IConnectionSocket* AcceptConnection(string ConnectionName);
+    int Listen(int Backlog);
+    int AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket);
 
-    ~WinServerSocket();
+    virtual ~WinServerSocket();
 };

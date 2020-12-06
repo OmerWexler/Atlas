@@ -34,10 +34,12 @@ public:
     WinConnectionSocket(string Name);
     WinConnectionSocket();
 
+    string GetName() const;
+
     int Connect(string Host, string Port);
     int Send(string Msg);
     int Recv(string &Buffer, int Size);
     int Disconnect();
 
-    ~WinConnectionSocket();
+    virtual ~WinConnectionSocket();
 };

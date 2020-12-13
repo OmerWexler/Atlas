@@ -8,6 +8,9 @@
 
 #include "Logger.h"
 
+#include "GridConnection.h"
+#include "GridNode.h"
+
 #define _CRTDBG_MAP_ALLOC
 #pragma comment(lib, "user32.lib")
 

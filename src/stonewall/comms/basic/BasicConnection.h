@@ -1,11 +1,11 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "IServerSocket.h"
 #include "IConnectionSocket.h"
 #include "ISerializer.h"
 #include "IParser.h"
-
-#include <unordered_map>
 
 class BasicConnection
 {

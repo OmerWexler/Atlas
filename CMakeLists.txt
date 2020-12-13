@@ -14,6 +14,11 @@ if(WIN32)
         "src/stonewall/parsers/*.cpp"
         "src/stonewall/comms/*.cpp"
         "src/stonewall/comms/basic/*.cpp"
+        "src/boulderbreaker/grid/*.cpp"
+        "src/boulderbreaker/callback/*.cpp"
+        "src/boulderbreaker/search_policy/*.cpp"
+        "src/boulderbreaker/resources/*.cpp"
+        "src/boulderbreaker/job/*.cpp"
     )
     
     include_directories(${CMAKE_SOURCE_DIR}/src/utils)
@@ -24,6 +29,11 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/serializers)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/callback)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/search_policy)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job)
 endif()
 
 add_subdirectory(test)

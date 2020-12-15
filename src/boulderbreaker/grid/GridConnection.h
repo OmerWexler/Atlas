@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
 #include "BasicConnection.h"
 #include "ICallback.h"
@@ -14,9 +15,15 @@
 
 class GridConnection
 {
+private:
+    BasicConnection Connection;
+    unordered_map<string, ICallback<GridConnection>*> Callbacks;
+    bool PeerJobPolicy;
+
+    void AddDefault
 public:
     GridConnection(); 
-    GridConnection(BasicConnection Socket);
+    GridConnection(BasicConnection Connection);
 
     void AddCustomParser(IParser* Parser);
     void AddCustomSerializer(ISerializer* Serializer);

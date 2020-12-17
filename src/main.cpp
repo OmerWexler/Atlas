@@ -1,10 +1,11 @@
 #include <memory>
+#include <string>
 
 #include "BasicConnection.h"
 #include "BasicServer.h"
-#include "SimpleStringParser.h"
-#include "SimpleStringSerializer.h"
-#include "SimpleStringMessage.h"
+#include "SeperatorBasedSerializer.h"
+#include "SeperatorBasedParser.h"
+#include "SeperatorBasedMessage.h"
 
 #include "Logger.h"
 
@@ -19,31 +20,32 @@ using namespace std;
 int main() {
     {
         Logger::GetInstance().SetLogLevel(L_DEBUG);
-        BasicConnection Connection("Connection");
-        BasicServer Server("Server");
 
-        Connection.AddParser((IParser*) new SimpleStringParser());
-        Connection.AddSerializer((ISerializer*) new SimpleStringSerializer());
+        SeperatorBasedParser Parser = SeperatorBasedParser();
+        SeperatorBasedSerializer Serializer = SeperatorBasedSerializer();
+        SeperatorBasedMessage* Msg = new SeperatorBasedMessage();
+        Msg->AddValue("AAA");
+        Msg->AddValue("BBBB");
+        Msg->AddValue("CC");
+        
+        Logger::GetInstance().Info(
+            Msg->GetValues()[0] + " " +
+            Msg->GetValues()[1] + " " +
+            Msg->GetValues()[2] + " "
+        );
+        
+        string SMsg = Serializer.Serialize((IMessage*)Msg);
+        Logger::GetInstance().Info(string(SMsg));
 
-        Server.AddParser((IParser*) new SimpleStringParser());
-        Server.AddSerializer((ISerializer*) new SimpleStringSerializer());
+        if (Parser.CanParse(SMsg))
+            Msg = (SeperatorBasedMessage*) Parser.Parse(SMsg);
 
-        Server.Bind("127.0.0.1", "17000");
-        Server.Listen(1);
-        Connection.Connect("127.0.0.1", "17000");
-
-        BasicConnection ServerConnection;
-        Server.AcceptConnection("ServerConnection", ServerConnection);
-
-        unique_ptr<IMessage> Msg((IMessage*) new SimpleStringMessage("Hello"));
-        Connection.Send(Msg);
-        ServerConnection.Recv(Msg);
-
-        ServerConnection.Send(Msg);
-        Connection.Recv(Msg);
-
-        Connection.Disconnect();
-        ServerConnection.Disconnect();
+        Logger::GetInstance().Info(
+            Msg->GetValues()[0] + " " +
+            Msg->GetValues()[1] + " " +
+            Msg->GetValues()[2] + " "
+        );
+        delete Msg;
     }
 
     if (_CrtDumpMemoryLeaks()) 

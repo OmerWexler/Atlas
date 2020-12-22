@@ -32,62 +32,63 @@ void GridConnection::AddCustomParser(IParser* Parser)
     Connection.AddParser(Parser);
 }
 
+void GridConnection::AddDefaultInterfaces()
+{
+
+}
+
+
 void GridConnection::AddCustomSerializer(ISerializer* Serializer)
 {
-    Connection.AddParser(ISerializer);
+    Connection.AddSerializer(Serializer);
 }
 
 void GridConnection::AddCustomCallback(ICallback<GridConnection>* Callback)
 {
-
+    Callbacks[Callback->GetMessageType()] = Callback;
 }
 
 int GridConnection::Connect(string Host, string Port)
 {
-
-}
-
-void GridConnection::StartAcceptingMessages()
-{
-
+    return Connection.Connect(Host, Port);
 }
 
 void GridConnection::SendJobPolicy(bool AcceptJobs)
 {
-
+    
 }
 
 int GridConnection::CancelJob(const IJob& Job)
 {
-
+    return -1;
 }
 
 int GridConnection::SendJob(const IJob& Job, IPCSearchPolicy ComparePolicy)
 {
-
+    return -1;
 }
 
 int GridConnection::SearchJobCandidate(IPCSearchPolicy ComparePolicy)
 {
-
+    return -1;
 }
 
 int GridConnection::SuggestJobCandidate(const PCPerformance& Performance, IPCSearchPolicy ComparePolicy)
 {
-
+    return -1;
 }
 
 int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 {
-
+    return -1;
 }
 
 bool GridConnection::GetPeerJobPolicy()
 {
-
+    return false;
 }
 
 int GridConnection::Disconnect()
 {
-
+    return -1;
 }

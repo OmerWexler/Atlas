@@ -8,6 +8,8 @@
 #include "IPCSearchPolicy.h"
 
 #include "IParser.h"
+#include "SendJobPolicyParser.h"
+
 #include "ISerializer.h"
 #include "IMessage.h"
 
@@ -20,20 +22,18 @@ private:
     unordered_map<string, ICallback<GridConnection>*> Callbacks;
     bool PeerJobPolicy;
 
-    void AddDefault
+    void AddDefaultInterfaces();
 public:
     GridConnection(); 
-    GridConnection(BasicConnection Connection);
+    GridConnection(BasicConnection& Connection);
 
     void AddCustomParser(IParser* Parser);
     void AddCustomSerializer(ISerializer* Serializer);
     void AddCustomCallback(ICallback<GridConnection>* Callback);
 
     int Connect(string Host, string Port);
-    void StartAcceptingMessages();
 
     void SendJobPolicy(bool AcceptJobs);
-
     int CancelJob(const IJob& Job);
     int SendJob(const IJob& Job, IPCSearchPolicy ComparePolicy);
 

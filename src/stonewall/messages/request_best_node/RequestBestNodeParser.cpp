@@ -6,8 +6,6 @@
 
 using namespace std;
 
-const string RequestBestNodeParser::HEADER = "RBN";
-
 RequestBestNodeParser::RequestBestNodeParser()
 {
     SPBParser = SeperatorBasedParser();
@@ -18,10 +16,12 @@ string RequestBestNodeParser::GetType() const
     return "RequestBestNode";
 }
 
-IMessage* RequestBestNodeParser::Parse(const string& SMsg)
+void RequestBestNodeParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    SeperatorBasedMessage* SPBMsg = (SeperatorBasedMessage*) SPBParser.Parse(SMsg.substr(HEADER.length()));
+    unique_ptr<IMessage> USPBMsg;
+    SPBParser.Parse(SMsg.substr(HEADER.length()), USPBMsg);
     
+    SeperatorBasedMessage* SPBMsg = (SeperatorBasedMessage*) USPBMsg.get();
     int Range = atoi(SPBMsg->GetValues()[0].c_str());
     
     PCPerformance& MinimumPerformance = PCPerformance();
@@ -29,7 +29,7 @@ IMessage* RequestBestNodeParser::Parse(const string& SMsg)
     MinimumPerformance.CPUPerformance.CPUFrequency = atoi(SPBMsg->GetValues()[2].c_str());
     MinimumPerformance.CPUPerformance.CPULoad = atoi(SPBMsg->GetValues()[2].c_str());
     
-    return new RequestBestNodeMessage(Range, MinimumPerformance);
+    Message.reset(new RequestBestNodeMessage(Range, MinimumPerformance));
 }
 
 bool RequestBestNodeParser::CanParse(const string& SMsg) const

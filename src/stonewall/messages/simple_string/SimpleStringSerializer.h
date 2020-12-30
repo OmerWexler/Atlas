@@ -12,6 +12,6 @@ class SimpleStringSerializer: public ISerializer
 {
 public:
     string GetType() const override;
-    string Serialize(const IMessage* Message) const override;
+    string Serialize(const unique_ptr<IMessage>& Message) const override;
     ISerializer* Clone() override;
 };

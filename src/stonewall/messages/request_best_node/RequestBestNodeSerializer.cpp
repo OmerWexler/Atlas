@@ -6,8 +6,6 @@
 
 using namespace std;
 
-const string RequestBestNodeSerializer::HEADER = "RBN";
-
 RequestBestNodeSerializer::RequestBestNodeSerializer()
 {
     SPBSerializer = SeperatorBasedSerializer();
@@ -18,19 +16,21 @@ string RequestBestNodeSerializer::GetType() const
     return "RequestBestNode";
 };
 
-string RequestBestNodeSerializer::Serialize(const IMessage* Message) const
+string RequestBestNodeSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
     string SMsg = HEADER;
-    int Range = ((RequestBestNodeMessage*) Message)->GetRange();
-    PCPerformance& MinimumPerformance = ((RequestBestNodeMessage*) Message)->GetMinimumAcceptablePerformance();
-    SeperatorBasedMessage SPBMsg = SeperatorBasedMessage();
+    int Range = ((RequestBestNodeMessage*) Message.get())->GetRange();
+    PCPerformance& MinimumPerformance = ((RequestBestNodeMessage*) Message.get())->GetMinimumAcceptablePerformance();
 
-    SPBMsg.AddValue(to_string(Range));
-    SPBMsg.AddValue(to_string(MinimumPerformance.CPUPerformance.CPUCores));
-    SPBMsg.AddValue(to_string(MinimumPerformance.CPUPerformance.CPUFrequency));
-    SPBMsg.AddValue(to_string(MinimumPerformance.CPUPerformance.CPULoad));
+    SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
+    unique_ptr<IMessage> USPBMsg((IMessage*) SPBMsg);
 
-    SMsg += SPBSerializer.Serialize((IMessage*) &SPBMsg);
+    SPBMsg->AddValue(to_string(Range));
+    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPUCores));
+    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPUFrequency));
+    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPULoad));
+
+    SMsg += SPBSerializer.Serialize(USPBMsg);
     return SMsg;
 };
 

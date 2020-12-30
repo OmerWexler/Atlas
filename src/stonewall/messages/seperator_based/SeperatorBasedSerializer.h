@@ -8,11 +8,11 @@ using namespace std;
 class SeperatorBasedSerializer: public ISerializer
 {
 private:
-    static const string SEPERATOR;
-    static const string HEADER;
+    string SEPERATOR = "@@@";
+    string HEADER = "SEPB";
 
 public:
     string GetType() const override;
-    string Serialize(const IMessage* Message) const override;
+    string Serialize(const unique_ptr<IMessage>& Message) const override;
     ISerializer* Clone() override;
 };

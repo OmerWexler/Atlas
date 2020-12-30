@@ -5,16 +5,14 @@
 
 using namespace std;
 
-const string SendJobPolicySerializer::HEADER = "SJP";
-
 string SendJobPolicySerializer::GetType() const
 {
     return "SendJobPolicy";
 }
 
-string SendJobPolicySerializer::Serialize(const IMessage* Message) const
+string SendJobPolicySerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
-    SendJobPolicyMessage* PolicyMsg = (SendJobPolicyMessage*) Message;
+    SendJobPolicyMessage* PolicyMsg = (SendJobPolicyMessage*) Message.get();
     string SMsg = "" + HEADER;
     if (PolicyMsg->GetPolicy())
         SMsg += "1";

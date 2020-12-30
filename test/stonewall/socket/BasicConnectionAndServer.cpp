@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "BasicConnection.h"
 #include "BasicServer.h"
 #include "SimpleStringParser.h"
@@ -7,10 +5,6 @@
 #include "SimpleStringMessage.h"
 
 #include "Logger.h"
-
-
-#define _CRTDBG_MAP_ALLOC
-#pragma comment(lib, "user32.lib")
 
 using namespace std;
 

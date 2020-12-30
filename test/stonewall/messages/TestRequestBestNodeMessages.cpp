@@ -16,19 +16,21 @@ int TestRequestBestNodeMessages()
     Performance.CPUPerformance.CPULoad = 20;
     
     RequestBestNodeMessage* Msg = new RequestBestNodeMessage(5, Performance);
+    unique_ptr<IMessage> UMsg((IMessage*) Msg);
 
-    string SMsg = Serializer.Serialize((IMessage*)Msg);
+    string SMsg = Serializer.Serialize(UMsg);
     if (SMsg != "RBNSEPB5@@@20@@@20@@@20")
     {
-        delete Msg;
         return -1;
     }
 
     if (Parser.CanParse(SMsg))
-        Msg = (RequestBestNodeMessage*) Parser.Parse(SMsg);
+    {
+        Parser.Parse(SMsg, UMsg);
+        Msg = (RequestBestNodeMessage*) UMsg.get();
+    }
     else 
     {
-        delete Msg;
         return -1;
     }
 
@@ -37,10 +39,8 @@ int TestRequestBestNodeMessages()
         Msg->GetMinimumAcceptablePerformance().CPUPerformance.CPUFrequency != 20 ||
         Msg->GetMinimumAcceptablePerformance().CPUPerformance.CPULoad != 20)
     {
-        delete Msg;
         return -1;
     }
 
-    delete Msg;
     return 0;
 }

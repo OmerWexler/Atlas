@@ -11,9 +11,9 @@ string SimpleStringParser::GetType() const
     return "SimpleString";
 }
 
-IMessage* SimpleStringParser::Parse(const string& SMsg)
+void  SimpleStringParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    return (IMessage*) new SimpleStringMessage(SMsg);
+    Message.reset((IMessage*) new SimpleStringMessage(SMsg));
 }
 
 bool SimpleStringParser::CanParse(const string& SMsg) const

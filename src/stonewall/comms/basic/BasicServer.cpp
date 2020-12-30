@@ -23,11 +23,24 @@ BasicServer::BasicServer(string Name)
 
 void BasicServer::AddParser(IParser* Parser)
 {
+    for(int i = 0; i < Parsers.size(); i++)
+    {
+        if (Parsers[i]->GetType() == Parser->GetType())
+        {
+            return;
+        }
+    }
+
     Parsers.push_back(Parser);
 }
 
 void BasicServer::AddSerializer(ISerializer* Serializer)
 {
+    if (Serializers.find(Serializer->GetType()) != Serializers.end())
+    {
+        return;
+    }
+
     Serializers[Serializer->GetType()] = Serializer;
 }
 

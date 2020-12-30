@@ -11,12 +11,12 @@ using namespace std;
 class SeperatorBasedParser: public IParser
 {
 private:
-    static const string SEPERATOR;
-    static const string HEADER;
+    string SEPERATOR = "@@@";
+    string HEADER = "SEPB";
 
 public:
     string GetType() const override;
-    IMessage* Parse(const string& SMsg) override;
+    void Parse(const string& SMsg, unique_ptr<IMessage>& Message) override;
     bool CanParse(const string& SMsg) const override;
     IParser* Clone() override;
 };

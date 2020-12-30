@@ -8,10 +8,10 @@ using namespace std;
 class SendJobPolicySerializer: public ISerializer
 {
 private:
-    static const string HEADER;
+    string HEADER = "SJP";
 
 public:
     string GetType() const override;
-    string Serialize(const IMessage* Message) const override;
+    string Serialize(const unique_ptr<IMessage>& Message) const override;
     ISerializer* Clone() override;
 };

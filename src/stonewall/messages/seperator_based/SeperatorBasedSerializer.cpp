@@ -5,17 +5,14 @@
 
 using namespace std;
 
-const string SeperatorBasedSerializer::SEPERATOR = "@@@";
-const string SeperatorBasedSerializer::HEADER = "SEPB";
-
 string SeperatorBasedSerializer::GetType() const
 {
     return "SeperatorBased";
 }
 
-string SeperatorBasedSerializer::Serialize(const IMessage* Message) const
+string SeperatorBasedSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
-    SeperatorBasedMessage* SBMsg = (SeperatorBasedMessage*) Message;
+    SeperatorBasedMessage* SBMsg = (SeperatorBasedMessage*) Message.get();
     
     string SMsg = "";
     vector<string> Values = SBMsg->GetValues();

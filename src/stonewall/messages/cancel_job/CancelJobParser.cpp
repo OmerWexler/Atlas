@@ -5,17 +5,15 @@
 
 using namespace std;
 
-const string CancelJobParser::HEADER = "CJ";
-
 string CancelJobParser::GetType() const
 {
     return "CancelJob";
 }
 
-IMessage* CancelJobParser::Parse(const string& SMsg)
+void CancelJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
     string Descriptor = SMsg.substr(HEADER.length(), SMsg.length());
-    return (IMessage*) new CancelJobMessage(Descriptor);
+    Message.reset((IMessage*) new CancelJobMessage(Descriptor));
 }
 
 bool CancelJobParser::CanParse(const string& SMsg) const

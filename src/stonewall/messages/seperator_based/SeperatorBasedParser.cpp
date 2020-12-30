@@ -5,17 +5,14 @@
 
 using namespace std;
 
-const string SeperatorBasedParser::SEPERATOR = "@@@";
-const string SeperatorBasedParser::HEADER = "SEPB";
-
 string SeperatorBasedParser::GetType() const
 {
     return "SeperatorBased";
 }
 
-IMessage* SeperatorBasedParser::Parse(const string& SMsg)
+void SeperatorBasedParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    SeperatorBasedMessage* Msg = new SeperatorBasedMessage();
+    SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
     
     string Section = "";
     for (size_t i = HEADER.length(); i < SMsg.length(); i++)
@@ -26,16 +23,16 @@ IMessage* SeperatorBasedParser::Parse(const string& SMsg)
         {
             if (SMsg.substr(i + 1, SEPERATOR.length()) == SEPERATOR)
             {
-                Msg->AddValue(Section);
+                SPBMsg->AddValue(Section);
                 Section = "";
                 i += SEPERATOR.length();
             }
         }
     }
 
-    Msg->AddValue(Section);
+    SPBMsg->AddValue(Section);
 
-    return (IMessage*) Msg;
+    Message.reset((IMessage*) SPBMsg);
 }
 
 bool SeperatorBasedParser::CanParse(const string& SMsg) const

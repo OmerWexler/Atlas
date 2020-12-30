@@ -5,17 +5,15 @@
 
 using namespace std;
 
-const string SendJobPolicyParser::HEADER = "SJP";
-
 string SendJobPolicyParser::GetType() const
 {
     return "SendJobPolicy";
 }
 
-IMessage* SendJobPolicyParser::Parse(const string& SMsg)
+void SendJobPolicyParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
     bool AcceptJobs = SMsg.substr(SMsg.length() - 1) == "1";
-    return (IMessage*) new SendJobPolicyMessage(AcceptJobs);
+    Message.reset((IMessage*) new SendJobPolicyMessage(AcceptJobs));
 }
 
 bool SendJobPolicyParser::CanParse(const string& SMsg) const

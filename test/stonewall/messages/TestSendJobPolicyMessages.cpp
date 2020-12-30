@@ -10,29 +10,30 @@ int TestSendJobPolicyMessages()
 {
     SendJobPolicyParser Parser = SendJobPolicyParser();
     SendJobPolicySerializer Serializer = SendJobPolicySerializer();
-    SendJobPolicyMessage* Msg = new SendJobPolicyMessage(true);
 
-    string SMsg = Serializer.Serialize((IMessage*)Msg);
+    SendJobPolicyMessage* Msg = new SendJobPolicyMessage(true);
+    unique_ptr<IMessage> UMsg((IMessage*) Msg);
+
+    string SMsg = Serializer.Serialize(UMsg);
     if (SMsg != "SJP1")
     {
-        delete Msg;
         return -1;
     }
 
     if (Parser.CanParse(SMsg))
-        Msg = (SendJobPolicyMessage*) Parser.Parse(SMsg);
+    {
+        Parser.Parse(SMsg, UMsg);
+        Msg = (SendJobPolicyMessage*) UMsg.get();
+    }
     else 
     {
-        delete Msg;
         return -1;
     }
 
     if (!Msg->GetPolicy())
     {
-        delete Msg;
         return -1;
     }
 
-    delete Msg;
     return 0;
 }

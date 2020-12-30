@@ -10,9 +10,9 @@ string SimpleStringSerializer::GetType() const
     return "SimpleString";
 }
 
-string SimpleStringSerializer::Serialize(const IMessage* Message) const
+string SimpleStringSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
-    return ((SimpleStringMessage*) Message)->GetValue();
+    return ((SimpleStringMessage*) Message.get())->GetValue();
 }
 
 ISerializer* SimpleStringSerializer::Clone()

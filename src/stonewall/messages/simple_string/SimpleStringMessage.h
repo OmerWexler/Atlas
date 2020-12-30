@@ -16,7 +16,7 @@ public:
         this->Value = Value;
     }
 
-    virtual string GetType() const
+    virtual string GetType() const override
     {
         return "SimpleString";
     };

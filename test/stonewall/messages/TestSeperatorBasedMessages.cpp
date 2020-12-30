@@ -10,22 +10,25 @@ int TestSeperatorBasedMessages()
     SeperatorBasedSerializer Serializer = SeperatorBasedSerializer();
     SeperatorBasedMessage* Msg = new SeperatorBasedMessage();
 
+    unique_ptr<IMessage> UMsg((IMessage*) Msg);
+
     Msg->AddValue("AAA");
     Msg->AddValue("BBBB");
     Msg->AddValue("CC");
 
-    string SMsg = Serializer.Serialize((IMessage*)Msg);
+    string SMsg = Serializer.Serialize(UMsg);
     if (SMsg != "SEPBAAA@@@BBBB@@@CC")
     {
-        delete Msg;
         return -1;
     }
 
     if (Parser.CanParse(SMsg))
-        Msg = (SeperatorBasedMessage*) Parser.Parse(SMsg);
+    {
+        Parser.Parse(SMsg, UMsg);
+        Msg = (SeperatorBasedMessage*) UMsg.get();
+    }
     else 
     {
-        delete Msg;
         return -1;
     }
 
@@ -35,10 +38,8 @@ int TestSeperatorBasedMessages()
         || Values[2] != "CC"
         || Values.size() != 3)
     {
-        delete Msg;
         return -1;
     }
 
-    delete Msg;
     return 0;
 }

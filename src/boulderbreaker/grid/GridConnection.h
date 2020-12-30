@@ -30,14 +30,13 @@ public:
 
     int Connect(string Host, string Port);
 
+    int SendMessage(const unique_ptr<IMessage>& Msg);
+
     void SendJobPolicy(bool AcceptJobs);
     int CancelJob(const IJob& Job);
     int SendJob(const IJob& Job);
-
     int RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace, PCPerformance& BestNode);
     int SendBestNode(const PCPerformance& Performance);
-
-    int SendMessage(const unique_ptr<IMessage>& Msg);
 
     bool GetPeerJobPolicy();
 

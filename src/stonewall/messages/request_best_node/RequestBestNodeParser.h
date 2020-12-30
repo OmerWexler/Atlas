@@ -8,14 +8,14 @@ using namespace std;
 class RequestBestNodeParser: public IParser
 {
 private:
-    static const string HEADER;
+    string HEADER = "RBN";
     SeperatorBasedParser SPBParser;
 
 public:
     RequestBestNodeParser();
 
     string GetType() const override;
-    IMessage* Parse(const string& SMsg) override;
+    void Parse(const string& SMsg, unique_ptr<IMessage>& Message) override;
     bool CanParse(const string& SMsg) const override;
     IParser* Clone() override;
 };

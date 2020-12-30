@@ -88,8 +88,6 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
     {
         int LastError = WSAGetLastError();
         Logger::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
-        closesocket(Socket);
-        WSACleanup();
         return LastError;
     } else {
         ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));

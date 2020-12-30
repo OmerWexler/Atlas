@@ -12,10 +12,10 @@ int TestWinSocketCommunications()
     WinConnectionSocket Connection = WinConnectionSocket("Connection");
     WinServerSocket Server = WinServerSocket("Server");
 
-    Server.Bind("127.0.0.1", "17000");
+    Server.Bind("127.0.0.1", "18001");
     Server.Listen(1);
 
-    Connection.Connect("127.0.0.1", "17000");
+    Connection.Connect("127.0.0.1", "18001");
     unique_ptr<IConnectionSocket> ServerClient;
     Server.AcceptConnection("ServerClient", ServerClient);
 
@@ -24,7 +24,7 @@ int TestWinSocketCommunications()
     ServerClient->Recv(Msg, 5);
 
     if (Msg != "Hello")
-    {
+    {   
         return -1;
     }
     

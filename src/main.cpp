@@ -1,16 +1,14 @@
 #include <memory>
 #include <string>
 
-#include "BasicConnection.h"
-#include "BasicServer.h"
-#include "SeperatorBasedSerializer.h"
-#include "SeperatorBasedParser.h"
-#include "SeperatorBasedMessage.h"
-
 #include "Logger.h"
 
 #include "GridConnection.h"
 #include "GridNode.h"
+
+#include "RequestBestNodeSerializer.h"
+#include "RequestBestNodeParser.h"
+#include "RequestBestNodeMessage.h"
 
 #define _CRTDBG_MAP_ALLOC
 #pragma comment(lib, "user32.lib")
@@ -19,33 +17,42 @@ using namespace std;
 
 int main() {
     {
-        Logger::GetInstance().SetLogLevel(L_DEBUG);
+        RequestBestNodeParser Parser = RequestBestNodeParser();
+        RequestBestNodeSerializer Serializer = RequestBestNodeSerializer();
 
-        SeperatorBasedParser Parser = SeperatorBasedParser();
-        SeperatorBasedSerializer Serializer = SeperatorBasedSerializer();
-        SeperatorBasedMessage* Msg = new SeperatorBasedMessage();
-        Msg->AddValue("AAA");
-        Msg->AddValue("BBBB");
-        Msg->AddValue("CC");
+        PCPerformance Performance = PCPerformance();
+        Performance.CPUPerformance.CPUCores = 20;
+        Performance.CPUPerformance.CPUFrequency = 20;
+        Performance.CPUPerformance.CPULoad = 20;
         
-        Logger::GetInstance().Info(
-            Msg->GetValues()[0] + " " +
-            Msg->GetValues()[1] + " " +
-            Msg->GetValues()[2] + " "
-        );
-        
+        RequestBestNodeMessage* Msg = new RequestBestNodeMessage(5, Performance);
+
         string SMsg = Serializer.Serialize((IMessage*)Msg);
-        Logger::GetInstance().Info(string(SMsg));
+        if (SMsg != "RBNSEPB5@@@20@@@20@@@20")
+        {
+            delete Msg;
+            return -1;
+        }
 
         if (Parser.CanParse(SMsg))
-            Msg = (SeperatorBasedMessage*) Parser.Parse(SMsg);
+            Msg = (RequestBestNodeMessage*) Parser.Parse(SMsg);
+        else 
+        {
+            delete Msg;
+            return -1;
+        }
 
-        Logger::GetInstance().Info(
-            Msg->GetValues()[0] + " " +
-            Msg->GetValues()[1] + " " +
-            Msg->GetValues()[2] + " "
-        );
+        if (Msg->GetRange() != 5 ||
+            Msg->GetMinimumAcceptablePerformance().CPUPerformance.CPUCores != 20 ||
+            Msg->GetMinimumAcceptablePerformance().CPUPerformance.CPUFrequency != 20 ||
+            Msg->GetMinimumAcceptablePerformance().CPUPerformance.CPULoad != 20)
+        {
+            delete Msg;
+            return -1;
+        }
+
         delete Msg;
+        return 0;
     }
 
     if (_CrtDumpMemoryLeaks()) 

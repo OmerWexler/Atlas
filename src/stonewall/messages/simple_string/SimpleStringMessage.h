@@ -25,6 +25,4 @@ public:
     {
         return Value;
     };
-
-    virtual ~SimpleStringMessage() {};
 };

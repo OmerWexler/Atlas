@@ -6,7 +6,6 @@
 #include "BasicServer.h"
 #include "GridConnection.h"
 #include "ICallback.h"
-#include "IPCSearchPolicy.h"
 #include "IParser.h"
 #include "ISerializer.h"
 
@@ -36,7 +35,7 @@ public:
 
     void SetJobPolicy(bool AcceptJobs);
     bool GetJobPolicy();
-    int SendJob(const IJob* Job, IPCSearchPolicy SearchPolicy);
+    int SendJob(const IJob* Job, int Range, PCPerformance& MinimumAcceptablePerformance);
 
     GridConnection GetConnection(int ConenctionID);
     void GetConnectionIDs(vector<int>& OutIDs);

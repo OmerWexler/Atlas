@@ -9,9 +9,14 @@ if(WIN32)
         "src/utils/*.cpp"
         "src/stonewall/socket/*.cpp"
         "src/stonewall/socket/winsocket/*.cpp"
+
         "src/stonewall/messages/*.cpp"
-        "src/stonewall/serializers/*.cpp"
-        "src/stonewall/parsers/*.cpp"
+        "src/stonewall/messages/cancel_job/*.cpp"
+        "src/stonewall/messages/request_best_node/*.cpp"
+        "src/stonewall/messages/send_job_policy/*.cpp"
+        "src/stonewall/messages/seperator_based/*.cpp"
+        "src/stonewall/messages/simple_string/*.cpp"
+
         "src/stonewall/comms/*.cpp"
         "src/stonewall/comms/basic/*.cpp"
         "src/boulderbreaker/grid/*.cpp"
@@ -25,8 +30,13 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket/winsocket)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages)
-    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/parsers)
-    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/serializers)
+
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job_policy)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/seperator_based)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string)
+    
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid)

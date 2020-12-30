@@ -1,13 +1,11 @@
 #pragma once
 
-#include <string>
 #include <vector>
-
 #include "IMessage.h"
 
 using namespace std;
 
-class SeperatorBasedMessage: IMessage
+class SeperatorBasedMessage: public IMessage
 {
 private:
     vector<string> Values;

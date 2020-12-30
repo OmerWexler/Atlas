@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
 #include "IMessage.h"
 
 using namespace std;
 
-class SendJobPolicyMessage: IMessage
+class SendJobPolicyMessage: public IMessage
 {
 private:
     bool Policy;
@@ -16,7 +15,7 @@ public:
         this->Policy = Policy;
     }
 
-    inline virtual string GetType() const override
+    inline string GetType() const override
     {
         return "SendJobPolicy";
     };

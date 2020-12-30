@@ -4,7 +4,7 @@ struct CPUPerformance
 {
     int CPUCores;
     int CPUFrequency;
-    float CPULoad;
+    int CPULoad; // 0 - 100
 };
 
 struct PCPerformance

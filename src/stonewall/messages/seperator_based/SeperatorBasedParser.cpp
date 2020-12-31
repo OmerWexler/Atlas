@@ -31,7 +31,6 @@ void SeperatorBasedParser::Parse(const string& SMsg, unique_ptr<IMessage>& Messa
     }
 
     SPBMsg->AddValue(Section);
-
     Message.reset((IMessage*) SPBMsg);
 }
 

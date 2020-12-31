@@ -4,6 +4,7 @@
 #include "TestSendJobPolicyMessages.cpp"
 #include "TestCancelJobMessage.cpp"
 #include "TestRequestBestNodeMessages.cpp"
+#include "TestSendJobMessage.cpp"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -63,6 +64,10 @@ int main(int argc, char** argv)
             ExitCode = TestRequestBestNodeMessages();
             break;
 
+        case 6:
+            ExitCode = TestSendJobMessage();
+            break;
+
         default:
             break;
         }
@@ -85,6 +90,9 @@ int main(int argc, char** argv)
         CheckMemory();
         
         ExitCode += TestRequestBestNodeMessages();
+        CheckMemory();
+        
+        ExitCode += TestSendJobMessage();
         CheckMemory();
     }
     exit(CheckMemory() + ExitCode);

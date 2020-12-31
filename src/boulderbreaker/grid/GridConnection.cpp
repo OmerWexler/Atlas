@@ -5,10 +5,17 @@
 #include "RequestBestNodeSerializer.h"
 #include "CancelJobSerializer.h"
 #include "SendJobPolicySerializer.h"
+#include "SendJobSerializer.h"
 
 #include "RequestBestNodeParser.h"
 #include "CancelJobParser.h"
 #include "SendJobPolicyParser.h"
+#include "SendJobParser.h"
+
+#include "RequestBestNodeMessage.h"
+#include "CancelJobMessage.h"
+#include "SendJobPolicyMessage.h"
+#include "SendJobMessage.h"
 
 #include "IJob.h"
 
@@ -68,20 +75,20 @@ int GridConnection::Connect(string Host, string Port)
 
 int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 {
-    return 0;
+    return Connection.Send(Msg);
 }
 
-void GridConnection::SendJobPolicy(bool AcceptJobs)
+int GridConnection::SendJobPolicy(bool AcceptJobs)
 {
-
+    return Connection.Send(unique_ptr<IMessage>((IMessage*) new SendJobPolicyMessage(AcceptJobs)));
 }
 
-int GridConnection::CancelJob(const IJob& Job)
+int GridConnection::CancelJob(const IJob* Job)
 {
-    return 0;
+    return Connection.Send(unique_ptr<IMessage>((IMessage*) new CancelJobMessage(Job->GetUniqueDescriptor())));
 }
 
-int GridConnection::SendJob(const IJob& Job)
+int GridConnection::SendJob(const IJob* Job)
 {
     return 0;
 }

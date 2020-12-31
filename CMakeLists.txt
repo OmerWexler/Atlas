@@ -13,6 +13,7 @@ if(WIN32)
         "src/stonewall/messages/*.cpp"
         "src/stonewall/messages/cancel_job/*.cpp"
         "src/stonewall/messages/request_best_node/*.cpp"
+        "src/stonewall/messages/send_job/*.cpp"
         "src/stonewall/messages/send_job_policy/*.cpp"
         "src/stonewall/messages/seperator_based/*.cpp"
         "src/stonewall/messages/simple_string/*.cpp"
@@ -23,7 +24,9 @@ if(WIN32)
         "src/boulderbreaker/callback/*.cpp"
         "src/boulderbreaker/search_policy/*.cpp"
         "src/boulderbreaker/resources/*.cpp"
+        
         "src/boulderbreaker/job/*.cpp"
+        "src/boulderbreaker/job/log/*.cpp"
     )
     
     include_directories(${CMAKE_SOURCE_DIR}/src/utils)
@@ -33,6 +36,7 @@ if(WIN32)
 
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job_policy)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/seperator_based)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string)
@@ -43,7 +47,9 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/callback)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/search_policy)
+
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/log)
 endif()
 
 add_subdirectory(test)

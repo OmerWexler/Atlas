@@ -5,10 +5,13 @@
 #include "TestCancelJobMessage.cpp"
 #include "TestRequestBestNodeMessages.cpp"
 #include "TestSendJobMessage.cpp"
+#include "Logger.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+
+using namespace std;
 
 int CheckMemory()
 {
@@ -74,26 +77,42 @@ int main(int argc, char** argv)
     }
     else 
     {
+        Logger::GetInstance().SetLogLevel(L_DEBUG);
+
+        Logger::GetInstance().Info("Starting TestWinSocketCommunications...");
         ExitCode += TestWinSocketCommunications();
         CheckMemory();
+        printf("\n");
 
+        Logger::GetInstance().Info("Starting TestBasicCommunications...");
         ExitCode += TestBasicCommunications();
         CheckMemory();
+        printf("\n");
     
+        Logger::GetInstance().Info("Starting TestSeperatorBasedMessages...");
         ExitCode += TestSeperatorBasedMessages();
         CheckMemory();
+        printf("\n");
         
+        Logger::GetInstance().Info("Starting TestSendJobPolicyMessages...");
         ExitCode += TestSendJobPolicyMessages();
         CheckMemory();
+        printf("\n");
         
+        Logger::GetInstance().Info("Starting TestCancelJobMessage...");
         ExitCode += TestCancelJobMessage();
         CheckMemory();
+        printf("\n");
         
+        Logger::GetInstance().Info("Starting TestRequestBestNodeMessages...");
         ExitCode += TestRequestBestNodeMessages();
         CheckMemory();
+        printf("\n");
         
+        Logger::GetInstance().Info("Starting TestSendJobMessage...");
         ExitCode += TestSendJobMessage();
         CheckMemory();
+        printf("\n");
     }
     exit(CheckMemory() + ExitCode);
 }

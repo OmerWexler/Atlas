@@ -27,10 +27,21 @@ string SendJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
     SPBMsg->AddValue(SJMsg->GetJob()->GetUniqueDescriptor());
     
     vector<Argument> Inputs = SJMsg->GetInput();
+    SPBMsg->AddValue(to_string(Inputs.size()));
     for (Argument Input: Inputs)
     {
         SPBMsg->AddValue(Input.Value);
         if (Input.IsFile)
+            SPBMsg->AddValue("1");
+        else
+            SPBMsg->AddValue("0");
+    }
+
+    vector<Argument> Outputs = SJMsg->GetOutput();
+    for (Argument Output: Outputs)
+    {
+        SPBMsg->AddValue(Output.Value);
+        if (Output.IsFile)
             SPBMsg->AddValue("1");
         else
             SPBMsg->AddValue("0");

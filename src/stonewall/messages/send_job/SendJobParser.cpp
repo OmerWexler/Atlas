@@ -28,9 +28,11 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     int Success = atoi(Values[1].c_str());
     string UniqueDecriptor = Values[2];
 
-    vector<Argument> Inputs = vector<Argument>();
     Argument CurrentArg = Argument("", false);
-    for (int i = 3; i < Values.size(); i += 2)
+    
+    vector<Argument> Inputs = vector<Argument>();
+    int NumOfInputs = atoi(Values[3].c_str());
+    for (int i = 4; i < 4 + NumOfInputs * 2; i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -38,10 +40,19 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
         Inputs.push_back(CurrentArg);
     }
 
+    vector<Argument> Outputs = vector<Argument>();
+    for (int i = 4 + NumOfInputs * 2; i < Values.size(); i += 2)
+    {
+        CurrentArg.Value = Values[i];
+        CurrentArg.IsFile = Values[i + 1] == "1";
+
+        Outputs.push_back(CurrentArg);
+    }
+
     IJob* Job = JobRegistry::GetJob(Type);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) new SendJobMessage(Job, Inputs));
+    Message.reset((IMessage*) new SendJobMessage(Job, Inputs, Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

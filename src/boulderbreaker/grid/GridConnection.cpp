@@ -68,11 +68,6 @@ void GridConnection::AddCustomCallback(ICallback<GridConnection>* Callback)
     Callbacks[Callback->GetMessageType()] = Callback;
 }
 
-int GridConnection::Connect(string Host, string Port)
-{
-    return Connection.Connect(Host, Port);
-}
-
 int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 {
     return Connection.Send(Msg);
@@ -93,7 +88,7 @@ int GridConnection::SendJob(const IJob* Job)
     return 0;
 }
 
-int GridConnection::RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace, PCPerformance& BestNode)
+int GridConnection::RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace)
 {
     return 0;
 }

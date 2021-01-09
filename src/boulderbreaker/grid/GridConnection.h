@@ -28,14 +28,12 @@ public:
     void AddCustomSerializer(ISerializer* Serializer);
     void AddCustomCallback(ICallback<GridConnection>* Callback);
 
-    int Connect(string Host, string Port);
-
     int SendMessage(const unique_ptr<IMessage>& Msg);
 
     int SendJobPolicy(bool AcceptJobs);
     int CancelJob(const IJob* Job);
     int SendJob(const IJob* Job);
-    int RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace, PCPerformance& BestNode);
+    int RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace);
     int SendBestNode(const PCPerformance& Performance);
 
     bool GetPeerJobPolicy();

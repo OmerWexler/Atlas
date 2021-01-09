@@ -38,7 +38,9 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
         Inputs.push_back(CurrentArg);
     }
 
-    IJob* Job = JobRegistry::GetJob(Type, Success, UniqueDecriptor);
+    IJob* Job = JobRegistry::GetJob(Type);
+    Job->SetUniqueDescriptor(UniqueDecriptor);
+    Job->SetSuccess(Success);
     Message.reset((IMessage*) new SendJobMessage(Job, Inputs));
 }
 

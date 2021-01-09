@@ -7,7 +7,7 @@
 
 using namespace std;
 
-IJob* JobRegistry::GetJob(int Type, int Success, string GetUniqueDescriptor)
+IJob* JobRegistry::GetJob(int Type)
 {
     IJob* Job;
 
@@ -15,8 +15,8 @@ IJob* JobRegistry::GetJob(int Type, int Success, string GetUniqueDescriptor)
     {
     case 0:
         Job = (IJob*) new JobLog();
-        Job->SetUniqueDescriptor("Test");
-
+        break;
+    
     case -1:
     default:
         Job = nullptr;

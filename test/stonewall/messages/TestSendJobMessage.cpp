@@ -17,18 +17,14 @@ int TestSendJobMessage()
     Inputs.push_back(Argument("AAA", false));
     Inputs.push_back(Argument("BB", true));
     
-    IJob* JobLog = new JobLog();
-    JobLog->SetUniqueDescriptor("Test");
+    IJob* Job = new JobLog();
+    Job->SetSuccess(1);
+    Job->SetUniqueDescriptor("Test");
     
-    SendJobMessage* Msg = new SendJobMessage(
-        (IJob*) JobLog,
-        Inputs
-    );
-    
-    unique_ptr<IMessage> UMsg((IMessage*) Msg);
+    unique_ptr<IMessage> UMsg((IMessage*) new SendJobMessage((IJob*) Job, Inputs));
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJSEPB0@@@0@@@Test@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJSEPB0@@@1@@@Test@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }
@@ -36,9 +32,8 @@ int TestSendJobMessage()
     if (Parser.CanParse(SMsg))
     {
         Parser.Parse(SMsg, UMsg);
-        Msg = (SendJobMessage*) UMsg.get();
     }
-    else 
+    else
     {
         return -1;
     }

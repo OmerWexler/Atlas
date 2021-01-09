@@ -36,6 +36,11 @@ public:
         return Success;
     }
 
+    void SetSuccess(int Success)
+    {
+        this->Success = Success;
+    }
+
     string GetUniqueDescriptor() const
     {
         return UniqueDescriptor;

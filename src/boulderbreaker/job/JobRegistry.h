@@ -7,5 +7,5 @@ using namespace std;
 class JobRegistry
 {
 public:
-    static IJob* GetJob(int Type, int Success, string GetUniqueDescriptor);
+    static IJob* GetJob(int Type);
 };

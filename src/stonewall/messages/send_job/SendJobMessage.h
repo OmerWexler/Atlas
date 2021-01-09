@@ -15,7 +15,7 @@ private:
 public:
     inline SendJobMessage(IJob* Job, vector<Argument> Input)
     {
-        this->Job = Job->Clone();
+        this->Job = Job;
         this->Input = Input;
     }
 

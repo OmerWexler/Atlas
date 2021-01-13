@@ -5,6 +5,7 @@
 #include "TestCancelJobMessage.cpp"
 #include "TestRequestBestNodeMessages.cpp"
 #include "TestSendJobMessage.cpp"
+#include "TestSendJobOutputMessage.cpp"
 #include "Logger.h"
 
 #define _CRTDBG_MAP_ALLOC
@@ -71,6 +72,10 @@ int main(int argc, char** argv)
             ExitCode = TestSendJobMessage();
             break;
 
+        case 7:
+            ExitCode = TestSendJobOutputMessage();
+            break;
+
         default:
             break;
         }
@@ -111,6 +116,11 @@ int main(int argc, char** argv)
         
         Logger::GetInstance().Info("Starting TestSendJobMessage...");
         ExitCode += TestSendJobMessage();
+        CheckMemory();
+        printf("\n");
+        
+        Logger::GetInstance().Info("Starting TestSendJobOutputMessage...");
+        ExitCode += TestSendJobOutputMessage();
         CheckMemory();
         printf("\n");
     }

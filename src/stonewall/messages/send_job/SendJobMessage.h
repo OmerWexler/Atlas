@@ -14,13 +14,13 @@ private:
     vector<Argument> Output;
 
 public:
-    inline SendJobMessage(IJob* Job, vector<Argument> Input)
+    inline SendJobMessage(IJob* Job, vector<Argument>& Input)
     {
         this->Job = Job;
         this->Input = Input;
     }
 
-    inline SendJobMessage(IJob* Job, vector<Argument> Input, vector<Argument> Output)
+    inline SendJobMessage(IJob* Job, vector<Argument>& Input, vector<Argument>& Output)
     {
         this->Job = Job;
         this->Input = Input;

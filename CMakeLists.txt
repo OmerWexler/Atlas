@@ -13,7 +13,9 @@ if(WIN32)
         "src/stonewall/messages/*.cpp"
         "src/stonewall/messages/cancel_job/*.cpp"
         "src/stonewall/messages/request_best_node/*.cpp"
+        "src/stonewall/messages/send_best_node/*.cpp"
         "src/stonewall/messages/send_job/*.cpp"
+        "src/stonewall/messages/send_job_output/*.cpp"
         "src/stonewall/messages/send_job_policy/*.cpp"
         "src/stonewall/messages/seperator_based/*.cpp"
         "src/stonewall/messages/simple_string/*.cpp"
@@ -36,7 +38,9 @@ if(WIN32)
 
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_best_node)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job)
+    include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job_output)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job_policy)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/seperator_based)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string)

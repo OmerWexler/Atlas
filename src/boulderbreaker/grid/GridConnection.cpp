@@ -3,69 +3,47 @@
 #include "ICallback.h"
 
 #include "RequestBestNodeSerializer.h"
+#include "SendBestNodeSerializer.h"
 #include "CancelJobSerializer.h"
 #include "SendJobPolicySerializer.h"
 #include "SendJobSerializer.h"
+#include "SendJobOutputSerializer.h"
 
 #include "RequestBestNodeParser.h"
+#include "SendBestNodeParser.h"
 #include "CancelJobParser.h"
 #include "SendJobPolicyParser.h"
 #include "SendJobParser.h"
+#include "SendJobOutputParser.h"
 
 #include "RequestBestNodeMessage.h"
+#include "SendBestNodeMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobPolicyMessage.h"
 #include "SendJobMessage.h"
+#include "SendJobOutputMessage.h"
 
 #include "IJob.h"
 
 GridConnection::GridConnection()
 {
-    this->Callbacks = unordered_map<string, ICallback<GridConnection>*>();
-    this->PeerJobPolicy = false;
-
     this->Connection = BasicConnection();
-    this->AddDefaultInterfaces();
 }
 
 GridConnection::GridConnection(BasicConnection& Connection)
 {
-    this->Callbacks = unordered_map<string, ICallback<GridConnection>*>();
-    this->PeerJobPolicy = false;
-
     this->Connection = Connection;
-    this->AddDefaultInterfaces();
 }
 
-void GridConnection::AddDefaultInterfaces()
+int GridConnection::Connect(string Host, string Port, bool IsWorker)
 {
-    AddCustomSerializer((ISerializer*) new CancelJobSerializer());
-    AddCustomSerializer((ISerializer*) new RequestBestNodeSerializer());
-    AddCustomSerializer((ISerializer*) new SendJobPolicySerializer());
-
-    AddCustomParser((IParser*) new CancelJobParser());
-    AddCustomParser((IParser*) new RequestBestNodeParser());
-    AddCustomParser((IParser*) new SendJobPolicyParser());
-}
-
-void GridConnection::AddCustomParser(IParser* Parser)
-{
-    Connection.AddParser(Parser);
-}
-
-void GridConnection::AddCustomSerializer(ISerializer* Serializer)
-{
-    Connection.AddSerializer(Serializer);
-}
-
-void GridConnection::AddCustomCallback(ICallback<GridConnection>* Callback)
-{
-    if (Callbacks.find(Callback->GetMessageType()) != Callbacks.end())
+    int Result = Connection.Connect(Host, Port); 
+    if (Result == 0)
     {
-        return;
+        Connection.Send(unique_ptr<IMessage>((IMessage*) new SendJobPolicyMessage(IsWorker)));
     }
 
-    Callbacks[Callback->GetMessageType()] = Callback;
+    return Result;
 }
 
 int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
@@ -73,37 +51,42 @@ int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
     return Connection.Send(Msg);
 }
 
-int GridConnection::SendJobPolicy(bool AcceptJobs)
+int GridConnection::SendJob(IJob* Job, vector<Argument>& Input)
 {
-    return Connection.Send(unique_ptr<IMessage>((IMessage*) new SendJobPolicyMessage(AcceptJobs)));
+    return Connection.Send(
+        unique_ptr<IMessage>((IMessage*) 
+            new SendJobMessage(Job, Input)));
 }
 
-int GridConnection::CancelJob(const IJob* Job)
+int GridConnection::SendJobOutput(IJob* Job, vector<Argument>& Output)
 {
-    return Connection.Send(unique_ptr<IMessage>((IMessage*) new CancelJobMessage(Job->GetUniqueDescriptor())));
+    return Connection.Send(
+        unique_ptr<IMessage>((IMessage*) 
+            new SendJobOutputMessage(Job->GetUniqueDescriptor(), Output)));
 }
 
-int GridConnection::SendJob(const IJob* Job)
+int GridConnection::CancelJob(IJob* Job)
 {
-    return 0;
+    return Connection.Send(
+        unique_ptr<IMessage>((IMessage*) 
+            new CancelJobMessage(Job->GetUniqueDescriptor())));
 }
 
-int GridConnection::RequestBestNode(int Range, PCPerformance MinimumAcceptablePerformace)
+int GridConnection::RequestBestNode(int Range, PCPerformance& MinimumAcceptablePerformace)
 {
-    return 0;
+    return Connection.Send(
+        unique_ptr<IMessage>((IMessage*) 
+            new RequestBestNodeMessage(Range, MinimumAcceptablePerformace)));
 }
 
 int GridConnection::SendBestNode(const PCPerformance& Performance)
 {
-    return 0;
-}
-
-bool GridConnection::GetPeerJobPolicy()
-{
-    return false;
+    return Connection.Send(
+        unique_ptr<IMessage>((IMessage*) 
+            new SendBestNodeMessage(Performance)));
 }
 
 int GridConnection::Disconnect()
 {
-    return 0;
+    return Connection.Disconnect();
 }

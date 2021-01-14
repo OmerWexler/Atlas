@@ -1,6 +1,5 @@
 #include "GridConnection.h"
 #include "BasicConnection.h"
-#include "ICallback.h"
 
 #include "RequestBestNodeSerializer.h"
 #include "SendBestNodeSerializer.h"
@@ -25,14 +24,37 @@
 
 #include "IJob.h"
 
+using namespace std;
 GridConnection::GridConnection()
 {
-    this->Connection = BasicConnection();
+    this->Connection = move(BasicConnection("Unnamed Connection"));
+}
+
+GridConnection::GridConnection(string Name)
+{
+    this->Connection = move(BasicConnection(Name));
 }
 
 GridConnection::GridConnection(BasicConnection& Connection)
 {
-    this->Connection = Connection;
+    this->Connection = move(Connection);
+}
+
+GridConnection::GridConnection(GridConnection&& Other)
+{
+    this->Connection = move(Other.Connection);
+}
+
+GridConnection& GridConnection::operator=(GridConnection&& Other)
+{
+    this->Connection = move(Other.Connection);
+    return *this;
+}
+
+void GridConnection::CopyCommInterfaces(const vector<IParser*>& Parsers, const unordered_map<string, ISerializer*>& Serializers)
+{
+    this->Parsers = vector<IParser*>(Parsers);
+    this->Serializers = unordered_map<string, ISerializer*>(Serializers);
 }
 
 int GridConnection::Connect(string Host, string Port, bool IsWorker)
@@ -40,6 +62,8 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker)
     int Result = Connection.Connect(Host, Port); 
     if (Result == 0)
     {
+        Connection.AddParsers(Parsers);
+        Connection.AddSerializers(Serializers);
         Connection.Send(unique_ptr<IMessage>((IMessage*) new SendJobPolicyMessage(IsWorker)));
     }
 

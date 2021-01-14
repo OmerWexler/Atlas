@@ -12,13 +12,18 @@
 class BasicServer
 {
 private:
-    string Name;
+    string Name = "";
     unique_ptr<IServerSocket> ServerSocket;
 
     vector<IParser*> Parsers;
     unordered_map<string, ISerializer*> Serializers;
 public:
+    BasicServer() {};
     BasicServer(string Name);
+
+    BasicServer(BasicServer&& Other);
+    BasicServer& operator=(BasicServer&& Other);
+    
     void AddParser(IParser* Parser);
     void AddSerializer(ISerializer* Serializer);
     

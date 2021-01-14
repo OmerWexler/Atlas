@@ -21,6 +21,23 @@ BasicServer::BasicServer(string Name)
     this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) new ServerSocketType(Name));
 }
 
+BasicServer::BasicServer(BasicServer&& Other)
+{
+    this->Name = Other.Name; 
+    this->Parsers = vector<IParser*>(Other.Parsers);
+    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
+    this->ServerSocket = unique_ptr<IServerSocket>(Other.ServerSocket.release());
+}
+
+BasicServer& BasicServer::operator=(BasicServer&& Other)
+{
+    this->Name = Other.Name; 
+    this->Parsers = vector<IParser*>(Other.Parsers);
+    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
+    this->ServerSocket = unique_ptr<IServerSocket>(Other.ServerSocket.release());
+    return *this;
+}
+
 void BasicServer::AddParser(IParser* Parser)
 {
     for(int i = 0; i < Parsers.size(); i++)
@@ -58,22 +75,22 @@ int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
 {
     unique_ptr<IConnectionSocket> NewConnectionSocket;
     int Result = ServerSocket->AcceptConnection(Name, NewConnectionSocket);
-    if (Result == 0)
+    if (Result != 0)
     {
-        OutConnection = BasicConnection(NewConnectionSocket.release());
-        for (IParser* Parser : Parsers)
-        {
-            OutConnection.AddParser(Parser->Clone());
-        }
-
-        for (pair<string, ISerializer*> element: Serializers)
-        {
-            OutConnection.AddSerializer(element.second->Clone());
-        }
-        return 0;
+        return Result;
     }
 
-    return -1;
+    OutConnection = BasicConnection(NewConnectionSocket.release());
+    for (IParser* Parser : Parsers)
+    {
+        OutConnection.AddParser(Parser->Clone());
+    }
+
+    for (pair<string, ISerializer*> element: Serializers)
+    {
+        OutConnection.AddSerializer(element.second->Clone());
+    }
+    return 0;
 }
 
 BasicServer::~BasicServer()

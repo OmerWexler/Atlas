@@ -3,4 +3,5 @@ add_executable(Atlas
     ${SOURCES}
 )
 
-target_link_libraries(Atlas PUBLIC wx::net wx::core wx::base)
+target_link_libraries(Atlas PUBLIC wx::net wx::core wx::base wx::aui wx::html)
+target_link_libraries(Atlas PUBLIC ${wxWidgets_LIBRARIES})

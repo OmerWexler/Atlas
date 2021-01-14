@@ -23,7 +23,7 @@ if(WIN32)
         "src/stonewall/comms/*.cpp"
         "src/stonewall/comms/basic/*.cpp"
         "src/boulderbreaker/grid/*.cpp"
-        "src/boulderbreaker/callback/*.cpp"
+        "src/boulderbreaker/handler/*.cpp"
         "src/boulderbreaker/search_policy/*.cpp"
         "src/boulderbreaker/resources/*.cpp"
         
@@ -48,7 +48,7 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
     include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid)
-    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/callback)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/handler)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/search_policy)
 

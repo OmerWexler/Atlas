@@ -19,15 +19,31 @@ BasicConnection::BasicConnection(IConnectionSocket* Socket)
     this->Name = ConnectionSocket->GetName();
 }
 
+BasicConnection::BasicConnection()
+{
+    this->Name = Name;
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(""));
+}
+
 BasicConnection::BasicConnection(string Name)
 {
     this->Name = Name;
     this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name));
 }
 
-BasicConnection& BasicConnection::operator=(BasicConnection& Other)
+BasicConnection::BasicConnection(BasicConnection&& Other)
 {
     this->Name = Other.Name;
+    this->Parsers = vector<IParser*>(Other.Parsers);
+    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
+}
+
+BasicConnection& BasicConnection::operator=(BasicConnection&& Other)
+{
+    this->Name = Other.Name;
+    this->Parsers = vector<IParser*>(Other.Parsers);
+    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
     this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
     return *this;
 }
@@ -60,11 +76,27 @@ void BasicConnection::AddSerializer(ISerializer* Serializer)
     Serializers[Serializer->GetType()] = Serializer;
 }
 
+void BasicConnection::AddParsers(vector<IParser*> Parsers)
+{
+    for(IParser* Parser: Parsers)
+    {
+        AddParser(Parser);
+    }
+}
+
+void BasicConnection::AddSerializers(unordered_map<string, ISerializer*> Serializers)
+{
+    for(pair<string, ISerializer*> Pair : Serializers)
+    {
+        AddSerializer(Pair.second);
+    }
+}
+
 int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
 {
     if (Serializers.find(Msg->GetType()) == Serializers.end())
     {
-        Logger::GetInstance().Error(this->Name + " couldn't parse message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
+        Logger::GetInstance().Error(this->Name + " couldn't serialize message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
         return -1;
     }
 

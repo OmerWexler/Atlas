@@ -19,12 +19,12 @@ string SendBestNodeSerializer::GetType() const
 string SendBestNodeSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
     string SMsg = HEADER;
-    PCPerformance& MinimumPerformance = ((SendBestNodeMessage*) Message.get())->GetMinimumAcceptablePerformance();
+    PCPerformance& Performance = ((SendBestNodeMessage*) Message.get())->GetNodePerformance();
 
     SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
-    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPUCores));
-    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPUFrequency));
-    SPBMsg->AddValue(to_string(MinimumPerformance.CPUPerformance.CPULoad));
+    SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPUCores));
+    SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPUFrequency));
+    SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPULoad));
 
     unique_ptr<IMessage> USPBMsg((IMessage*) SPBMsg);
     SMsg += SPBSerializer.Serialize(USPBMsg);

@@ -20,8 +20,3 @@ bool CancelJobParser::CanParse(const string& SMsg) const
 {
     return SMsg.substr(0, HEADER.length()) == HEADER;
 }
-
-IParser* CancelJobParser::Clone()
-{
-    return (IParser*) new CancelJobParser();
-}

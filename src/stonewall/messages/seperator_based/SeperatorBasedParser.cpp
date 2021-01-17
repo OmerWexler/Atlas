@@ -38,8 +38,3 @@ bool SeperatorBasedParser::CanParse(const string& SMsg) const
 {
     return SMsg.substr(0, HEADER.length()) == HEADER;
 }
-
-IParser* SeperatorBasedParser::Clone()
-{
-    return (IParser*) new SeperatorBasedParser();
-}

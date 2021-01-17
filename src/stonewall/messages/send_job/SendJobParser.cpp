@@ -60,8 +60,3 @@ bool SendJobParser::CanParse(const string& SMsg) const
     return SMsg.substr(0, HEADER.length()) == HEADER &&
             SPBParser.CanParse(SMsg.substr(HEADER.length()));
 }
-
-IParser* SendJobParser::Clone()
-{
-    return (IParser*) new SendJobParser();
-}

@@ -14,8 +14,3 @@ string SimpleStringSerializer::Serialize(const unique_ptr<IMessage>& Message) co
 {
     return ((SimpleStringMessage*) Message.get())->GetValue();
 }
-
-ISerializer* SimpleStringSerializer::Clone()
-{
-    return (ISerializer*) new SimpleStringSerializer();
-}

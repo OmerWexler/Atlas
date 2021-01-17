@@ -33,17 +33,23 @@ BasicConnection::BasicConnection(string Name)
 
 BasicConnection::BasicConnection(BasicConnection&& Other)
 {
-    this->Name = Other.Name;
-    this->Parsers = vector<IParser*>(Other.Parsers);
-    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
+    (*this) = move(Other);
 }
 
 BasicConnection& BasicConnection::operator=(BasicConnection&& Other)
 {
     this->Name = Other.Name;
-    this->Parsers = vector<IParser*>(Other.Parsers);
-    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
+
+    for (auto Parser: Other.Parsers)
+    {
+        AddParser(Parser);
+    } 
+
+    for (auto Pair: Other.Serializers)
+    {
+        AddSerializer(Pair.second);
+    } 
+
     this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
     return *this;
 }
@@ -53,7 +59,7 @@ int BasicConnection::Connect(string Host, string Port)
     return ConnectionSocket->Connect(Host, Port);
 }
 
-void BasicConnection::AddParser(IParser* Parser)
+void BasicConnection::AddParser(shared_ptr<IParser>& Parser)
 {
     for(int i = 0; i < Parsers.size(); i++)
     {
@@ -63,32 +69,32 @@ void BasicConnection::AddParser(IParser* Parser)
         }
     }
 
-    Parsers.push_back(Parser);
+    Parsers.push_back(shared_ptr<IParser>(Parser));
 }
 
-void BasicConnection::AddSerializer(ISerializer* Serializer)
+void BasicConnection::AddSerializer(shared_ptr<ISerializer>& Serializer)
 {
     if (Serializers.find(Serializer->GetType()) != Serializers.end())
     {
         return;
     }
 
-    Serializers[Serializer->GetType()] = Serializer;
+    Serializers[Serializer->GetType()] = shared_ptr<ISerializer>(Serializer);
 }
 
-void BasicConnection::AddParsers(vector<IParser*> Parsers)
+void BasicConnection::AddParsers(vector<shared_ptr<IParser>>& Parsers)
 {
-    for(IParser* Parser: Parsers)
+    for(shared_ptr<IParser> Parser: Parsers)
     {
-        AddParser(Parser);
+        AddParser(shared_ptr<IParser>(Parser));
     }
 }
 
-void BasicConnection::AddSerializers(unordered_map<string, ISerializer*> Serializers)
+void BasicConnection::AddSerializers(unordered_map<string, shared_ptr<ISerializer>>& Serializers)
 {
-    for(pair<string, ISerializer*> Pair : Serializers)
+    for(pair<string, shared_ptr<ISerializer>> Pair : Serializers)
     {
-        AddSerializer(Pair.second);
+        AddSerializer(shared_ptr<ISerializer>(Pair.second));
     }
 }
 
@@ -117,7 +123,7 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
     ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
     ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
 
-    for (IParser* parser : Parsers)
+    for (shared_ptr<IParser> parser : Parsers)
     {
         if (parser->CanParse(SMsg))
         {
@@ -133,17 +139,4 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
 int BasicConnection::Disconnect()
 {
     return ConnectionSocket->Disconnect();
-}
-
-BasicConnection::~BasicConnection()
-{
-    for (IParser* parser : Parsers)
-    {
-        delete parser;
-    }
-
-    for (std::pair<std::string, ISerializer*> element : Serializers)
-    {
-        delete element.second;
-    }
 }

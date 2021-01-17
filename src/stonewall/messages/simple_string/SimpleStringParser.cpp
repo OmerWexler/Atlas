@@ -20,8 +20,3 @@ bool SimpleStringParser::CanParse(const string& SMsg) const
 {
     return true;
 }
-
-IParser* SimpleStringParser::Clone()
-{
-    return (IParser*) new SimpleStringParser();
-}

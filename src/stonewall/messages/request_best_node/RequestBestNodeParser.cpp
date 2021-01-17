@@ -37,8 +37,3 @@ bool RequestBestNodeParser::CanParse(const string& SMsg) const
     return SMsg.substr(0, HEADER.length()) == HEADER &&
             SPBParser.CanParse(SMsg.substr(HEADER.length()));
 }
-
-IParser* RequestBestNodeParser::Clone()
-{
-    return (IParser*) new RequestBestNodeParser();
-}

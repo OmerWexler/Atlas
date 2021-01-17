@@ -36,8 +36,3 @@ string SendJobOutputSerializer::Serialize(const unique_ptr<IMessage>& Message) c
     string SMsg = HEADER + Serializer.Serialize(unique_ptr<IMessage>((IMessage*) SPBMsg));
     return SMsg;
 };
-
-ISerializer* SendJobOutputSerializer::Clone()
-{
-    return (ISerializer*) new SendJobOutputSerializer();
-};

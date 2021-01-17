@@ -15,8 +15,8 @@ private:
     string Name;
     unique_ptr<IConnectionSocket> ConnectionSocket;
 
-    vector<IParser*> Parsers;
-    unordered_map<string, ISerializer*> Serializers;
+    vector<shared_ptr<IParser>> Parsers;
+    unordered_map<string, shared_ptr<ISerializer>> Serializers;
 public:
     BasicConnection();
     BasicConnection(string Name);
@@ -26,15 +26,16 @@ public:
     BasicConnection& operator= (BasicConnection&& Other);
     
     int Connect(string Host, string Port);
-    void AddParser(IParser* Parser);
-    void AddSerializer(ISerializer* Serializer);
+    void AddParser(shared_ptr<IParser>& Parser);
+    void AddSerializer(shared_ptr<ISerializer>& Serializer);
 
-    void AddParsers(vector<IParser*> Parsers);
-    void AddSerializers(unordered_map<string, ISerializer*> Serializers);
-
+    void AddParsers(vector<shared_ptr<IParser>>& Parsers);
+    void AddSerializers(unordered_map<string, shared_ptr<ISerializer>>& Serializers);
+    
     int Send(const unique_ptr<IMessage>& Msg);
     int Recv(unique_ptr<IMessage>& OutMsg);
-    int Disconnect();
     
-    ~BasicConnection();
+    void SetName(string NewName) { this->Name = NewName; };
+
+    int Disconnect();
 };

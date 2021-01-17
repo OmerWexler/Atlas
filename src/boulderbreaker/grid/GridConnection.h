@@ -15,8 +15,8 @@ class GridConnection
 {
 private:
     BasicConnection Connection;
-    vector<IParser*> Parsers;
-    unordered_map<string, ISerializer*> Serializers;
+    vector<shared_ptr<IParser>> Parsers;
+    unordered_map<string, shared_ptr<ISerializer>> Serializers;
 
 public:
     GridConnection(); 
@@ -26,7 +26,9 @@ public:
     GridConnection(GridConnection&& Other);
     GridConnection& operator=(GridConnection&& Other);
 
-    void CopyCommInterfaces(const vector<IParser*>& Parsers, const unordered_map<string, ISerializer*>& Serializers);
+    void CopyCommInterfaces(const vector<shared_ptr<IParser>>& Parsers, const unordered_map<string, shared_ptr<ISerializer>>& Serializers);
+    void AddParser(shared_ptr<IParser>& Parser);
+    void AddSerializer(shared_ptr<ISerializer>& Serializer);
 
     int Connect(string Host, string Port, bool IsWorker);
 

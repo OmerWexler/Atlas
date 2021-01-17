@@ -51,10 +51,40 @@ GridConnection& GridConnection::operator=(GridConnection&& Other)
     return *this;
 }
 
-void GridConnection::CopyCommInterfaces(const vector<IParser*>& Parsers, const unordered_map<string, ISerializer*>& Serializers)
+void GridConnection::CopyCommInterfaces(const vector<shared_ptr<IParser>>& Parsers, const unordered_map<string, shared_ptr<ISerializer>>& Serializers)
 {
-    this->Parsers = vector<IParser*>(Parsers);
-    this->Serializers = unordered_map<string, ISerializer*>(Serializers);
+    for (shared_ptr<IParser> Parser: Parsers)
+    {
+        AddParser(Parser);
+    }
+
+    for (pair<string, shared_ptr<ISerializer>> Pair: Serializers)
+    {
+        AddSerializer(Pair.second);
+    } 
+}
+
+void GridConnection::AddParser(shared_ptr<IParser>& Parser)
+{
+    for(shared_ptr<IParser> LocalParser: Parsers)
+    {
+        if (LocalParser->GetType() == Parser->GetType())
+        {
+            return;
+        }
+    }
+    
+    this->Parsers.push_back(shared_ptr<IParser>(Parser));
+}
+
+void GridConnection::AddSerializer(shared_ptr<ISerializer>& Serializer)
+{
+    if (Serializers.find(Serializer->GetType()) != Serializers.end())
+    {
+        return;
+    }
+
+    this->Serializers[Serializer->GetType()] = shared_ptr<ISerializer>(Serializer);
 }
 
 int GridConnection::Connect(string Host, string Port, bool IsWorker)

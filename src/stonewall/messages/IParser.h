@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class IParser: public Cloneable<IParser*>
+class IParser
 {
 public:
     virtual string GetType() const = 0;

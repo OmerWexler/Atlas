@@ -52,8 +52,3 @@ string SendJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 
     return SMsg;
 }
-
-ISerializer* SendJobSerializer::Clone()
-{
-    return (ISerializer*) new SendJobSerializer();
-}

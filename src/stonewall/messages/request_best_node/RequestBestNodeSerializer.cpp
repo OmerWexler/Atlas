@@ -32,8 +32,3 @@ string RequestBestNodeSerializer::Serialize(const unique_ptr<IMessage>& Message)
     SMsg += SPBSerializer.Serialize(USPBMsg);
     return SMsg;
 };
-
-ISerializer* RequestBestNodeSerializer::Clone()
-{
-    return (ISerializer*) new RequestBestNodeSerializer();
-}

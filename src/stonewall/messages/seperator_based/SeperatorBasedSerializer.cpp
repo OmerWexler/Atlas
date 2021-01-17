@@ -29,8 +29,3 @@ string SeperatorBasedSerializer::Serialize(const unique_ptr<IMessage>& Message) 
 
     return SMsg;
 }
-
-ISerializer* SeperatorBasedSerializer::Clone()
-{
-    return (ISerializer*) new SeperatorBasedSerializer();
-}

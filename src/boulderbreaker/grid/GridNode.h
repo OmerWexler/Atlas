@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 #include <vector>
+#include <thread> 
+#include <memory> 
 
 #include "BasicServer.h"
 #include "GridConnection.h"
@@ -14,6 +16,8 @@ class GridNode
 private:
     string Name;
     
+    int BACK_LOG = 5;
+    
     BasicServer NodeServer;
     GridConnection NodeAdmin;
 
@@ -21,30 +25,32 @@ private:
     unordered_map<int, GridConnection> Clients;
     vector<GridConnection> QueuedConnections;
 
-    vector<IJob*> LocalJobs;
-    unordered_map<int, vector<IJob*>> MemberJobs;
+    vector<unique_ptr<IJob>> LocalJobs;
+    unordered_map<int, vector<unique_ptr<IJob>>> MemberJobs;
 
-    vector<IParser*> CollectiveParsers;
-    unordered_map<string, ISerializer*> CollectiveSerializers;
+    vector<shared_ptr<IParser>> CollectiveParsers;
+    unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
 
-    vector<IHandler*> Handlers;
+    vector<unique_ptr<IHandler>> Handlers;
 
     void Init();
 
 public:
+    thread ConnectionListener;
+
+    GridNode() { Name = ""; };
     GridNode(string Name);
 
-    void AddCollectiveParser(IParser* Parser);
-    void AddCollectiveSerializer(ISerializer* Serializer);
-    void AddHandler(IHandler* Handler);
+    void AddCollectiveParser(shared_ptr<IParser>& Parser);
+    void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
+    void AddHandler(unique_ptr<IHandler>& Handler);
 
     int Setup(string Host, string Port);
+    void ConnectionListenerFunc();
 
-    int AccpetNodeConnection();
     int ConnectToNode(string Host, string Port, bool IsWorker);
 
-    int SendJob(const IJob* Job, int Range, PCPerformance& MinimumAcceptablePerformance);
-
     GridConnection& GetConnection(int ConenctionID);
-    void GetConnectionIDs(vector<int>& OutIDs);
+    void GetMemberIDs(vector<int>& OutIDs);
+    void GetClientIDs(vector<int>& OutIDs);
 };

@@ -20,8 +20,3 @@ bool SendJobPolicyParser::CanParse(const string& SMsg) const
 {
     return SMsg.substr(0, HEADER.length()) == HEADER;
 }
-
-IParser* SendJobPolicyParser::Clone()
-{
-    return (IParser*) new SendJobPolicyParser();
-}

@@ -13,8 +13,3 @@ string CancelJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
     string SMsg = HEADER + ((CancelJobMessage*) Message.get())->GetDescriptor();
     return SMsg;
 };
-
-ISerializer* CancelJobSerializer::Clone()
-{
-    return (ISerializer*) new CancelJobSerializer();
-};

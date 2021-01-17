@@ -1,6 +1,8 @@
 #include <memory>
 #include <string>
+#include <iostream>
 
+#include "NodeContainer.h"
 #include "Logger.h"
 
 #include "GridConnection.h"
@@ -15,20 +17,62 @@
 #define _CRTDBG_MAP_ALLOC
 #pragma comment(lib, "user32.lib")
 
+
+GridNode NodeCotainer::Node = GridNode();
+
 using namespace std;
 
-int main() {
+int StartServer(string Host, string Port, string Name)
+{
+    GridNode Node;
+    cout << "Server" << endl;
+    Node = GridNode(Name);
+    
+    int Result;
+    Result = Node.Setup(Host, Port);
+    if (Result != 0)
+        return Result;
+
+    while(Node.ConnectionListener.joinable())
     {
-        unique_ptr<IMessage> ptr((IMessage*) new SimpleStringMessage(""));
-        ptr.reset((IMessage*) new RequestBestNodeMessage(5, PCPerformance()));
+    }
+    return 0;
+}
+
+int StartClient(string Host, string Port, string Name)
+{
+    cout << "Client" << endl;
+
+    NodeCotainer::Node = GridNode(Name);
+    NodeCotainer::Node.ConnectToNode(Host, Port, true);
+    return 0;
+}
+
+int main(int argc, char** argv) {
+    {
+        Logger::GetInstance().SetLogLevel(L_DEBUG);
+
+        if (argc > 0)
+        {
+            if (string(argv[1]) == "server")
+            {
+                exit(StartServer(argv[2], argv[3], argv[4]));
+            }
+            else if (string(argv[1]) == "client")
+            {
+                exit(StartClient(argv[2], argv[3], argv[4]));
+            }
+        }
+
+        system("pause");
     }
 
     if (_CrtDumpMemoryLeaks()) 
     {
-        return -1;
+        exit(-1);
     }
     else 
     {
-        return 0;
+        exit(0);
     }
 }

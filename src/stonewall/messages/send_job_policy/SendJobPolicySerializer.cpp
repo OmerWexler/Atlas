@@ -21,8 +21,3 @@ string SendJobPolicySerializer::Serialize(const unique_ptr<IMessage>& Message) c
     
     return SMsg;
 }
-
-ISerializer* SendJobPolicySerializer::Clone()
-{
-    return (ISerializer*) new SendJobPolicySerializer();
-}

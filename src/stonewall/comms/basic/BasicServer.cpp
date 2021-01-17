@@ -15,6 +15,8 @@
 #define ServerSocketType WinServerSocket
 #endif
 
+using namespace std;
+
 BasicServer::BasicServer(string Name)
 {
     this->Name = Name;
@@ -23,22 +25,28 @@ BasicServer::BasicServer(string Name)
 
 BasicServer::BasicServer(BasicServer&& Other)
 {
-    this->Name = Other.Name; 
-    this->Parsers = vector<IParser*>(Other.Parsers);
-    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
-    this->ServerSocket = unique_ptr<IServerSocket>(Other.ServerSocket.release());
+    (*this) = move(Other);
 }
 
 BasicServer& BasicServer::operator=(BasicServer&& Other)
 {
     this->Name = Other.Name; 
-    this->Parsers = vector<IParser*>(Other.Parsers);
-    this->Serializers = unordered_map<string, ISerializer*>(Other.Serializers);
+
+    for (shared_ptr<IParser> Parser: Other.Parsers)
+    {
+        this->Parsers.push_back(Parser);
+    } 
+
+    for (pair<string, shared_ptr<ISerializer>> Pair: Other.Serializers)
+    {
+        this->Serializers[Pair.first] = Pair.second;
+    } 
+
     this->ServerSocket = unique_ptr<IServerSocket>(Other.ServerSocket.release());
     return *this;
 }
 
-void BasicServer::AddParser(IParser* Parser)
+void BasicServer::AddParser(shared_ptr<IParser>& Parser)
 {
     for(int i = 0; i < Parsers.size(); i++)
     {
@@ -48,17 +56,17 @@ void BasicServer::AddParser(IParser* Parser)
         }
     }
 
-    Parsers.push_back(Parser);
+    Parsers.push_back(shared_ptr<IParser>(Parser));
 }
 
-void BasicServer::AddSerializer(ISerializer* Serializer)
+void BasicServer::AddSerializer(shared_ptr<ISerializer>& Serializer)
 {
     if (Serializers.find(Serializer->GetType()) != Serializers.end())
     {
         return;
     }
 
-    Serializers[Serializer->GetType()] = Serializer;
+    Serializers[Serializer->GetType()] = shared_ptr<ISerializer>(Serializer);
 }
 
 int BasicServer::Bind(string Host, string Port)
@@ -81,27 +89,14 @@ int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
     }
 
     OutConnection = BasicConnection(NewConnectionSocket.release());
-    for (IParser* Parser : Parsers)
+    for (shared_ptr<IParser> Parser : Parsers)
     {
-        OutConnection.AddParser(Parser->Clone());
+        OutConnection.AddParser(Parser);
     }
 
-    for (pair<string, ISerializer*> element: Serializers)
+    for (pair<string, shared_ptr<ISerializer>> element: Serializers)
     {
-        OutConnection.AddSerializer(element.second->Clone());
+        OutConnection.AddSerializer(element.second);
     }
     return 0;
-}
-
-BasicServer::~BasicServer()
-{
-    for (IParser* parser : Parsers)
-    {
-        delete parser;
-    }
-
-    for (std::pair<std::string, ISerializer*> element : Serializers)
-    {
-        delete element.second;
-    }
 }

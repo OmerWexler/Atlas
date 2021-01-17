@@ -21,31 +21,48 @@
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
 
+#ifdef LINUX
+#include <unistd.h>
+#endif
+#ifdef WINDOWS
+#include <windows.h>
+#endif
+
+void CPSleep(int SleepSeconds)
+{
+#ifdef LINUX
+    usleep(SleepSeconds * 1000 * 1000);   // usleep takes sleep time in us (1 millionth of a second)
+#endif
+#ifdef WINDOWS
+    Sleep(SleepSeconds * 1000);
+#endif
+}
+
 GridNode::GridNode(string Name)
 {
     this->Name = Name;
-    this->NodeServer = BasicServer("BasicServer - " + Name);
+    this->NodeServer = move(BasicServer("BasicServer - " + Name));
     Init();
 }
 
 void GridNode::Init()
 {
-    AddCollectiveParser((IParser*) new SendJobPolicyParser());
-    AddCollectiveParser((IParser*) new RequestBestNodeParser());
-    AddCollectiveParser((IParser*) new SendBestNodeParser());
-    AddCollectiveParser((IParser*) new SendJobParser());
-    AddCollectiveParser((IParser*) new CancelJobParser());
-    AddCollectiveParser((IParser*) new SendJobOutputParser());
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobPolicyParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new RequestBestNodeParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendBestNodeParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new CancelJobParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobOutputParser()));
 
-    AddCollectiveSerializer((ISerializer*) new SendJobPolicySerializer());
-    AddCollectiveSerializer((ISerializer*) new RequestBestNodeSerializer());
-    AddCollectiveSerializer((ISerializer*) new SendBestNodeSerializer());
-    AddCollectiveSerializer((ISerializer*) new SendJobSerializer());
-    AddCollectiveSerializer((ISerializer*) new CancelJobSerializer());
-    AddCollectiveSerializer((ISerializer*) new SendJobOutputSerializer());
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobPolicySerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new RequestBestNodeSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendBestNodeSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new CancelJobSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobOutputSerializer()));
 }
 
-void GridNode::AddCollectiveParser(IParser* Parser)
+void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
 {
     NodeServer.AddParser(Parser);
 
@@ -57,22 +74,22 @@ void GridNode::AddCollectiveParser(IParser* Parser)
         }
     }
 
-    CollectiveParsers.push_back(Parser);
+    CollectiveParsers.push_back(shared_ptr<IParser>(Parser));
 }
 
-void GridNode::AddCollectiveSerializer(ISerializer* Serializer)
+void GridNode::AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer)
 {
     if (CollectiveSerializers.find(Serializer->GetType()) == CollectiveSerializers.end())
     {
         CollectiveSerializers[Serializer->GetType()] = Serializer;
     }
 
-    NodeServer.AddSerializer(Serializer);
+    NodeServer.AddSerializer(shared_ptr<ISerializer>(Serializer));
 }
 
-void GridNode::AddHandler(IHandler* Handler)
+void GridNode::AddHandler(unique_ptr<IHandler>& Handler)
 {
-    Handlers.push_back(Handler);
+    Handlers.push_back(unique_ptr<IHandler>(Handler.release()));
 }
 
 int GridNode::Setup(string Host, string Port)
@@ -80,31 +97,28 @@ int GridNode::Setup(string Host, string Port)
     int Result;
     Result = NodeServer.Bind(Host, Port);
     if (Result != 0)
-    {
         return Result;
-    }
 
-    Result = NodeServer.Listen(5);
-    if (Result != 0)
-    {
-        return Result;
-    }
-
+    ConnectionListener = thread(&GridNode::ConnectionListenerFunc, this);
     return 0;
 }
 
-int GridNode::AccpetNodeConnection()
-{  
-    string NewName = "Connection - " + to_string(Members.size() + Clients.size()) + " of " + Name;
-    BasicConnection NewConnection{NewName}; 
-    int Result = NodeServer.AcceptConnection(NewName, NewConnection);
-    if (Result != 0) 
+void GridNode::ConnectionListenerFunc()
+{
+    int Result = -1;
+    while (Result != 0)
     {
-        return Result;
+        Result = NodeServer.Listen(BACK_LOG);
+        CPSleep(1);
     }
 
-    QueuedConnections.push_back(GridConnection(NewConnection));
-    return 0;
+    while (true)
+    {
+        BasicConnection NewConnection{}; 
+        int Result = NodeServer.AcceptConnection("", NewConnection);
+        if (Result -= 0)
+            QueuedConnections.push_back(GridConnection(NewConnection));
+    }
 }
 
 int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
@@ -122,17 +136,26 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     return 0;
 }
 
-int GridNode::SendJob(const IJob* Job, int Range, PCPerformance& MinimumAcceptablePerformance)
-{
-    return 0;
-}
-
 GridConnection& GridNode::GetConnection(int ConenctionID)
 {
     return Members[ConenctionID];
 }
 
-void GridNode::GetConnectionIDs(vector<int>& OutIDs)
+void GridNode::GetMemberIDs(vector<int>& OutIDs)
 {
+    OutIDs.clear();
     
+    for (auto& Member: Members)
+    {
+        OutIDs.push_back(Member.first);
+    }
+}
+
+void GridNode::GetClientIDs(vector<int>& OutIDs)
+{
+    OutIDs.clear();
+    for (auto& Client: Clients)
+    {
+        OutIDs.push_back(Client.first);
+    }
 }

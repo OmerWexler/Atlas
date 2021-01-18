@@ -21,6 +21,8 @@ public:
     BasicServer() {};
     BasicServer(string Name);
 
+    void SetName(string Name) { this->Name = Name; }
+
     BasicServer(BasicServer&& Other);
     BasicServer& operator=(BasicServer&& Other);
     

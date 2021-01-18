@@ -23,7 +23,7 @@ public:
 
         for (Argument Input: Inputs)
         {
-            Logger::GetInstance().Info(Input.Value);
+            SingletonLogger::GetInstance().Info(Input.Value);
             Output.push_back(Input);
         }
 

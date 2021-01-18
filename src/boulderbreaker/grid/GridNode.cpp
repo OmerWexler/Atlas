@@ -17,25 +17,17 @@
 #include "RequestBestNodeParser.h"
 #include "SendBestNodeParser.h"
 
+#include "RegistrationHandler.h"
+
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
+#include "Utils.h"
+#include "Logger.h"
 
-#ifdef LINUX
-#include <unistd.h>
-#endif
-#ifdef WINDOWS
-#include <windows.h>
-#endif
-
-void CPSleep(int SleepSeconds)
+GridNode::GridNode()
 {
-#ifdef LINUX
-    usleep(SleepSeconds * 1000 * 1000);   // usleep takes sleep time in us (1 millionth of a second)
-#endif
-#ifdef WINDOWS
-    Sleep(SleepSeconds * 1000);
-#endif
+    *this = GridNode("");
 }
 
 GridNode::GridNode(string Name)
@@ -43,6 +35,12 @@ GridNode::GridNode(string Name)
     this->Name = Name;
     this->NodeServer = move(BasicServer("BasicServer - " + Name));
     Init();
+}
+
+void GridNode::SetName(string Name)
+{
+    this->Name = Name;
+    this->NodeServer.SetName("BasicServer - " + Name);
 }
 
 void GridNode::Init()
@@ -60,6 +58,42 @@ void GridNode::Init()
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new CancelJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobOutputSerializer()));
+
+    AddHandler(unique_ptr<IHandler>((IHandler*) new RegistrationHandler()));
+}
+
+void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Type, int QueueID, vector<int>& Slots)
+{
+    GridConnection NewMember = move(QueuedConnections[QueueID]);
+    QueuedConnections.erase(QueuedConnections.begin() + QueueID);
+
+    int NewID = 0;
+
+    if (Slots.size() > 0)
+    {   
+        NewID = Slots[Slots.size() - 1];
+        Slots.erase(Slots.end() - 1);
+    }
+    else
+    {
+        NewID = (int) Members.size();
+    }
+
+    string NewName = this->Name + "::" + Type + to_string(NewID);
+    NewMember.SetName(NewName);
+    To[NewID] = move(NewMember);
+
+    SingletonLogger::GetInstance().Info(Name + " registered - " + NewName);
+}
+
+void GridNode::RegisterMemberFromQueue(int QueueID)
+{   
+    PopFromQueueTo(Members, "Member", QueueID, AvailableMemberSlots);
+}
+
+void GridNode::RegisterClientFromQueue(int QueueID)
+{
+    PopFromQueueTo(Clients, "Client", QueueID, AvailableClientSlots);
 }
 
 void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
@@ -100,6 +134,9 @@ int GridNode::Setup(string Host, string Port)
         return Result;
 
     ConnectionListener = thread(&GridNode::ConnectionListenerFunc, this);
+    QueueManager = thread(&GridNode::QueueManagerFunc, this);
+    MemberManager = thread(&GridNode::MemberManagerFunc, this);
+    ClientManager = thread(&GridNode::ClientManagerFunc, this);
     return 0;
 }
 
@@ -109,15 +146,103 @@ void GridNode::ConnectionListenerFunc()
     while (Result != 0)
     {
         Result = NodeServer.Listen(BACK_LOG);
-        CPSleep(1);
+        Utils::CPSleep(1);
     }
 
     while (true)
     {
         BasicConnection NewConnection{}; 
         int Result = NodeServer.AcceptConnection("", NewConnection);
-        if (Result -= 0)
+        if (Result == 0)
             QueuedConnections.push_back(GridConnection(NewConnection));
+        
+        Utils::CPSleep(1);
+    }
+}
+
+void GridNode::QueueManagerFunc()
+{
+    unique_ptr<IMessage> Message;
+    int Result;
+    while (true)
+    {
+        for (int i = 0; i < QueuedConnections.size(); i++)
+        {
+            Result = QueuedConnections[i].RecvMessage(Message);
+            if (Result != 0)
+            {
+                if (!QueuedConnections[i].IsConnected())
+                {
+                    QueuedConnections.erase(QueuedConnections.begin() + i);
+                    continue;
+                }
+            }
+            
+            for (unique_ptr<IHandler>& Handler: Handlers)
+            {
+                if (Handler->IsMessageRelated(Message))
+                {
+                    Handler->AddMessage(Message, QueuedConnections[i]);
+                    break;
+                }
+            }
+        }
+
+        Utils::CPSleep(1);
+    }
+}
+
+void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots)
+{
+    unique_ptr<IMessage> Message;
+    unordered_map<int, GridConnection>::iterator Iterator = Map.begin();
+
+    while (Iterator != Map.end())
+    {
+        if (!Iterator->second.IsConnected())
+        {
+            Slots.push_back(Iterator->first);
+            Iterator = Map.erase(Iterator);
+            continue;
+        }
+
+        int Result = Iterator->second.RecvMessage(Message);
+        if (Result != 0)
+        {
+            Iterator++;
+            continue;
+        }
+        
+        for (unique_ptr<IHandler>& Handler: Handlers)
+        {
+            if (Handler->IsMessageRelated(Message))
+            {
+                Handler->AddMessage(Message, Iterator->second);
+                break;
+            }
+        }
+        Iterator++;
+    }
+}
+
+void GridNode::MemberManagerFunc()
+{
+    while (true)
+    {
+        if (Members.size() > 0)
+            IterateOnConnectionMap(Members, AvailableMemberSlots);
+        Utils::CPSleep(1);
+    }
+}
+
+void GridNode::ClientManagerFunc()
+{
+    unique_ptr<IMessage> Message;
+    while (true)
+    {
+        if (Clients.size() > 0)
+            IterateOnConnectionMap(Clients, AvailableClientSlots);        
+        Utils::CPSleep(1);
     }
 }
 
@@ -132,13 +257,13 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
         return Result;
     }
 
-    QueuedConnections.push_back(move(NewConnection));
+    NodeAdmin = move(NewConnection);
     return 0;
 }
 
-GridConnection& GridNode::GetConnection(int ConenctionID)
+GridConnection& GridNode::GetMember(int MemberID)
 {
-    return Members[ConenctionID];
+    return Members[MemberID];
 }
 
 void GridNode::GetMemberIDs(vector<int>& OutIDs)
@@ -151,11 +276,30 @@ void GridNode::GetMemberIDs(vector<int>& OutIDs)
     }
 }
 
+GridConnection& GridNode::GetClient(int ClientID)
+{
+    return Clients[ClientID];
+}
+    
 void GridNode::GetClientIDs(vector<int>& OutIDs)
 {
     OutIDs.clear();
     for (auto& Client: Clients)
     {
         OutIDs.push_back(Client.first);
+    }
+}
+
+GridConnection& GridNode::GetQueuedConnection(int QueueID)
+{
+    return QueuedConnections[QueueID];
+}
+
+void GridNode::GetQueuedConnectionIDs(vector<int>& OutIDs)
+{
+    OutIDs.clear();
+    for (int i = 0; i < QueuedConnections.size(); i++)
+    {
+        OutIDs.push_back(i);
     }
 }

@@ -82,44 +82,44 @@ int main(int argc, char** argv)
     }
     else 
     {
-        Logger::GetInstance().SetLogLevel(L_DEBUG);
+        SingletonLogger::GetInstance().SetLogLevel(L_DEBUG);
 
-        Logger::GetInstance().Info("Starting TestWinSocketCommunications...");
+        SingletonLogger::GetInstance().Info("Starting TestWinSocketCommunications...");
         ExitCode += TestWinSocketCommunications();
         CheckMemory();
         printf("\n");
 
-        Logger::GetInstance().Info("Starting TestBasicCommunications...");
+        SingletonLogger::GetInstance().Info("Starting TestBasicCommunications...");
         ExitCode += TestBasicCommunications();
         CheckMemory();
         printf("\n");
     
-        Logger::GetInstance().Info("Starting TestSeperatorBasedMessages...");
+        SingletonLogger::GetInstance().Info("Starting TestSeperatorBasedMessages...");
         ExitCode += TestSeperatorBasedMessages();
         CheckMemory();
         printf("\n");
         
-        Logger::GetInstance().Info("Starting TestSendJobPolicyMessages...");
+        SingletonLogger::GetInstance().Info("Starting TestSendJobPolicyMessages...");
         ExitCode += TestSendJobPolicyMessages();
         CheckMemory();
         printf("\n");
         
-        Logger::GetInstance().Info("Starting TestCancelJobMessage...");
+        SingletonLogger::GetInstance().Info("Starting TestCancelJobMessage...");
         ExitCode += TestCancelJobMessage();
         CheckMemory();
         printf("\n");
         
-        Logger::GetInstance().Info("Starting TestRequestBestNodeMessages...");
+        SingletonLogger::GetInstance().Info("Starting TestRequestBestNodeMessages...");
         ExitCode += TestRequestBestNodeMessages();
         CheckMemory();
         printf("\n");
         
-        Logger::GetInstance().Info("Starting TestSendJobMessage...");
+        SingletonLogger::GetInstance().Info("Starting TestSendJobMessage...");
         ExitCode += TestSendJobMessage();
         CheckMemory();
         printf("\n");
         
-        Logger::GetInstance().Info("Starting TestSendJobOutputMessage...");
+        SingletonLogger::GetInstance().Info("Starting TestSendJobOutputMessage...");
         ExitCode += TestSendJobOutputMessage();
         CheckMemory();
         printf("\n");

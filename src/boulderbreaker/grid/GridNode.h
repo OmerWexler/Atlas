@@ -10,21 +10,22 @@
 #include "IHandler.h"
 #include "IParser.h"
 #include "ISerializer.h"
+#include "Singleton.h"
 
 class GridNode
 {
 private:
-    string Name;
-    
     int BACK_LOG = 5;
     
+    string Name;
     BasicServer NodeServer;
     GridConnection NodeAdmin;
 
-    unordered_map<int, GridConnection> Members;
-    unordered_map<int, GridConnection> Clients;
-    vector<GridConnection> QueuedConnections;
-
+    thread ConnectionListener;
+    thread QueueManager;
+    thread MemberManager;
+    thread ClientManager;
+    
     vector<unique_ptr<IJob>> LocalJobs;
     unordered_map<int, vector<unique_ptr<IJob>>> MemberJobs;
 
@@ -33,13 +34,28 @@ private:
 
     vector<unique_ptr<IHandler>> Handlers;
 
+    unordered_map<int, GridConnection> Members;
+    vector<int> AvailableMemberSlots;
+    
+    unordered_map<int, GridConnection> Clients;
+    vector<int> AvailableClientSlots;
+
+    vector<GridConnection> QueuedConnections;
+
     void Init();
+    string CreateMemberName();
+    string CreateClientName();
+
+    void PopFromQueueTo(unordered_map<int, GridConnection>& To, string Name, int QueueID, vector<int>& Slots);
 
 public:
-    thread ConnectionListener;
-
-    GridNode() { Name = ""; };
+    GridNode();
     GridNode(string Name);
+
+    void SetName(string Name);
+
+    void RegisterMemberFromQueue(int QueueID);
+    void RegisterClientFromQueue(int QueueID);
 
     void AddCollectiveParser(shared_ptr<IParser>& Parser);
     void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
@@ -47,10 +63,24 @@ public:
 
     int Setup(string Host, string Port);
     void ConnectionListenerFunc();
+    void QueueManagerFunc();
+
+    void IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots);
+    void MemberManagerFunc();
+    void ClientManagerFunc();
 
     int ConnectToNode(string Host, string Port, bool IsWorker);
+    
+    GridConnection& GetAdmin() { return NodeAdmin; };
 
-    GridConnection& GetConnection(int ConenctionID);
+    GridConnection& GetMember(int MemberID);
     void GetMemberIDs(vector<int>& OutIDs);
+
+    GridConnection& GetClient(int ClientID);
     void GetClientIDs(vector<int>& OutIDs);
+
+    GridConnection& GetQueuedConnection(int ClientID);
+    void GetQueuedConnectionIDs(vector<int>& OutIDs);
 };
+
+class SingletonNodeGrid: public Singleton<GridNode>{};

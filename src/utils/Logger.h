@@ -5,6 +5,8 @@ using namespace std;
 #include <string>
 #include <fstream>
 
+#include "Singleton.h"
+
 enum LogLevel {
     L_DEBUG = 4,
     L_INFO = 3,
@@ -18,14 +20,11 @@ private:
     ofstream LogFile;
     LogLevel Level = L_ERROR;
 
-    Logger() {}
-    
     string FormatMessage(string Msg); 
     string GetTime();
     void Log(string Msg, LogLevel Level);
 public:
-    Logger(Logger &other) = delete;
-    void operator=(const Logger &) = delete;
+    Logger() {}
 
     void SetLogFileName(string Path, string Name);
     void SetLogFileName(string Name);
@@ -36,11 +35,7 @@ public:
     void Error(string Msg);
     void Warning(string Msg);
 
-    inline static Logger& GetInstance() 
-    {
-        static Logger Instance;
-        return Instance;
-    }
-
     ~Logger();
 };
+
+class SingletonLogger: public Singleton<Logger> {};

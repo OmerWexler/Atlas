@@ -10,15 +10,25 @@
 
 using namespace std;
 
-// Logger* Logger::Instance = nullptr;
-
 string Logger::GetTime()
 {
     time_t Now = time(0);
     tm *LocalTime = &tm();
     localtime_s(LocalTime, &Now);
 
-    return to_string(LocalTime->tm_hour) + ":" + to_string(LocalTime->tm_min) + ":" + to_string(LocalTime->tm_sec);
+    string Hour = to_string(LocalTime->tm_hour);
+    if (Hour.size() == 1)
+        Hour = "0" + Hour;
+
+    string Minute = to_string(LocalTime->tm_min);
+    if (Minute.size() == 1)
+        Minute = "0" + Minute;
+
+    string Second = to_string(LocalTime->tm_sec);
+    if (Second.size() == 1)
+        Second = "0" + Second;
+
+    return  Hour + ":" + Minute + ":" + Second;
 }
 
 void Logger::SetLogFileName(string Name)

@@ -36,11 +36,13 @@ BasicServer& BasicServer::operator=(BasicServer&& Other)
     {
         this->Parsers.push_back(Parser);
     } 
+    Other.Parsers.clear();
 
     for (pair<string, shared_ptr<ISerializer>> Pair: Other.Serializers)
     {
         this->Serializers[Pair.first] = Pair.second;
     } 
+    Other.Serializers.clear();
 
     this->ServerSocket = unique_ptr<IServerSocket>(Other.ServerSocket.release());
     return *this;
@@ -88,7 +90,7 @@ int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
         return Result;
     }
 
-    OutConnection = BasicConnection(NewConnectionSocket.release());
+    OutConnection = BasicConnection(NewConnectionSocket);
     for (shared_ptr<IParser> Parser : Parsers)
     {
         OutConnection.AddParser(Parser);

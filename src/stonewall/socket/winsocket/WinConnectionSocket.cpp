@@ -16,7 +16,7 @@ void WinConnectionSocket::Construct(string Name)
     if (Result != 0)
     {
         printf("WSAStartup failed with error: %d\n", Result);
-        Logger::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
+        SingletonLogger::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
     }
 
     // Setup hints
@@ -49,6 +49,11 @@ string WinConnectionSocket::GetName() const
     return this->Name;
 }
 
+void WinConnectionSocket::SetName(string NewName)
+{
+    this->Name = NewName;
+}
+
 int WinConnectionSocket::Connect(string Host, string Port) 
 {
     struct addrinfo *ServerAddress = NULL;
@@ -58,7 +63,7 @@ int WinConnectionSocket::Connect(string Host, string Port)
     Result = getaddrinfo(Host.c_str(), Port.c_str(), &ServerAddressHints, &ServerAddress);
     if (Result != 0)
     {
-        Logger::GetInstance().Error(Name + " couldn't get server address info: " + to_string(Result));
+        SingletonLogger::GetInstance().Error(Name + " couldn't get server address info: " + to_string(Result));
         WSACleanup();
         return -1;
     }
@@ -70,7 +75,7 @@ int WinConnectionSocket::Connect(string Host, string Port)
         Socket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
         if (Socket == INVALID_SOCKET)
         {
-            Logger::GetInstance().Error(Name + " - socket instantiation failed with WAS error: " + to_string(WSAGetLastError()));
+            SingletonLogger::GetInstance().Error(Name + " - socket instantiation failed with WAS error: " + to_string(WSAGetLastError()));
             WSACleanup();
             return -1;
         }
@@ -90,13 +95,13 @@ int WinConnectionSocket::Connect(string Host, string Port)
 
     if (Socket == INVALID_SOCKET)
     {
-        Logger::GetInstance().Warning(Name + " unable to connect to " + Host + ":" + Port + "!");
+        SingletonLogger::GetInstance().Warning(Name + " unable to connect to " + Host + ":" + Port + "!");
         WSACleanup();
         return -1;
     }
 
     this->ServerAddress = Host + ":" + Port;
-    Logger::GetInstance().Info(Name + " connected to " + this->ServerAddress);
+    SingletonLogger::GetInstance().Info(Name + " connected to " + this->ServerAddress);
     Connected = true;
     return 0;
 }
@@ -105,7 +110,7 @@ int WinConnectionSocket::Send(string Msg)
 {
     if (!Connected)
     {
-        Logger::GetInstance().Error(Name + " - socket must be connected to send messages!");
+        SingletonLogger::GetInstance().Error(Name + " - socket must be connected to send messages!");
         return -1;
     }
 
@@ -116,13 +121,19 @@ int WinConnectionSocket::Send(string Msg)
     int Result = send(Socket, CMsg, len, 0);
     if (Result == SOCKET_ERROR)
     {
-        Logger::GetInstance().Error(Name + " failed to send: \"" + Msg + "\" to " + ServerAddress + " with error: " + to_string(WSAGetLastError()));
+        int WSALastError = WSAGetLastError();
+        SingletonLogger::GetInstance().Error(Name + " failed to send: \"" + Msg + "\" to " + ServerAddress + " with error: " + to_string(WSALastError));
         closesocket(Socket);
         WSACleanup();
+
+        if (WSALastError == 10054) // Disconnect
+        {
+            Connected = false;
+        }
         return -1;
     }
     
-    Logger::GetInstance().Info(Name + " sent " + Msg + " to " + this->ServerAddress);
+    SingletonLogger::GetInstance().Info(Name + " sent " + Msg + " to " + this->ServerAddress);
     return Result;
 }
 
@@ -130,7 +141,7 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
 {
     if (!Connected)
     {
-        Logger::GetInstance().Error(Name + " - socket must be connected to receive messages!");
+        SingletonLogger::GetInstance().Error(Name + " - socket must be connected to receive messages!");
         return -1;
     }
 
@@ -140,19 +151,20 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
     if (Result > 0)
     {
         Buffer = string(recvbuf, Size);
-        Logger::GetInstance().Info(Name + " received " + Buffer + " from " + ServerAddress);
+        SingletonLogger::GetInstance().Info(Name + " received " + Buffer + " from " + ServerAddress);
     }
     else if (Result == 0)
     {
-        Logger::GetInstance().Warning(Name + " couldn't receive " + to_string(Size) + " bytes from" + ServerAddress + " because it disconnected");
+        SingletonLogger::GetInstance().Warning(Name + " couldn't receive " + to_string(Size) + " bytes from" + ServerAddress + " because it disconnected");
+        Connected = false;
     }
     else
     {
-        Logger::GetInstance().Error(Name + " - recv failed with error: " + to_string(WSAGetLastError()));
+        SingletonLogger::GetInstance().Error(Name + " - recv failed with error: " + to_string(WSAGetLastError()));
+        Connected = false;
     }
     
     delete recvbuf;
-
     return Result;
 }
 
@@ -161,13 +173,13 @@ int WinConnectionSocket::Disconnect()
     int Result = shutdown(Socket, SD_SEND);
     if (Result == SOCKET_ERROR)
     {
-        Logger::GetInstance().Error(Name + " - shutdown failed with error: " + to_string(WSAGetLastError()));
+        SingletonLogger::GetInstance().Error(Name + " - shutdown failed with error: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
         return -1;
     }
 
-    Logger::GetInstance().Info(Name + " shutdown");
+    SingletonLogger::GetInstance().Info(Name + " shutdown");
     return 0;
 }
 

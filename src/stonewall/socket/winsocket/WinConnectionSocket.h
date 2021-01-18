@@ -35,8 +35,11 @@ public:
     WinConnectionSocket();
 
     string GetName() const;
+    void SetName(string NewName);
 
     int Connect(string Host, string Port);
+    bool IsConnected() const { return Connected; };
+
     int Send(string Msg);
     int Recv(string &Buffer, int Size);
     int Disconnect();

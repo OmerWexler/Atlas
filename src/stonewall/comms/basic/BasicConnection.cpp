@@ -13,16 +13,16 @@
 
 using namespace std;
 
-BasicConnection::BasicConnection(IConnectionSocket* Socket)
-{
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Socket);
-    this->Name = ConnectionSocket->GetName();
-}
-
 BasicConnection::BasicConnection()
 {
     this->Name = Name;
     this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(""));
+}
+
+BasicConnection::BasicConnection(unique_ptr<IConnectionSocket>& Socket)
+{
+    this->Name = Socket->GetName();
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>(Socket.release());
 }
 
 BasicConnection::BasicConnection(string Name)
@@ -44,14 +44,27 @@ BasicConnection& BasicConnection::operator=(BasicConnection&& Other)
     {
         AddParser(Parser);
     } 
+    Other.Parsers.clear();
 
     for (auto Pair: Other.Serializers)
     {
         AddSerializer(Pair.second);
     } 
+    Other.Serializers.clear();
 
     this->ConnectionSocket = unique_ptr<IConnectionSocket>(Other.ConnectionSocket.release());
     return *this;
+}
+
+bool BasicConnection::operator==(BasicConnection& Other)
+{
+    return Name == Other.Name && ConnectionSocket.get() == Other.ConnectionSocket.get();
+}
+
+void BasicConnection::SetName(string NewName)
+{
+    this->Name = NewName;
+    this->ConnectionSocket->SetName(NewName);
 }
 
 int BasicConnection::Connect(string Host, string Port)
@@ -102,7 +115,7 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
 {
     if (Serializers.find(Msg->GetType()) == Serializers.end())
     {
-        Logger::GetInstance().Error(this->Name + " couldn't serialize message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
+        SingletonLogger::GetInstance().Error(this->Name + " couldn't serialize message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
         return -1;
     }
 
@@ -120,8 +133,15 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
 int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
 {
     string SMsg;
-    ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
-    ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
+    int Result;
+
+    Result = ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
+    if (Result < 0)
+        return Result;
+    
+    Result = ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
+    if (Result < 0)
+        return Result;
 
     for (shared_ptr<IParser> parser : Parsers)
     {
@@ -132,7 +152,7 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
         }
     }
     
-    Logger::GetInstance().Error(Name + " couldn't parse message " + SMsg + " because a corresponding parser wasn't found.");
+    SingletonLogger::GetInstance().Error(Name + " couldn't parse message " + SMsg + " because a corresponding parser wasn't found.");
     return -1;
 }
 

@@ -27,28 +27,58 @@
 using namespace std;
 GridConnection::GridConnection()
 {
-    this->Connection = move(BasicConnection("Unnamed Connection"));
+    Name = "";
+    this->Connection = move(BasicConnection(Name));
 }
 
 GridConnection::GridConnection(string Name)
 {
+    this->Name = Name;
     this->Connection = move(BasicConnection(Name));
 }
 
 GridConnection::GridConnection(BasicConnection& Connection)
 {
+    this->Name = Connection.GetName();
     this->Connection = move(Connection);
 }
 
 GridConnection::GridConnection(GridConnection&& Other)
 {
-    this->Connection = move(Other.Connection);
+    *this = move(Other);
+}
+
+void GridConnection::SetName(string NewName)
+{
+    this->Name = NewName;
+    this->Connection.SetName(NewName);
 }
 
 GridConnection& GridConnection::operator=(GridConnection&& Other)
 {
     this->Connection = move(Other.Connection);
+    
+    this->Name = Other.Name;
+    this->Connection.SetName(Name);
+
+    for (shared_ptr<IParser> Parser: Other.Parsers)
+    {
+        AddParser(Parser);
+    } 
+    Other.Parsers.clear();
+
+    for (pair<string, shared_ptr<ISerializer>> Pair: Other.Serializers)
+    {
+        AddSerializer(Pair.second);
+    } 
+    Other.Serializers.clear();
+    
     return *this;
+}
+
+bool GridConnection::operator==(GridConnection& Other)
+{
+    return Other.Connection == this->Connection;
 }
 
 void GridConnection::CopyCommInterfaces(const vector<shared_ptr<IParser>>& Parsers, const unordered_map<string, shared_ptr<ISerializer>>& Serializers)
@@ -66,6 +96,8 @@ void GridConnection::CopyCommInterfaces(const vector<shared_ptr<IParser>>& Parse
 
 void GridConnection::AddParser(shared_ptr<IParser>& Parser)
 {
+    Connection.AddParser(Parser);
+    
     for(shared_ptr<IParser> LocalParser: Parsers)
     {
         if (LocalParser->GetType() == Parser->GetType())
@@ -79,6 +111,8 @@ void GridConnection::AddParser(shared_ptr<IParser>& Parser)
 
 void GridConnection::AddSerializer(shared_ptr<ISerializer>& Serializer)
 {
+    Connection.AddSerializer(Serializer);
+
     if (Serializers.find(Serializer->GetType()) != Serializers.end())
     {
         return;
@@ -103,6 +137,11 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker)
 int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 {
     return Connection.Send(Msg);
+}
+
+int GridConnection::RecvMessage(unique_ptr<IMessage>& Msg)
+{
+    return Connection.Recv(Msg);
 }
 
 int GridConnection::SendJob(IJob* Job, vector<Argument>& Input)

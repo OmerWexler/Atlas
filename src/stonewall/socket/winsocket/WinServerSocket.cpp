@@ -14,7 +14,7 @@ WinServerSocket::WinServerSocket(string Name)
     int Result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (Result != 0)
     {
-        Logger::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
+        SingletonLogger::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
     }
 
     ZeroMemory(&HomeHints, sizeof(HomeHints));
@@ -34,7 +34,7 @@ int WinServerSocket::Bind(string Host, string Port)
     int Result = getaddrinfo(Host.c_str(), Port.c_str(), &HomeHints, &ResolvedAddress);
     if (Result != 0)
     {
-        Logger::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
+        SingletonLogger::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
         WSACleanup();
         return 1;
     }
@@ -42,7 +42,7 @@ int WinServerSocket::Bind(string Host, string Port)
     Socket = socket(ResolvedAddress->ai_family, ResolvedAddress->ai_socktype, ResolvedAddress->ai_protocol);
     if (Socket == INVALID_SOCKET)
     {
-        Logger::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
+        SingletonLogger::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
         freeaddrinfo(ResolvedAddress);
         WSACleanup();
         return -1;
@@ -51,7 +51,7 @@ int WinServerSocket::Bind(string Host, string Port)
     Result = bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
     if (Result == SOCKET_ERROR)
     {
-        Logger::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
+        SingletonLogger::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
         freeaddrinfo(ResolvedAddress);
         closesocket(Socket);
         WSACleanup();
@@ -60,7 +60,7 @@ int WinServerSocket::Bind(string Host, string Port)
 
     freeaddrinfo(ResolvedAddress);
 
-    Logger::GetInstance().Info(Name + " bound to " + HomeAddress);
+    SingletonLogger::GetInstance().Info(Name + " bound to " + HomeAddress);
     return 0;
 }
 
@@ -69,13 +69,13 @@ int WinServerSocket::Listen(int Backlog)
     int Result = listen(Socket, Backlog);
     if (Result == SOCKET_ERROR)
     {
-        Logger::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
+        SingletonLogger::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
         return -1;
     }
 
-    Logger::GetInstance().Info(Name + " listening on " + HomeAddress);
+    SingletonLogger::GetInstance().Info(Name + " listening on " + HomeAddress);
     return 0;
 }
 
@@ -87,11 +87,11 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
     if (ClientSocket == INVALID_SOCKET)
     {
         int LastError = WSAGetLastError();
-        Logger::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
+        SingletonLogger::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
         return LastError;
     } else {
         ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
-        Logger::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
+        SingletonLogger::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
         return 0;
     }
 }

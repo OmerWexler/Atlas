@@ -6,6 +6,6 @@
 class IHandler
 {
 public:
-    virtual string AddMessage(IMessage* Message, GridConnection& Sender) const = 0;
-    virtual void IsMessageRelated(IMessage* Message) const = 0;
+    virtual void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender) const = 0;
+    virtual bool IsMessageRelated(const unique_ptr<IMessage>& Message) const = 0;
 };

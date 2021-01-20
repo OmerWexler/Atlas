@@ -144,21 +144,21 @@ int GridConnection::RecvMessage(unique_ptr<IMessage>& Msg)
     return Connection.Recv(Msg);
 }
 
-int GridConnection::SendJob(IJob* Job, vector<Argument>& Input)
+int GridConnection::SendJob(shared_ptr<IJob>& Job, vector<Argument>& Input)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
             new SendJobMessage(Job, Input)));
 }
 
-int GridConnection::SendJobOutput(IJob* Job, vector<Argument>& Output)
+int GridConnection::SendJobOutput(shared_ptr<IJob>& Job, vector<Argument>& Output)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
             new SendJobOutputMessage(Job->GetUniqueDescriptor(), Output)));
 }
 
-int GridConnection::CancelJob(IJob* Job)
+int GridConnection::CancelJob(shared_ptr<IJob>& Job)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 

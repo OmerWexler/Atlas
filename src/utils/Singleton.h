@@ -1,26 +1,20 @@
 #pragma once
 
+#include <future>
+
 template <class T>
 class Singleton: public T
 {
 private:
-    Singleton() {};
-
+    Singleton()= default;
+    ~Singleton()= default;
+    Singleton(const Singleton&)= delete;
+    Singleton& operator=(const Singleton&)= delete;
+    
 public:
-    Singleton(Singleton &other) = delete;
-    void operator=(const Singleton &) = delete;
-    
-    inline static T& GetInstance() 
-    {
-        static T* Instance;
-
-        if (Instance == nullptr)
-        {
-            Instance = new T();
-        }
-
-        return *Instance;
+    static Singleton& Singleton::GetInstance() 
+    {      
+        static Singleton Instance;
+        return Instance;
     }
-    
-    ~Singleton() { delete T; }
 };

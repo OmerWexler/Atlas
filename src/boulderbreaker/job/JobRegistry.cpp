@@ -7,9 +7,9 @@
 
 using namespace std;
 
-IJob* JobRegistry::GetJob(int Type)
+void JobRegistry::GetJob(int Type, shared_ptr<IJob>& OutJob)
 {
-    IJob* Job;
+    IJob* Job = nullptr;
 
     switch (Type)
     {
@@ -23,5 +23,8 @@ IJob* JobRegistry::GetJob(int Type)
         break;
     }
 
-    return Job;
+    if (Job != nullptr)
+    {
+        OutJob.reset(Job);
+    }
 }

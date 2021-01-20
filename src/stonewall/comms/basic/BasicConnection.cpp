@@ -115,7 +115,7 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
 {
     if (Serializers.find(Msg->GetType()) == Serializers.end())
     {
-        SingletonLogger::GetInstance().Error(this->Name + " couldn't serialize message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
+        Singleton<Logger>::GetInstance().Error(this->Name + " couldn't serialize message of type " + Msg->GetType() + " because a corresponding serializer wasn't defined.");
         return -1;
     }
 
@@ -152,7 +152,7 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
         }
     }
     
-    SingletonLogger::GetInstance().Error(Name + " couldn't parse message " + SMsg + " because a corresponding parser wasn't found.");
+    Singleton<Logger>::GetInstance().Error(Name + " couldn't parse message " + SMsg + " because a corresponding parser wasn't found.");
     return -1;
 }
 

@@ -23,13 +23,14 @@ private:
     string FormatMessage(string Msg); 
     string GetTime();
     void Log(string Msg, LogLevel Level);
+
 public:
-    Logger() {}
+    Logger() {};
 
     void SetLogFileName(string Path, string Name);
     void SetLogFileName(string Name);
     void SetLogLevel(LogLevel Level);
-
+    
     void Debug(string Msg);
     void Info(string Msg);
     void Error(string Msg);
@@ -37,5 +38,3 @@ public:
 
     ~Logger();
 };
-
-class SingletonLogger: public Singleton<Logger> {};

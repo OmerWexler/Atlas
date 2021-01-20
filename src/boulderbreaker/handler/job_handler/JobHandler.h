@@ -2,7 +2,7 @@
 
 #include "IHandler.h"
 
-class RegistrationHandler: IHandler
+class JobHandler: IHandler
 {
 public:
     void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender) const;

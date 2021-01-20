@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 
-#include "NodeContainer.h"
 #include "Logger.h"
 
 #include "GridConnection.h"
@@ -22,24 +21,27 @@
 using namespace std;
 
 int main(int argc, char** argv) {
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
+    
     {
-        SingletonLogger::GetInstance().SetLogLevel(L_DEBUG);
+        Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
 
         cout << "Client" << endl;
-        SingletonNodeGrid::GetInstance().SetName("Client");
+        Singleton<GridNode>::GetInstance().SetName("Client");
 
         int Result = -1;
         while (Result != 0)
         {
-            Result = SingletonNodeGrid::GetInstance().ConnectToNode("127.0.0.1", "64000", true);
+            Result = Singleton<GridNode>::GetInstance().ConnectToNode("127.0.0.1", "64000", true);
             Utils::CPSleep(1);
         }
 
-        SingletonNodeGrid::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));
+        Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));
         Result = 1;
         while (true)
         {
-            Result = SingletonNodeGrid::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) new SimpleStringMessage("AAAAA")));
+            Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) new SimpleStringMessage("AAAAA")));
             if (Result < 0)
             {
                 break;

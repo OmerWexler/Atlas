@@ -42,9 +42,9 @@ public:
     int RequestBestNode(int Range, PCPerformance& MinimumAcceptablePerformace);
     int SendBestNode(const PCPerformance& Performance);
 
-    int SendJob(IJob* Job, vector<Argument>& Input);
-    int SendJobOutput(IJob* Job, vector<Argument>& Output);
-    int CancelJob(IJob* Job);
+    int SendJob(shared_ptr<IJob>& Job, vector<Argument>& Input);
+    int SendJobOutput(shared_ptr<IJob>& Job, vector<Argument>& Output);
+    int CancelJob(shared_ptr<IJob>& Job);
 
     void SetName(string NewName);
     string GetName() { return Name; }

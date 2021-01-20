@@ -49,10 +49,11 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
         Outputs.push_back(CurrentArg);
     }
 
-    IJob* Job = JobRegistry::GetJob(Type);
+    shared_ptr<IJob> Job;
+    JobRegistry::GetJob(Type, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) new SendJobMessage(Job, Inputs, Outputs));
+    Message.reset((IMessage*) new SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

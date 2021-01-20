@@ -1,12 +1,15 @@
 #pragma once
 
 #include <memory>
+#include <thread>
+#include <chrono>
+
 #include "WinConnectionSocket.h"
 #include "WinServerSocket.h"
 #include "Logger.h"
+#include "Utils.h"
 
 using namespace std;
-
 
 WinServerSocket::WinServerSocket(string Name) 
 {
@@ -14,7 +17,7 @@ WinServerSocket::WinServerSocket(string Name)
     int Result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (Result != 0)
     {
-        SingletonLogger::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
+        Singleton<Logger>::GetInstance().Error(Name + " - WSAStartup failed with error: " + to_string(Result));
     }
 
     ZeroMemory(&HomeHints, sizeof(HomeHints));
@@ -34,7 +37,7 @@ int WinServerSocket::Bind(string Host, string Port)
     int Result = getaddrinfo(Host.c_str(), Port.c_str(), &HomeHints, &ResolvedAddress);
     if (Result != 0)
     {
-        SingletonLogger::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
+        Singleton<Logger>::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
         WSACleanup();
         return 1;
     }
@@ -42,16 +45,16 @@ int WinServerSocket::Bind(string Host, string Port)
     Socket = socket(ResolvedAddress->ai_family, ResolvedAddress->ai_socktype, ResolvedAddress->ai_protocol);
     if (Socket == INVALID_SOCKET)
     {
-        SingletonLogger::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
+        Singleton<Logger>::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
         freeaddrinfo(ResolvedAddress);
         WSACleanup();
         return -1;
     }
 
-    Result = bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
+    Result = ::bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
     if (Result == SOCKET_ERROR)
     {
-        SingletonLogger::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
+        Singleton<Logger>::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
         freeaddrinfo(ResolvedAddress);
         closesocket(Socket);
         WSACleanup();
@@ -60,7 +63,7 @@ int WinServerSocket::Bind(string Host, string Port)
 
     freeaddrinfo(ResolvedAddress);
 
-    SingletonLogger::GetInstance().Info(Name + " bound to " + HomeAddress);
+    Singleton<Logger>::GetInstance().Info(Name + " bound to " + HomeAddress);
     return 0;
 }
 
@@ -69,29 +72,37 @@ int WinServerSocket::Listen(int Backlog)
     int Result = listen(Socket, Backlog);
     if (Result == SOCKET_ERROR)
     {
-        SingletonLogger::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
+        Singleton<Logger>::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
         closesocket(Socket);
         WSACleanup();
         return -1;
     }
 
-    SingletonLogger::GetInstance().Info(Name + " listening on " + HomeAddress);
+    Singleton<Logger>::GetInstance().Info(Name + " listening on " + HomeAddress);
     return 0;
 }
 
 int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket)
 {
     SOCKET ClientSocket = INVALID_SOCKET;
+
+    thread MemberManager = thread([](SOCKET Socket){
+        Utils::CPSleep(5);
+        closesocket(Socket);
+        WSACleanup();
+    }, ClientSocket);
+
+    Singleton<Logger>::GetInstance().Debug("Low Accept");
     ClientSocket = accept(Socket, NULL, NULL);
 
     if (ClientSocket == INVALID_SOCKET)
     {
         int LastError = WSAGetLastError();
-        SingletonLogger::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
+        Singleton<Logger>::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
         return LastError;
     } else {
         ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
-        SingletonLogger::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
+        Singleton<Logger>::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
         return 0;
     }
 }

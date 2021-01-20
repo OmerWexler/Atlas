@@ -10,7 +10,7 @@
 #include "IHandler.h"
 #include "IParser.h"
 #include "ISerializer.h"
-#include "Singleton.h"
+#include "Logger.h"
 
 class GridNode
 {
@@ -42,6 +42,8 @@ private:
 
     vector<GridConnection> QueuedConnections;
 
+    bool ThreadsAlive = true;
+    
     void Init();
     string CreateMemberName();
     string CreateClientName();
@@ -70,7 +72,9 @@ public:
     void ClientManagerFunc();
 
     int ConnectToNode(string Host, string Port, bool IsWorker);
-    
+
+    int CancelJob(IJob* Job);
+
     GridConnection& GetAdmin() { return NodeAdmin; };
 
     GridConnection& GetMember(int MemberID);
@@ -81,6 +85,7 @@ public:
 
     GridConnection& GetQueuedConnection(int ClientID);
     void GetQueuedConnectionIDs(vector<int>& OutIDs);
-};
 
-class SingletonNodeGrid: public Singleton<GridNode>{};
+    void Stop();
+    ~GridNode();
+};

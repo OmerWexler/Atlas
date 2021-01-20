@@ -12,6 +12,8 @@ private:
     string UniqueDescriptor;
 
 public:
+    JobLog() {};
+    ~JobLog() {};
     int GetType() const
     {
         return 0;
@@ -23,12 +25,17 @@ public:
 
         for (Argument Input: Inputs)
         {
-            SingletonLogger::GetInstance().Info(Input.Value);
+            Singleton<Logger>::GetInstance().Info(Input.Value);
             Output.push_back(Input);
         }
 
         Success = 0;
         return Output;
+    }
+
+    int Kill()
+    {
+        return 0;
     }
 
     int GetSuccess() const

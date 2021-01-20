@@ -7,12 +7,13 @@
 #include "SimpleStringMessage.h"
 
 #include "Logger.h"
+#include "GridNode.h"
 
 using namespace std;
 
 int TestBasicCommunications() 
 {
-    SingletonLogger::GetInstance().SetLogLevel(L_DEBUG);
+    Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
     BasicConnection Connection("Connection");
     BasicServer Server("Server");
 

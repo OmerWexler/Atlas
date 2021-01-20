@@ -12,6 +12,7 @@ class IJob: public Cloneable<IJob*>
 public: 
     virtual int GetType() const = 0;
     virtual vector<Argument> Execute(vector<Argument>& Input) = 0;
+    virtual int Kill() = 0;
     
     virtual int GetSuccess() const = 0;
     virtual void SetSuccess(int Success) = 0;

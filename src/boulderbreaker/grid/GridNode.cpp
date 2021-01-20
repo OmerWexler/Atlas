@@ -18,6 +18,7 @@
 #include "SendBestNodeParser.h"
 
 #include "RegistrationHandler.h"
+#include "JobHandler.h"
 
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
@@ -27,7 +28,9 @@
 
 GridNode::GridNode()
 {
-    *this = GridNode("");
+    this->Name = "";
+    this->NodeServer = move(BasicServer(""));
+    Init();
 }
 
 GridNode::GridNode(string Name)
@@ -60,6 +63,7 @@ void GridNode::Init()
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobOutputSerializer()));
 
     AddHandler(unique_ptr<IHandler>((IHandler*) new RegistrationHandler()));
+    AddHandler(unique_ptr<IHandler>((IHandler*) new JobHandler()));
 }
 
 void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Type, int QueueID, vector<int>& Slots)
@@ -83,7 +87,7 @@ void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Typ
     NewMember.SetName(NewName);
     To[NewID] = move(NewMember);
 
-    SingletonLogger::GetInstance().Info(Name + " registered - " + NewName);
+    Singleton<Logger>::GetInstance().Info(Name + " registered - " + NewName);
 }
 
 void GridNode::RegisterMemberFromQueue(int QueueID)
@@ -149,10 +153,13 @@ void GridNode::ConnectionListenerFunc()
         Utils::CPSleep(1);
     }
 
-    while (true)
+    while (ThreadsAlive)
     {
         BasicConnection NewConnection{}; 
+        Singleton<Logger>::GetInstance().Debug("Accept");
         int Result = NodeServer.AcceptConnection("", NewConnection);
+        Singleton<Logger>::GetInstance().Debug("Dead Accept");
+
         if (Result == 0)
             QueuedConnections.push_back(GridConnection(NewConnection));
         
@@ -164,7 +171,7 @@ void GridNode::QueueManagerFunc()
 {
     unique_ptr<IMessage> Message;
     int Result;
-    while (true)
+    while (ThreadsAlive)
     {
         for (int i = 0; i < QueuedConnections.size(); i++)
         {
@@ -227,7 +234,7 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
 
 void GridNode::MemberManagerFunc()
 {
-    while (true)
+    while (ThreadsAlive)
     {
         if (Members.size() > 0)
             IterateOnConnectionMap(Members, AvailableMemberSlots);
@@ -238,7 +245,7 @@ void GridNode::MemberManagerFunc()
 void GridNode::ClientManagerFunc()
 {
     unique_ptr<IMessage> Message;
-    while (true)
+    while (ThreadsAlive)
     {
         if (Clients.size() > 0)
             IterateOnConnectionMap(Clients, AvailableClientSlots);        
@@ -302,4 +309,24 @@ void GridNode::GetQueuedConnectionIDs(vector<int>& OutIDs)
     {
         OutIDs.push_back(i);
     }
+}
+
+void Stop()
+{
+
+}
+
+GridNode::~GridNode()
+{
+    if (ConnectionListener.joinable())
+        ConnectionListener.join();
+    
+    if (QueueManager.joinable())
+        QueueManager.join();
+
+    if (MemberManager.joinable())
+        MemberManager.join();
+
+    if (ClientManager.joinable())
+        ClientManager.join();
 }

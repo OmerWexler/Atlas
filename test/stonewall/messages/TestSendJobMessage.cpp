@@ -17,10 +17,10 @@ int TestSendJobMessage()
     Inputs.push_back(Argument("AAA", false));
     Inputs.push_back(Argument("BB", true));
 
-    IJob* Job = new JobLog();
+    shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) new JobLog());
     Job->SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) new SendJobMessage((IJob*) Job, Inputs, Job->Execute(Inputs)));
+    unique_ptr<IMessage> UMsg((IMessage*) new SendJobMessage(Job, Inputs, Job->Execute(Inputs)));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);

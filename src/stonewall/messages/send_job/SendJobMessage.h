@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "IMessage.h"
 #include "IJob.h"
 #include "Argument.h"
@@ -9,18 +11,18 @@ using namespace std;
 class SendJobMessage: public IMessage
 {
 private:
-    IJob* Job;
+    shared_ptr<IJob> Job;
     vector<Argument> Input;
     vector<Argument> Output;
 
 public:
-    inline SendJobMessage(IJob* Job, vector<Argument>& Input)
+    inline SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input)
     {
         this->Job = Job;
         this->Input = Input;
     }
 
-    inline SendJobMessage(IJob* Job, vector<Argument>& Input, vector<Argument>& Output)
+    inline SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output)
     {
         this->Job = Job;
         this->Input = Input;
@@ -32,7 +34,7 @@ public:
         return "SendJob";
     };
 
-    inline IJob* GetJob() const
+    inline shared_ptr<IJob>& GetJob()
     {
         return Job;
     };
@@ -51,9 +53,4 @@ public:
     {
         return Output;
     };
-
-    inline ~SendJobMessage()
-    {
-        delete Job;
-    }
 };

@@ -28,6 +28,7 @@ if(WIN32)
         
         "src/boulderbreaker/handler/*.cpp"
         "src/boulderbreaker/handler/registration_handler/*.cpp"
+        "src/boulderbreaker/handler/job_handler/*.cpp"
         
         "src/boulderbreaker/job/*.cpp"
         "src/boulderbreaker/job/log/*.cpp"
@@ -55,6 +56,7 @@ if(WIN32)
     
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/handler)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/handler/registration_handler)
+    include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/handler/job_handler)
 
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job)
     include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/log)

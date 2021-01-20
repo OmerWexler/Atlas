@@ -6,8 +6,8 @@ using namespace std;
 
 int TestWinSocketCommunications() 
 {
-    SingletonLogger::GetInstance().SetLogLevel(LogLevel::L_ERROR);
-    SingletonLogger::GetInstance().SetLogFileName("Debug", "WinSocketCommsSequence.txt");
+    Singleton<Logger>::GetInstance().SetLogLevel(LogLevel::L_ERROR);
+    Singleton<Logger>::GetInstance().SetLogFileName("Debug", "WinSocketCommsSequence.txt");
 
     WinConnectionSocket Connection = WinConnectionSocket("Connection");
     WinServerSocket Server = WinServerSocket("Server");
@@ -32,7 +32,7 @@ int TestWinSocketCommunications()
     Connection.Recv(Msg, 5);
     if (Msg != "Hello")
     {   
-        SingletonLogger::GetInstance().Error("Received unexpected message");
+        Singleton<Logger>::GetInstance().Error("Received unexpected message");
         return -1;
     }
 

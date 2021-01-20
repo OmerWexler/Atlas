@@ -12,19 +12,19 @@ void RegistrationHandler::AddMessage(unique_ptr<IMessage>& Message, GridConnecti
     {
         SendJobPolicyMessage* SJPMsg = (SendJobPolicyMessage*) Message.get();
         vector<int> IDs;
-        SingletonNodeGrid::GetInstance().GetQueuedConnectionIDs(IDs);
+        Singleton<GridNode>::GetInstance().GetQueuedConnectionIDs(IDs);
 
         for (int ID: IDs)
         {
-            if (SingletonNodeGrid::GetInstance().GetQueuedConnection(ID) == Sender)
+            if (Singleton<GridNode>::GetInstance().GetQueuedConnection(ID) == Sender)
             {
                 if (SJPMsg->GetPolicy())
                 {
-                    SingletonNodeGrid::GetInstance().RegisterMemberFromQueue(ID);
+                    Singleton<GridNode>::GetInstance().RegisterMemberFromQueue(ID);
                 }
                 else
                 {
-                    SingletonNodeGrid::GetInstance().RegisterClientFromQueue(ID);
+                    Singleton<GridNode>::GetInstance().RegisterClientFromQueue(ID);
                 }
             }
         }

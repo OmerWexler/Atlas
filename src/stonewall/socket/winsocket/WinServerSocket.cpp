@@ -11,7 +11,7 @@
 
 using namespace std;
 
-WinServerSocket::WinServerSocket(string Name) 
+WinServerSocket::WinServerSocket(string Name, bool Blocking) 
 {
     // Initialize Winsock
     int Result = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -26,6 +26,10 @@ WinServerSocket::WinServerSocket(string Name)
     HomeHints.ai_protocol = IPPROTO_TCP;
 
     this->Name = Name;
+    if (Blocking)
+        this->BlockMode = 0; 
+    else
+        this->BlockMode = 1; 
 }
 
 int WinServerSocket::Bind(string Host, string Port) 
@@ -50,6 +54,7 @@ int WinServerSocket::Bind(string Host, string Port)
         WSACleanup();
         return -1;
     }
+    ioctlsocket(Socket, FIONBIO, &BlockMode);
 
     Result = ::bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
     if (Result == SOCKET_ERROR)
@@ -85,20 +90,15 @@ int WinServerSocket::Listen(int Backlog)
 int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket)
 {
     SOCKET ClientSocket = INVALID_SOCKET;
-
-    thread MemberManager = thread([](SOCKET Socket){
-        Utils::CPSleep(5);
-        closesocket(Socket);
-        WSACleanup();
-    }, ClientSocket);
-
-    Singleton<Logger>::GetInstance().Debug("Low Accept");
     ClientSocket = accept(Socket, NULL, NULL);
 
     if (ClientSocket == INVALID_SOCKET)
     {
         int LastError = WSAGetLastError();
-        Singleton<Logger>::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
+        if (LastError != 10035)
+        {
+            Singleton<Logger>::GetInstance().Error(Name + " had error while accepting client: " + to_string(LastError));
+        }
         return LastError;
     } else {
         ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));

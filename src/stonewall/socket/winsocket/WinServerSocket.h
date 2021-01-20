@@ -24,12 +24,16 @@ private:
     SOCKET Socket = INVALID_SOCKET;
     struct addrinfo HomeHints;
 
+    // 0 = Blocked
+    // 1 = Non Blocking
+    u_long BlockMode = 0;
+
     string Name = "";
     string HomeAddress = "";
 
 public:
-    WinServerSocket(string Name, SOCKET Socket);
-    WinServerSocket(string Name);
+    WinServerSocket(string Name, bool Blocking, SOCKET Socket);
+    WinServerSocket(string Name, bool Blocking);
         
     int Bind(string Host, string Port);
     int Listen(int Backlog);

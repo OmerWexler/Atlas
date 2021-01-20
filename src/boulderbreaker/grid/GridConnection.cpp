@@ -28,13 +28,13 @@ using namespace std;
 GridConnection::GridConnection()
 {
     Name = "";
-    this->Connection = move(BasicConnection(Name));
+    this->Connection = move(BasicConnection(Name, false));
 }
 
 GridConnection::GridConnection(string Name)
 {
     this->Name = Name;
-    this->Connection = move(BasicConnection(Name));
+    this->Connection = move(BasicConnection(Name, false));
 }
 
 GridConnection::GridConnection(BasicConnection& Connection)

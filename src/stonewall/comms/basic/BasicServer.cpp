@@ -17,10 +17,10 @@
 
 using namespace std;
 
-BasicServer::BasicServer(string Name)
+BasicServer::BasicServer(string Name, bool Blocking)
 {
     this->Name = Name;
-    this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) new ServerSocketType(Name));
+    this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) new ServerSocketType(Name, Blocking));
 }
 
 BasicServer::BasicServer(BasicServer&& Other)

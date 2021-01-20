@@ -25,16 +25,19 @@ int main() {
 
     int Result;
     Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "64000");
-    // while ()
-    // Utils::CPSleep(3);
-    // if (Result != 0)
-    //     exit(Result);
-
-    while(true)
+    if (Result != 0)
     {
-        Utils::CPSleep(1);
+        Singleton<GridNode>::GetInstance().Stop();
+        exit(Result);
     }
 
-    // system("pause");
+    Utils::CPSleep(5);
+    while(Singleton<GridNode>::GetInstance().GetNumberOfConnections() > 0)
+    {
+        Utils::CPSleep(5);
+    }
+
+    Singleton<GridNode>::GetInstance().Stop();
+    system("pause");
     exit(0);
 }

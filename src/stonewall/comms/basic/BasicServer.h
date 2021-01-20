@@ -17,9 +17,10 @@ private:
 
     vector<shared_ptr<IParser>> Parsers;
     unordered_map<string, shared_ptr<ISerializer>> Serializers;
+
 public:
     BasicServer() {};
-    BasicServer(string Name);
+    BasicServer(string Name, bool Blocking);
 
     void SetName(string Name) { this->Name = Name; }
 

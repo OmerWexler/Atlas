@@ -7,10 +7,14 @@
 
 using namespace std;
 
-void WinConnectionSocket::Construct(string Name)
+void WinConnectionSocket::Construct(string Name, bool Blocking)
 {
     this->Name = Name;
-
+    if (Blocking)
+        this->BlockMode = 0; 
+    else
+        this->BlockMode = 1; 
+    
     // Initialize Winsock
     int Result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (Result != 0)
@@ -28,12 +32,12 @@ void WinConnectionSocket::Construct(string Name)
 
 WinConnectionSocket::WinConnectionSocket()
 {
-    Construct("");
+    Construct("", false);
 }
 
-WinConnectionSocket::WinConnectionSocket(string Name) 
+WinConnectionSocket::WinConnectionSocket(string Name, bool Blocking) 
 {
-    Construct(Name);
+    Construct(Name, Blocking);
 }
 
 WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket, string ServerAddress) 
@@ -41,7 +45,7 @@ WinConnectionSocket::WinConnectionSocket(string Name, SOCKET Socket, string Serv
     this->Connected = true;
     this->Socket = Socket;
     this->ServerAddress = ServerAddress;
-    Construct(Name);
+    Construct(Name, false);
 }
 
 string WinConnectionSocket::GetName() const
@@ -101,6 +105,8 @@ int WinConnectionSocket::Connect(string Host, string Port)
     }
 
     this->ServerAddress = Host + ":" + Port;
+    ioctlsocket(Socket, FIONBIO, &BlockMode);
+    
     Singleton<Logger>::GetInstance().Info(Name + " connected to " + this->ServerAddress);
     Connected = true;
     return 0;

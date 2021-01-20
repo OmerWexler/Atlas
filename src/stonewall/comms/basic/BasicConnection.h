@@ -21,7 +21,7 @@ private:
 public:
     BasicConnection();
     BasicConnection(unique_ptr<IConnectionSocket>& Socket);
-    BasicConnection(string Name);
+    BasicConnection(string Name, bool Blocking);
 
     BasicConnection(BasicConnection&& Other);
     BasicConnection& operator=(BasicConnection&& Other);

@@ -24,14 +24,17 @@ private:
     SOCKET Socket = INVALID_SOCKET;
     struct addrinfo ServerAddressHints;
 
+    // 0 = Blocked
+    // 1 = Non Blocking
+    u_long BlockMode = 0;
     string Name = "";
     string ServerAddress = "";
     bool Connected = false;
 
-    void Construct(string Name);
+    void Construct(string Name, bool Blocking);
 public:
     WinConnectionSocket(string Name, SOCKET Socket, string ServerAddress);
-    WinConnectionSocket(string Name);
+    WinConnectionSocket(string Name, bool Blocking);
     WinConnectionSocket();
 
     string GetName() const;

@@ -16,7 +16,7 @@ using namespace std;
 BasicConnection::BasicConnection()
 {
     this->Name = Name;
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(""));
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType("", false));
 }
 
 BasicConnection::BasicConnection(unique_ptr<IConnectionSocket>& Socket)
@@ -25,10 +25,10 @@ BasicConnection::BasicConnection(unique_ptr<IConnectionSocket>& Socket)
     this->ConnectionSocket = unique_ptr<IConnectionSocket>(Socket.release());
 }
 
-BasicConnection::BasicConnection(string Name)
+BasicConnection::BasicConnection(string Name, bool Blocking)
 {
     this->Name = Name;
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name));
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name, Blocking));
 }
 
 BasicConnection::BasicConnection(BasicConnection&& Other)

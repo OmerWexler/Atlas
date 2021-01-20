@@ -86,6 +86,8 @@ public:
     GridConnection& GetQueuedConnection(int ClientID);
     void GetQueuedConnectionIDs(vector<int>& OutIDs);
 
+    int GetNumberOfConnections() { return (int) (Members.size() + Clients.size() + QueuedConnections.size()); }
+
     void Stop();
-    ~GridNode();
+    ~GridNode() {};
 };

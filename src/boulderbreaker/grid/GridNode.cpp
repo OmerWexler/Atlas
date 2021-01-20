@@ -29,14 +29,14 @@
 GridNode::GridNode()
 {
     this->Name = "";
-    this->NodeServer = move(BasicServer(""));
+    this->NodeServer = move(BasicServer("", false));
     Init();
 }
 
 GridNode::GridNode(string Name)
 {
     this->Name = Name;
-    this->NodeServer = move(BasicServer("BasicServer - " + Name));
+    this->NodeServer = move(BasicServer("BasicServer - " + Name, false));
     Init();
 }
 
@@ -147,7 +147,7 @@ int GridNode::Setup(string Host, string Port)
 void GridNode::ConnectionListenerFunc()
 {
     int Result = -1;
-    while (Result != 0)
+    while (Result != 0 && ThreadsAlive)
     {
         Result = NodeServer.Listen(BACK_LOG);
         Utils::CPSleep(1);
@@ -311,13 +311,9 @@ void GridNode::GetQueuedConnectionIDs(vector<int>& OutIDs)
     }
 }
 
-void Stop()
+void GridNode::Stop()
 {
-
-}
-
-GridNode::~GridNode()
-{
+    ThreadsAlive = false;
     if (ConnectionListener.joinable())
         ConnectionListener.join();
     

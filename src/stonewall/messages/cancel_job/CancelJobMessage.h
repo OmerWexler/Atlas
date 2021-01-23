@@ -10,18 +10,9 @@ private:
     string Descriptor = "";
 
 public:
-    inline CancelJobMessage(const string Descriptor)
-    {
-        this->Descriptor = Descriptor;
-    }
-
-    inline string GetType() const override
-    {
-        return "CancelJob";
-    };
-
-    inline string GetDescriptor()
-    {
-        return Descriptor;
-    }
+    const static string TYPE;
+    
+    CancelJobMessage(const string Descriptor);
+    string GetType() const override;
+    string GetDescriptor();
 };

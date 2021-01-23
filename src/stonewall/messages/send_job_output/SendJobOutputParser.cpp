@@ -15,7 +15,7 @@ SendJobOutputParser::SendJobOutputParser()
 
 string SendJobOutputParser::GetType() const
 {
-    return "SendJobOutput";
+    return SendJobOutputMessage::TYPE;
 }
 
 void SendJobOutputParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

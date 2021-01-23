@@ -11,18 +11,9 @@ private:
     struct PCPerformance& NodePerformance = PCPerformance();
 
 public:
-    inline SendBestNodeMessage(const PCPerformance& NodePerformance)
-    {
-        this->NodePerformance = NodePerformance;
-    }
-
-    inline string GetType() const override
-    {
-        return "SendBestNode";
-    }
-
-    inline PCPerformance& GetNodePerformance()
-    {
-        return NodePerformance;
-    }
+    const static string TYPE;
+    
+    SendBestNodeMessage(const PCPerformance& NodePerformance);
+    string GetType() const override;
+    PCPerformance& GetNodePerformance();
 };

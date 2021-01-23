@@ -14,24 +14,10 @@ private:
     vector<Argument> Output;
 
 public:
-    inline SendJobOutputMessage(string Descriptor, vector<Argument>& Output)
-    {
-        this->Descriptor = Descriptor;
-        this->Output = Output;
-    }
+    const static string TYPE;
 
-    inline string GetType() const override
-    {
-        return "SendJobOutput";
-    };
-
-    inline string GetDescriptor()
-    {
-        return Descriptor;
-    }
-
-    inline vector<Argument> GetOutput()
-    {
-        return Output;
-    }
+    SendJobOutputMessage(string Descriptor, vector<Argument>& Output);
+    string GetType() const override;
+    string GetDescriptor();
+    vector<Argument> GetOutput();
 };

@@ -7,7 +7,7 @@ using namespace std;
 
 string SendJobPolicyParser::GetType() const
 {
-    return "SendJobPolicy";
+    return SendJobPolicyMessage::TYPE;
 }
 
 void SendJobPolicyParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

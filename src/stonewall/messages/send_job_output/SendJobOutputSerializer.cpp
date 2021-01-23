@@ -13,7 +13,7 @@ SendJobOutputSerializer::SendJobOutputSerializer()
 
 string SendJobOutputSerializer::GetType() const
 {
-    return "SendJobOutput";
+    return SendJobOutputMessage::TYPE;
 }
 
 string SendJobOutputSerializer::Serialize(const unique_ptr<IMessage>& Message) const

@@ -12,24 +12,10 @@ private:
     struct PCPerformance& MinimumAcceptablePerformance = PCPerformance();
 
 public:
-    inline RequestBestNodeMessage(int Range, PCPerformance& MinimumAcceptablePerformance)
-    {
-        this->Range = Range;
-        this->MinimumAcceptablePerformance = MinimumAcceptablePerformance;
-    }
-
-    inline string GetType() const override
-    {
-        return "RequestBestNode";
-    }
-
-    inline int GetRange()
-    {
-        return Range;
-    }
-
-    inline PCPerformance& GetMinimumAcceptablePerformance()
-    {
-        return MinimumAcceptablePerformance;
-    }
+    const static string TYPE;
+    
+    RequestBestNodeMessage(int Range, PCPerformance& MinimumAcceptablePerformance);
+    string GetType() const override;
+    int GetRange();
+    PCPerformance& GetMinimumAcceptablePerformance();
 };

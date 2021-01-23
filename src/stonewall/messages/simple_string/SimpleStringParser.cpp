@@ -8,7 +8,7 @@ using namespace std;
 
 string SimpleStringParser::GetType() const
 {
-    return "SimpleString";
+    return SimpleStringMessage::TYPE;
 }
 
 void  SimpleStringParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

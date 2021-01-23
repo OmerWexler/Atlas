@@ -14,7 +14,7 @@ SendJobSerializer::SendJobSerializer()
 
 string SendJobSerializer::GetType() const
 {
-    return "SendJobPolicy";
+    return SendJobMessage::TYPE;
 }
 
 string SendJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const

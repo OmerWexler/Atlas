@@ -13,7 +13,7 @@ RequestBestNodeSerializer::RequestBestNodeSerializer()
 
 string RequestBestNodeSerializer::GetType() const
 {
-    return "RequestBestNode";
+    return RequestBestNodeMessage::TYPE;
 };
 
 string RequestBestNodeSerializer::Serialize(const unique_ptr<IMessage>& Message) const

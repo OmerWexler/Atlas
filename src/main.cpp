@@ -14,7 +14,6 @@ int main(int argc, char** argv) {
     {
         Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
         Singleton<GridNode>::GetInstance().SetName("AAAA");
-        JobLogSingleton::GetInstance().SetSuccess(1);
     }
 
     if (_CrtDumpMemoryLeaks()) 

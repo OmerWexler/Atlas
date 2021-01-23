@@ -16,41 +16,13 @@ private:
     vector<Argument> Output;
 
 public:
-    inline SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input)
-    {
-        this->Job = Job;
-        this->Input = Input;
-    }
+    const static string TYPE;
 
-    inline SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output)
-    {
-        this->Job = Job;
-        this->Input = Input;
-        this->Output = Output;
-    }
-
-    inline string GetType() const override
-    {
-        return "SendJob";
-    };
-
-    inline shared_ptr<IJob>& GetJob()
-    {
-        return Job;
-    };
-
-    inline vector<Argument> GetInput() const
-    {
-        return Input;
-    };
-
-    inline void SetOutput(vector<Argument> Output)
-    {
-        this->Output = Output;
-    };
-
-    inline vector<Argument> GetOutput() const
-    {
-        return Output;
-    };
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input);
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output);
+    string GetType() const override;
+    shared_ptr<IJob>& GetJob();
+    vector<Argument> GetInput() const;
+    void SetOutput(vector<Argument> Output);
+    vector<Argument> GetOutput() const;
 };

@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "IMessage.h"
-#include "Cloneable.h"
 
 using namespace std;
 

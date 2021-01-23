@@ -4,25 +4,28 @@
 #include "BasicServer.h"
 
 #include "SendJobPolicySerializer.h"
-
 #include "RequestBestNodeSerializer.h"
 #include "SendBestNodeSerializer.h"
-
 #include "SendJobSerializer.h"
 #include "CancelJobSerializer.h"
 #include "SendJobOutputSerializer.h"
 
 #include "SendJobPolicyParser.h"
-
 #include "RequestBestNodeParser.h"
 #include "SendBestNodeParser.h"
-
-#include "RegistrationHandler.h"
-#include "JobHandler.h"
-
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
+
+#include "SendJobPolicyMessage.h"
+#include "RequestBestNodeMessage.h"
+#include "SendBestNodeMessage.h"
+#include "SendJobMessage.h"
+#include "CancelJobMessage.h"
+#include "SendJobOutputMessage.h"
+
+#include "JobCore.h"
+
 #include "Utils.h"
 #include "Logger.h"
 
@@ -62,8 +65,7 @@ void GridNode::Init()
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new CancelJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobOutputSerializer()));
 
-    AddHandler(unique_ptr<IHandler>((IHandler*) new RegistrationHandler()));
-    AddHandler(unique_ptr<IHandler>((IHandler*) new JobHandler()));
+    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) new JobCore()));
 }
 
 void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Type, int QueueID, vector<int>& Slots)
@@ -88,16 +90,6 @@ void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Typ
     To[NewID] = move(NewMember);
 
     Singleton<Logger>::GetInstance().Info(Name + " registered - " + NewName);
-}
-
-void GridNode::RegisterMemberFromQueue(int QueueID)
-{   
-    PopFromQueueTo(Members, "Member", QueueID, AvailableMemberSlots);
-}
-
-void GridNode::RegisterClientFromQueue(int QueueID)
-{
-    PopFromQueueTo(Clients, "Client", QueueID, AvailableClientSlots);
 }
 
 void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
@@ -125,9 +117,9 @@ void GridNode::AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer)
     NodeServer.AddSerializer(shared_ptr<ISerializer>(Serializer));
 }
 
-void GridNode::AddHandler(unique_ptr<IHandler>& Handler)
+void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
 {
-    Handlers.push_back(unique_ptr<IHandler>(Handler.release()));
+    FunctionCores.push_back(unique_ptr<IFunctionCore>(Core.release()));
 }
 
 int GridNode::Setup(string Host, string Port)
@@ -156,12 +148,18 @@ void GridNode::ConnectionListenerFunc()
     while (ThreadsAlive)
     {
         BasicConnection NewConnection{}; 
-        Singleton<Logger>::GetInstance().Debug("Accept");
         int Result = NodeServer.AcceptConnection("", NewConnection);
-        Singleton<Logger>::GetInstance().Debug("Dead Accept");
+        GridConnection NewGridConnection = GridConnection(NewConnection);
 
-        if (Result == 0)
-            QueuedConnections.push_back(GridConnection(NewConnection));
+        unique_ptr<IMessage> Msg;
+        NewGridConnection.RecvMessage(Msg);
+        if (Msg->GetType() == SendJobPolicyMessage::TYPE)
+        {
+
+        }
+
+        // if (Result == 0)
+        //     QueuedConnections.push_back();
         
         Utils::CPSleep(1);
     }
@@ -185,12 +183,11 @@ void GridNode::QueueManagerFunc()
                 }
             }
             
-            for (unique_ptr<IHandler>& Handler: Handlers)
+            for (unique_ptr<IFunctionCore>& Core: FunctionCores)
             {
-                if (Handler->IsMessageRelated(Message))
+                if (Core->IsMessageRelated(Message))
                 {
-                    Handler->AddMessage(Message, QueuedConnections[i]);
-                    break;
+                    Core->AddMessage(Message, QueuedConnections[i]);
                 }
             }
         }
@@ -220,12 +217,11 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
             continue;
         }
         
-        for (unique_ptr<IHandler>& Handler: Handlers)
+        for (unique_ptr<IFunctionCore>& Core: FunctionCores)
         {
-            if (Handler->IsMessageRelated(Message))
+            if (Core->IsMessageRelated(Message))
             {
-                Handler->AddMessage(Message, Iterator->second);
-                break;
+                Core->AddMessage(Message, Iterator->second);
             }
         }
         Iterator++;
@@ -276,7 +272,6 @@ GridConnection& GridNode::GetMember(int MemberID)
 void GridNode::GetMemberIDs(vector<int>& OutIDs)
 {
     OutIDs.clear();
-    
     for (auto& Member: Members)
     {
         OutIDs.push_back(Member.first);
@@ -294,20 +289,6 @@ void GridNode::GetClientIDs(vector<int>& OutIDs)
     for (auto& Client: Clients)
     {
         OutIDs.push_back(Client.first);
-    }
-}
-
-GridConnection& GridNode::GetQueuedConnection(int QueueID)
-{
-    return QueuedConnections[QueueID];
-}
-
-void GridNode::GetQueuedConnectionIDs(vector<int>& OutIDs)
-{
-    OutIDs.clear();
-    for (int i = 0; i < QueuedConnections.size(); i++)
-    {
-        OutIDs.push_back(i);
     }
 }
 

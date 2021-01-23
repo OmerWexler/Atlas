@@ -14,7 +14,7 @@ SendJobParser::SendJobParser()
 
 string SendJobParser::GetType() const
 {
-    return "SendJobPolicy";
+    return SendJobMessage::TYPE;
 }
 
 void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
@@ -24,7 +24,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     
     vector<string> Values = ((SeperatorBasedMessage*) USPBMsg.get())->GetValues();
 
-    int Type = atoi(Values[0].c_str());
+    int TYPE = atoi(Values[0].c_str());
     int Success = atoi(Values[1].c_str());
     string UniqueDecriptor = Values[2];
 
@@ -50,7 +50,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     }
 
     shared_ptr<IJob> Job;
-    JobRegistry::GetJob(Type, Job);
+    JobRegistry::GetJob(TYPE, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
     Message.reset((IMessage*) new SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs));

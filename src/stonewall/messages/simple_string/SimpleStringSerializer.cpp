@@ -7,7 +7,7 @@ using namespace std;
 
 string SimpleStringSerializer::GetType() const
 {
-    return "SimpleString";
+    return SimpleStringMessage::TYPE;
 }
 
 string SimpleStringSerializer::Serialize(const unique_ptr<IMessage>& Message) const

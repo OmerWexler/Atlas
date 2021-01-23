@@ -9,8 +9,8 @@ int TestWinSocketCommunications()
     Singleton<Logger>::GetInstance().SetLogLevel(LogLevel::L_ERROR);
     Singleton<Logger>::GetInstance().SetLogFileName("Debug", "WinSocketCommsSequence.txt");
 
-    WinConnectionSocket Connection = WinConnectionSocket("Connection");
-    WinServerSocket Server = WinServerSocket("Server");
+    WinConnectionSocket Connection = WinConnectionSocket("Connection", true);
+    WinServerSocket Server = WinServerSocket("Server", true);
 
     Server.Bind("127.0.0.1", "18001");
     Server.Listen(1);

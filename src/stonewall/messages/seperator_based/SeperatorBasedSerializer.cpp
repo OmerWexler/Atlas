@@ -7,7 +7,7 @@ using namespace std;
 
 string SeperatorBasedSerializer::GetType() const
 {
-    return "SeperatorBased";
+    return SeperatorBasedMessage::TYPE;
 }
 
 string SeperatorBasedSerializer::Serialize(const unique_ptr<IMessage>& Message) const

@@ -11,23 +11,10 @@ private:
     vector<string> Values;
 
 public:
-    inline SeperatorBasedMessage()
-    {
-        this->Values = vector<string>();
-    }
+    const static string TYPE;
 
-    inline virtual string GetType() const override
-    {
-        return "SeperatorBased";
-    }
-
-    inline vector<string> GetValues()
-    {
-        return Values;
-    }
-
-    inline void AddValue(string Value)
-    {
-        Values.push_back(Value);
-    }
+    SeperatorBasedMessage();
+    string GetType() const override;
+    vector<string> GetValues();
+    void AddValue(string Value);
 };

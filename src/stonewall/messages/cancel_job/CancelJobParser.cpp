@@ -7,7 +7,7 @@ using namespace std;
 
 string CancelJobParser::GetType() const
 {
-    return "CancelJob";
+    return CancelJobMessage::TYPE;
 }
 
 void CancelJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

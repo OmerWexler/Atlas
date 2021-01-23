@@ -10,18 +10,9 @@ private:
     bool Policy;
 
 public:
-    inline SendJobPolicyMessage(bool Policy)
-    {
-        this->Policy = Policy;
-    }
+    const static string TYPE;
 
-    inline string GetType() const override
-    {
-        return "SendJobPolicy";
-    };
-
-    inline bool GetPolicy()
-    {
-        return Policy;
-    }
+    SendJobPolicyMessage(bool Policy);
+    string GetType() const override;
+    bool GetPolicy();
 };

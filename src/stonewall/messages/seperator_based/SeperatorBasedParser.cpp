@@ -7,7 +7,7 @@ using namespace std;
 
 string SeperatorBasedParser::GetType() const
 {
-    return "SeperatorBased";
+    return SeperatorBasedMessage::TYPE;
 }
 
 void SeperatorBasedParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

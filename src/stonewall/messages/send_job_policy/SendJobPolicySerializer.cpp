@@ -7,7 +7,7 @@ using namespace std;
 
 string SendJobPolicySerializer::GetType() const
 {
-    return "SendJobPolicy";
+    return SendJobPolicyMessage::TYPE;
 }
 
 string SendJobPolicySerializer::Serialize(const unique_ptr<IMessage>& Message) const

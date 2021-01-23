@@ -2,14 +2,19 @@
 
 #include <memory>
 
-#include "IHandler.h"
+#include "IFunctionCore.h"
 #include "Logger.h"
 #include "SimpleStringMessage.h"
 
-class TestHandler: IHandler
+class TestCore: IFunctionCore
 {
 public:
-    void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender) const
+    string GetType() const
+    {
+        return "TestCore";
+    }
+
+    void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender)
     {
         Singleton<Logger>::GetInstance().Debug("SS Message - " + ((SimpleStringMessage*) Message.get())->GetValue());
         Singleton<Logger>::GetInstance().Debug("From - " + Sender.GetName());

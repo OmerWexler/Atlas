@@ -14,8 +14,8 @@ using namespace std;
 int TestBasicCommunications() 
 {
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
-    BasicConnection Connection("Connection");
-    BasicServer Server("Server");
+    BasicConnection Connection("Connection", true);
+    BasicServer Server("Server", true);
 
     Connection.AddParser(shared_ptr<IParser>((IParser*) new SimpleStringParser()));
     Connection.AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));

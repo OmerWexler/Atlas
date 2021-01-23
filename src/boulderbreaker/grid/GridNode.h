@@ -7,7 +7,7 @@
 
 #include "BasicServer.h"
 #include "GridConnection.h"
-#include "IHandler.h"
+#include "IFunctionCore.h"
 #include "IParser.h"
 #include "ISerializer.h"
 #include "Logger.h"
@@ -25,14 +25,11 @@ private:
     thread QueueManager;
     thread MemberManager;
     thread ClientManager;
-    
-    vector<unique_ptr<IJob>> LocalJobs;
-    unordered_map<int, vector<unique_ptr<IJob>>> MemberJobs;
 
     vector<shared_ptr<IParser>> CollectiveParsers;
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
 
-    vector<unique_ptr<IHandler>> Handlers;
+    vector<unique_ptr<IFunctionCore>> FunctionCores;
 
     unordered_map<int, GridConnection> Members;
     vector<int> AvailableMemberSlots;
@@ -50,20 +47,6 @@ private:
 
     void PopFromQueueTo(unordered_map<int, GridConnection>& To, string Name, int QueueID, vector<int>& Slots);
 
-public:
-    GridNode();
-    GridNode(string Name);
-
-    void SetName(string Name);
-
-    void RegisterMemberFromQueue(int QueueID);
-    void RegisterClientFromQueue(int QueueID);
-
-    void AddCollectiveParser(shared_ptr<IParser>& Parser);
-    void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
-    void AddHandler(unique_ptr<IHandler>& Handler);
-
-    int Setup(string Host, string Port);
     void ConnectionListenerFunc();
     void QueueManagerFunc();
 
@@ -71,9 +54,19 @@ public:
     void MemberManagerFunc();
     void ClientManagerFunc();
 
-    int ConnectToNode(string Host, string Port, bool IsWorker);
+public:
+    GridNode();
+    GridNode(string Name);
 
-    int CancelJob(IJob* Job);
+    void SetName(string Name);
+
+    void AddCollectiveParser(shared_ptr<IParser>& Parser);
+    void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
+    void AddFunctionCore(unique_ptr<IFunctionCore>& Core);
+
+    int Setup(string Host, string Port);
+
+    int ConnectToNode(string Host, string Port, bool IsWorker);
 
     GridConnection& GetAdmin() { return NodeAdmin; };
 
@@ -85,8 +78,6 @@ public:
 
     GridConnection& GetQueuedConnection(int ClientID);
     void GetQueuedConnectionIDs(vector<int>& OutIDs);
-
-    int GetNumberOfConnections() { return (int) (Members.size() + Clients.size() + QueuedConnections.size()); }
 
     void Stop();
     ~GridNode() {};

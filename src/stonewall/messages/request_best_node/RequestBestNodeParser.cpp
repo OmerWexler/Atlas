@@ -13,7 +13,7 @@ RequestBestNodeParser::RequestBestNodeParser()
 
 string RequestBestNodeParser::GetType() const
 {
-    return "RequestBestNode";
+    return RequestBestNodeMessage::TYPE;
 }
 
 void RequestBestNodeParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)

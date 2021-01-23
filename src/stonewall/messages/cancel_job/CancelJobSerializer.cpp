@@ -5,7 +5,7 @@
 
 string CancelJobSerializer::GetType() const
 {
-    return "CancelJob";
+    return CancelJobMessage::TYPE;
 }
 
 string CancelJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const

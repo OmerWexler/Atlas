@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IMessage.h"
-#include <string>
 
 using namespace std;
 
@@ -11,18 +10,9 @@ private:
     string Value;
     
 public:
-    SimpleStringMessage(string Value)
-    {
-        this->Value = Value;
-    }
+    const static string TYPE;
 
-    virtual string GetType() const override
-    {
-        return "SimpleString";
-    };
-
-    virtual string GetValue() const
-    {
-        return Value;
-    };
+    SimpleStringMessage(string Value);
+    virtual string GetType() const override;
+    virtual string GetValue() const;
 };

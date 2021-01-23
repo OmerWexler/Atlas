@@ -32,6 +32,16 @@ WinServerSocket::WinServerSocket(string Name, bool Blocking)
         this->BlockMode = 1; 
 }
 
+string WinServerSocket::GetName() const
+{
+    return Name;
+}
+
+void WinServerSocket::SetName(string NewName)
+{
+    this->Name = NewName;
+}
+
 int WinServerSocket::Bind(string Host, string Port) 
 {
     HomeAddress = Host + ":" + Port;

@@ -28,6 +28,12 @@ BasicServer::BasicServer(BasicServer&& Other)
     (*this) = move(Other);
 }
 
+void BasicServer::SetName(string Name)
+{
+    this->Name = Name;
+    this->ServerSocket->SetName(Name);
+}
+
 BasicServer& BasicServer::operator=(BasicServer&& Other)
 {
     this->Name = Other.Name; 

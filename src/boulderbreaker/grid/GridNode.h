@@ -22,7 +22,6 @@ private:
     GridConnection NodeAdmin;
 
     thread ConnectionListener;
-    thread QueueManager;
     thread MemberManager;
     thread ClientManager;
 
@@ -37,19 +36,15 @@ private:
     unordered_map<int, GridConnection> Clients;
     vector<int> AvailableClientSlots;
 
-    vector<GridConnection> QueuedConnections;
-
     bool ThreadsAlive = true;
     
     void Init();
     string CreateMemberName();
     string CreateClientName();
 
-    void PopFromQueueTo(unordered_map<int, GridConnection>& To, string Name, int QueueID, vector<int>& Slots);
+    void AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection);
 
     void ConnectionListenerFunc();
-    void QueueManagerFunc();
-
     void IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots);
     void MemberManagerFunc();
     void ClientManagerFunc();

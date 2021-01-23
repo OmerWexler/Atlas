@@ -22,7 +22,7 @@ public:
     BasicServer() {};
     BasicServer(string Name, bool Blocking);
 
-    void SetName(string Name) { this->Name = Name; }
+    void SetName(string Name);
 
     BasicServer(BasicServer&& Other);
     BasicServer& operator=(BasicServer&& Other);

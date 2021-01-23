@@ -68,11 +68,8 @@ void GridNode::Init()
     AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) new JobCore()));
 }
 
-void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Type, int QueueID, vector<int>& Slots)
+void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection)
 {
-    GridConnection NewMember = move(QueuedConnections[QueueID]);
-    QueuedConnections.erase(QueuedConnections.begin() + QueueID);
-
     int NewID = 0;
 
     if (Slots.size() > 0)
@@ -82,12 +79,12 @@ void GridNode::PopFromQueueTo(unordered_map<int, GridConnection>& To, string Typ
     }
     else
     {
-        NewID = (int) Members.size();
+        NewID = (int) Map.size();
     }
 
     string NewName = this->Name + "::" + Type + to_string(NewID);
-    NewMember.SetName(NewName);
-    To[NewID] = move(NewMember);
+    Connection.SetName(NewName);
+    Map[NewID] = move(Connection);
 
     Singleton<Logger>::GetInstance().Info(Name + " registered - " + NewName);
 }
@@ -130,7 +127,6 @@ int GridNode::Setup(string Host, string Port)
         return Result;
 
     ConnectionListener = thread(&GridNode::ConnectionListenerFunc, this);
-    QueueManager = thread(&GridNode::QueueManagerFunc, this);
     MemberManager = thread(&GridNode::MemberManagerFunc, this);
     ClientManager = thread(&GridNode::ClientManagerFunc, this);
     return 0;
@@ -147,52 +143,30 @@ void GridNode::ConnectionListenerFunc()
 
     while (ThreadsAlive)
     {
-        BasicConnection NewConnection{}; 
+        Utils::CPSleep(1);
+
+        BasicConnection NewConnection{};
         int Result = NodeServer.AcceptConnection("", NewConnection);
-        GridConnection NewGridConnection = GridConnection(NewConnection);
+        if (Result != 0)
+            continue;
+
+        GridConnection NewGridConnection = move(GridConnection(NewConnection));
 
         unique_ptr<IMessage> Msg;
+        NewGridConnection.SetName("Unnamed");
         NewGridConnection.RecvMessage(Msg);
+
         if (Msg->GetType() == SendJobPolicyMessage::TYPE)
         {
-
-        }
-
-        // if (Result == 0)
-        //     QueuedConnections.push_back();
-        
-        Utils::CPSleep(1);
-    }
-}
-
-void GridNode::QueueManagerFunc()
-{
-    unique_ptr<IMessage> Message;
-    int Result;
-    while (ThreadsAlive)
-    {
-        for (int i = 0; i < QueuedConnections.size(); i++)
-        {
-            Result = QueuedConnections[i].RecvMessage(Message);
-            if (Result != 0)
+            if (((SendJobPolicyMessage*) Msg.get())->GetPolicy())
             {
-                if (!QueuedConnections[i].IsConnected())
-                {
-                    QueuedConnections.erase(QueuedConnections.begin() + i);
-                    continue;
-                }
+                AddConnectionToMap(Members, "Member", AvailableMemberSlots, NewGridConnection);
             }
-            
-            for (unique_ptr<IFunctionCore>& Core: FunctionCores)
+            else
             {
-                if (Core->IsMessageRelated(Message))
-                {
-                    Core->AddMessage(Message, QueuedConnections[i]);
-                }
+                AddConnectionToMap(Clients, "Client", AvailableClientSlots, NewGridConnection);
             }
         }
-
-        Utils::CPSleep(1);
     }
 }
 
@@ -298,9 +272,6 @@ void GridNode::Stop()
     if (ConnectionListener.joinable())
         ConnectionListener.join();
     
-    if (QueueManager.joinable())
-        QueueManager.join();
-
     if (MemberManager.joinable())
         MemberManager.join();
 

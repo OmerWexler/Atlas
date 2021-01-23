@@ -7,6 +7,7 @@
 #include "TestSendJobMessage.cpp"
 #include "TestSendJobOutputMessage.cpp"
 #include "Logger.h"
+#include "Utils.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -14,22 +15,9 @@
 
 using namespace std;
 
-int CheckMemory()
-{
-    if (_CrtDumpMemoryLeaks()) 
-    {
-        return -2;
-    }
-    else 
-    {
-        return 0;
-    }
-}
-
 int main(int argc, char** argv)
 {   
-    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-    _CrtSetReportFile( _CRT_ERROR, _CRTDBG_FILE_STDOUT );
+    Utils::SetupMemoryCheck();
 
     int ExitCode = 0;
     
@@ -79,44 +67,52 @@ int main(int argc, char** argv)
         Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
 
         Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
-        ExitCode += TestWinSocketCommunications();
-        CheckMemory();
+        ExitCode = TestWinSocketCommunications();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
 
         Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
-        ExitCode += TestBasicCommunications();
-        CheckMemory();
+        ExitCode = TestBasicCommunications();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
     
         Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
-        ExitCode += TestSeperatorBasedMessages();
-        CheckMemory();
+        ExitCode = TestSeperatorBasedMessages();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
-        ExitCode += TestSendJobPolicyMessages();
-        CheckMemory();
+        ExitCode = TestSendJobPolicyMessages();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
-        ExitCode += TestCancelJobMessage();
-        CheckMemory();
+        ExitCode = TestCancelJobMessage();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestRequestBestNodeMessages...");
-        ExitCode += TestRequestBestNodeMessages();
-        CheckMemory();
+        ExitCode = TestRequestBestNodeMessages();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
-        ExitCode += TestSendJobMessage();
-        CheckMemory();
+        ExitCode = TestSendJobMessage();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
-        ExitCode += TestSendJobOutputMessage();
-        CheckMemory();
+        ExitCode = TestSendJobOutputMessage();
+        if (ExitCode != 0)
+            exit(ExitCode);
         printf("\n");
     }
-    exit(CheckMemory() + ExitCode);
+    exit(ExitCode);
 }

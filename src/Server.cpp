@@ -6,6 +6,7 @@
 
 #include "GridConnection.h"
 #include "GridNode.h"
+
 #include "TestCore.h"
 
 #include "SimpleStringParser.h"
@@ -19,7 +20,7 @@ int main() {
     Utils::SetupMemoryCheck();
 
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
-    Singleton<Logger>::GetInstance().Debug("HHH");
+    Singleton<GridNode>::GetInstance().SetName("Server");
     Singleton<GridNode>::GetInstance().AddCollectiveParser(shared_ptr<IParser>((IParser*) new SimpleStringParser()));
     Singleton<GridNode>::GetInstance().AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) new TestCore()));
 
@@ -32,9 +33,10 @@ int main() {
     }
 
     vector<int> IDs;
-    Singleton<GridNode>::GetInstance().GetMemberIDs(IDs);
 
     Utils::CPSleep(5);
+    Singleton<GridNode>::GetInstance().GetMemberIDs(IDs);
+
     while(IDs.size() > 0)
     {
         Utils::CPSleep(5);

@@ -34,7 +34,10 @@ private:
 public:
     WinServerSocket(string Name, bool Blocking, SOCKET Socket);
     WinServerSocket(string Name, bool Blocking);
-        
+    
+    string GetName() const;
+    void SetName(string NewName);
+
     int Bind(string Host, string Port);
     int Listen(int Backlog);
     int AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket);

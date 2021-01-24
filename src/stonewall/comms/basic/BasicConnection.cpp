@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Utils.h"
 #include "IMessage.h"
 #include "BasicConnection.h"
 #include "Logger.h"
@@ -16,7 +17,7 @@ using namespace std;
 BasicConnection::BasicConnection()
 {
     this->Name = Name;
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType("", false));
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) DBG_NEW ConnectionSocketType("", false));
 }
 
 BasicConnection::BasicConnection(unique_ptr<IConnectionSocket>& Socket)
@@ -28,7 +29,7 @@ BasicConnection::BasicConnection(unique_ptr<IConnectionSocket>& Socket)
 BasicConnection::BasicConnection(string Name, bool Blocking)
 {
     this->Name = Name;
-    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) new ConnectionSocketType(Name, Blocking));
+    this->ConnectionSocket = unique_ptr<IConnectionSocket>((IConnectionSocket*) DBG_NEW ConnectionSocketType(Name, Blocking));
 }
 
 BasicConnection::BasicConnection(BasicConnection&& Other)

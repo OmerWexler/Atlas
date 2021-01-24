@@ -22,6 +22,7 @@
 #include "SendJobMessage.h"
 #include "SendJobOutputMessage.h"
 
+#include "Utils.h"
 #include "IJob.h"
 
 using namespace std;
@@ -128,7 +129,7 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker)
     {
         Connection.AddParsers(Parsers);
         Connection.AddSerializers(Serializers);
-        Connection.Send(unique_ptr<IMessage>((IMessage*) new SendJobPolicyMessage(IsWorker)));
+        Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobPolicyMessage(IsWorker)));
     }
 
     return Result;
@@ -148,35 +149,35 @@ int GridConnection::SendJob(shared_ptr<IJob>& Job, vector<Argument>& Input)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
-            new SendJobMessage(Job, Input)));
+            DBG_NEW SendJobMessage(Job, Input)));
 }
 
 int GridConnection::SendJobOutput(shared_ptr<IJob>& Job, vector<Argument>& Output)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
-            new SendJobOutputMessage(Job->GetUniqueDescriptor(), Output)));
+            DBG_NEW SendJobOutputMessage(Job->GetUniqueDescriptor(), Output)));
 }
 
 int GridConnection::CancelJob(shared_ptr<IJob>& Job)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
-            new CancelJobMessage(Job->GetUniqueDescriptor())));
+            DBG_NEW CancelJobMessage(Job->GetUniqueDescriptor())));
 }
 
 int GridConnection::RequestBestNode(int Range, PCPerformance& MinimumAcceptablePerformace)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
-            new RequestBestNodeMessage(Range, MinimumAcceptablePerformace)));
+            DBG_NEW RequestBestNodeMessage(Range, MinimumAcceptablePerformace)));
 }
 
 int GridConnection::SendBestNode(const PCPerformance& Performance)
 {
     return Connection.Send(
         unique_ptr<IMessage>((IMessage*) 
-            new SendBestNodeMessage(Performance)));
+            DBG_NEW SendBestNodeMessage(Performance)));
 }
 
 int GridConnection::Disconnect()

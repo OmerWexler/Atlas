@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "Utils.h"
 #include "BasicConnection.h"
 #include "BasicServer.h"
 #include "SimpleStringParser.h"
@@ -17,11 +18,11 @@ int TestBasicCommunications()
     BasicConnection Connection("Connection", true);
     BasicServer Server("Server", true);
 
-    Connection.AddParser(shared_ptr<IParser>((IParser*) new SimpleStringParser()));
-    Connection.AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));
+    Connection.AddParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
+    Connection.AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
 
-    Server.AddParser(shared_ptr<IParser>((IParser*) new SimpleStringParser()));
-    Server.AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));
+    Server.AddParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
+    Server.AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
 
     Server.Bind("127.0.0.1", "17000");
     Server.Listen(1);
@@ -30,7 +31,7 @@ int TestBasicCommunications()
     BasicConnection ServerConnection;
     Server.AcceptConnection("ServerConnection", ServerConnection);
 
-    unique_ptr<IMessage> Msg((IMessage*) new SimpleStringMessage("Hello"));
+    unique_ptr<IMessage> Msg((IMessage*) DBG_NEW SimpleStringMessage("Hello"));
     Connection.Send(Msg);
     ServerConnection.Recv(Msg);
 

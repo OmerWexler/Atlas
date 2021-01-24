@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "SeperatorBasedMessage.h"
 #include "SeperatorBasedSerializer.h"
 #include "SeperatorBasedParser.h"
@@ -8,7 +9,7 @@ int TestSeperatorBasedMessages()
 {
     SeperatorBasedParser Parser = SeperatorBasedParser();
     SeperatorBasedSerializer Serializer = SeperatorBasedSerializer();
-    SeperatorBasedMessage* Msg = new SeperatorBasedMessage();
+    SeperatorBasedMessage* Msg = DBG_NEW SeperatorBasedMessage();
 
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 

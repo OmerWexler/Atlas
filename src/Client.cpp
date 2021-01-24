@@ -37,11 +37,11 @@ int main(int argc, char** argv) {
             Utils::CPSleep(1);
         }
 
-        Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) new SimpleStringSerializer()));
+        Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
         Result = 1;
         while (true)
         {
-            Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) new SimpleStringMessage("AAAAA")));
+            Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SimpleStringMessage("AAAAA")));
             if (Result < 0)
             {
                 break;

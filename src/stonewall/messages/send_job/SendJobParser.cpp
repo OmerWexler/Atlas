@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendJobParser.h"
 #include "SendJobMessage.h"
 #include "SeperatorBasedMessage.h"
@@ -53,7 +54,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     JobRegistry::GetJob(TYPE, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) new SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs));
+    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

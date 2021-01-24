@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "SendJobPolicyMessage.h"
 #include "SendJobPolicySerializer.h"
 #include "SendJobPolicyParser.h"
@@ -11,7 +12,7 @@ int TestSendJobPolicyMessages()
     SendJobPolicyParser Parser = SendJobPolicyParser();
     SendJobPolicySerializer Serializer = SendJobPolicySerializer();
 
-    SendJobPolicyMessage* Msg = new SendJobPolicyMessage(true);
+    SendJobPolicyMessage* Msg = DBG_NEW SendJobPolicyMessage(true);
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 
     string SMsg = Serializer.Serialize(UMsg);

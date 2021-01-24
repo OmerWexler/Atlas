@@ -69,50 +69,50 @@ int main(int argc, char** argv)
         Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
         ExitCode = TestWinSocketCommunications();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
 
         Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
         ExitCode = TestBasicCommunications();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
     
         Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
         ExitCode = TestSeperatorBasedMessages();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
         ExitCode = TestSendJobPolicyMessages();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
         ExitCode = TestCancelJobMessage();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestRequestBestNodeMessages...");
         ExitCode = TestRequestBestNodeMessages();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
         ExitCode = TestSendJobMessage();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
         ExitCode = TestSendJobOutputMessage();
         if (ExitCode != 0)
-            exit(ExitCode);
+            return ExitCode;
         printf("\n");
     }
-    exit(ExitCode);
+    return ExitCode;
 }

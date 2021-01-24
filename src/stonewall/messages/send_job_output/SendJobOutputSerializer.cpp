@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendJobOutputSerializer.h"
 #include "SendJobOutputMessage.h"
 
@@ -19,7 +20,7 @@ string SendJobOutputSerializer::GetType() const
 string SendJobOutputSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
     SendJobOutputMessage* SJOMsg = (SendJobOutputMessage*) Message.get();
-    SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
+    SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
 
     SPBMsg->AddValue(SJOMsg->GetDescriptor());
 

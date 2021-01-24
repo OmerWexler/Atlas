@@ -4,6 +4,7 @@
 #include "Argument.h"
 
 #include "JobLog.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ void JobRegistry::GetJob(int Type, shared_ptr<IJob>& OutJob)
     switch (Type)
     {
     case 0:
-        Job = (IJob*) new JobLog();
+        Job = (IJob*) DBG_NEW JobLog();
         break;
     
     case -1:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "BasicServer.h"
 #include "BasicConnection.h"
 
@@ -20,7 +21,7 @@ using namespace std;
 BasicServer::BasicServer(string Name, bool Blocking)
 {
     this->Name = Name;
-    this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) new ServerSocketType(Name, Blocking));
+    this->ServerSocket = unique_ptr<IServerSocket>((IServerSocket*) DBG_NEW ServerSocketType(Name, Blocking));
 }
 
 BasicServer::BasicServer(BasicServer&& Other)

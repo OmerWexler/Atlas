@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendJobOutputParser.h"
 #include "SendJobOutputMessage.h"
 
@@ -37,7 +38,7 @@ void SendJobOutputParser::Parse(const string& SMsg, unique_ptr<IMessage>& Messag
         Outputs.push_back(CurrentArg);
     }
 
-    Message.reset((IMessage*) new SendJobOutputMessage(Descriptor, Outputs));
+    Message.reset((IMessage*) DBG_NEW SendJobOutputMessage(Descriptor, Outputs));
 }
 
 bool SendJobOutputParser::CanParse(const string& SMsg) const

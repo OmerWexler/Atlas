@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "Utils.h"
 #include "SendJobOutputParser.h"
 #include "SendJobOutputSerializer.h"
 #include "SendJobOutputMessage.h"
@@ -20,7 +21,7 @@ int TestSendJobOutputMessage()
     JobLog Job = JobLog();
     Job.SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) new SendJobOutputMessage(Job.GetUniqueDescriptor(), Output));
+    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobOutputMessage(Job.GetUniqueDescriptor(), Output));
     SendJobOutputMessage* SJOMsg = (SendJobOutputMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);

@@ -1,9 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "WinConnectionSocket.h"
 #include "Logger.h"
-
-#include <string>
+#include "Utils.h"
 
 using namespace std;
 
@@ -151,7 +152,7 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
         return -1;
     }
 
-    char* recvbuf = new char [Size];
+    char* recvbuf = DBG_NEW char [Size];
 
     int Result = recv(Socket, recvbuf, Size, 0);
     if (Result > 0)

@@ -19,14 +19,16 @@ void JobCore::AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender)
     if (Message->GetType() == CancelJobMessage::TYPE)
     {
         CancelJobMessage* CJMsg = (CancelJobMessage*) Message.get();
-        // Singleton<GridNode>::GetInstance().CancelJob();
+        // if (LocalJobs.find(CJMsg->GetDescriptor()) != LocalJobs.end())
+        // {
+            
+        // }
     }
-    
 }
 
 bool JobCore::IsMessageRelated(const unique_ptr<IMessage>& Message) const
 {
     return Message->GetType() == CancelJobMessage::TYPE ||
-            Message->GetType() == SendJobMessage::TYPE ||
-            Message->GetType() == SendJobOutputMessage::TYPE;
+           Message->GetType() == SendJobMessage::TYPE ||
+           Message->GetType() == SendJobOutputMessage::TYPE;
 }

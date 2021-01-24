@@ -27,7 +27,6 @@ private:
 
     vector<shared_ptr<IParser>> CollectiveParsers;
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
-
     vector<unique_ptr<IFunctionCore>> FunctionCores;
 
     unordered_map<int, GridConnection> Members;
@@ -66,14 +65,12 @@ public:
     GridConnection& GetAdmin() { return NodeAdmin; };
 
     GridConnection& GetMember(int MemberID);
-    void GetMemberIDs(vector<int>& OutIDs);
+    vector<int> GetMemberIDs();
 
     GridConnection& GetClient(int ClientID);
-    void GetClientIDs(vector<int>& OutIDs);
-
-    GridConnection& GetQueuedConnection(int ClientID);
-    void GetQueuedConnectionIDs(vector<int>& OutIDs);
+    vector<int> GetClientIDs();
 
     void Stop();
-    ~GridNode() {};
+
+    ~GridNode();
 };

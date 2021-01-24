@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendJobPolicyParser.h"
 #include "SendJobPolicyMessage.h"
 
@@ -13,7 +14,7 @@ string SendJobPolicyParser::GetType() const
 void SendJobPolicyParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
     bool AcceptJobs = SMsg.substr(SMsg.length() - 1) == "1";
-    Message.reset((IMessage*) new SendJobPolicyMessage(AcceptJobs));
+    Message.reset((IMessage*) DBG_NEW SendJobPolicyMessage(AcceptJobs));
 }
 
 bool SendJobPolicyParser::CanParse(const string& SMsg) const

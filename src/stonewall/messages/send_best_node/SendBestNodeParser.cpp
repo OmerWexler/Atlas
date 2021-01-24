@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendBestNodeParser.h"
 #include "SeperatorBasedMessage.h"
 #include "SendBestNodeMessage.h"
@@ -28,7 +29,7 @@ void SendBestNodeParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message
     MinimumPerformance.CPUPerformance.CPUFrequency = atoi(Values[1].c_str());
     MinimumPerformance.CPUPerformance.CPULoad = atoi(Values[1].c_str());
     
-    Message.reset(new SendBestNodeMessage(MinimumPerformance));
+    Message.reset(DBG_NEW SendBestNodeMessage(MinimumPerformance));
 }
 
 bool SendBestNodeParser::CanParse(const string& SMsg) const

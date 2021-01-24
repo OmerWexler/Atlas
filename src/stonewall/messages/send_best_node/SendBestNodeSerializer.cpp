@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SendBestNodeSerializer.h"
 #include "SendBestNodeMessage.h"
 #include "SeperatorBasedMessage.h"
@@ -21,7 +22,7 @@ string SendBestNodeSerializer::Serialize(const unique_ptr<IMessage>& Message) co
     string SMsg = HEADER;
     PCPerformance& Performance = ((SendBestNodeMessage*) Message.get())->GetNodePerformance();
 
-    SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
+    SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPUCores));
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPUFrequency));
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPULoad));

@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "Utils.h"
 #include "SendJobParser.h"
 #include "SendJobSerializer.h"
 #include "SendJobMessage.h"
@@ -17,10 +18,10 @@ int TestSendJobMessage()
     Inputs.push_back(Argument("AAA", false));
     Inputs.push_back(Argument("BB", true));
 
-    shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) new JobLog());
+    shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) DBG_NEW JobLog());
     Job->SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) new SendJobMessage(Job, Inputs, Job->Execute(Inputs)));
+    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, Job->Execute(Inputs)));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);

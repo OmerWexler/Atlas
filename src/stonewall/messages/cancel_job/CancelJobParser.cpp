@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "CancelJobParser.h"
 #include "CancelJobMessage.h"
 
@@ -13,7 +14,7 @@ string CancelJobParser::GetType() const
 void CancelJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
     string Descriptor = SMsg.substr(HEADER.length(), SMsg.length());
-    Message.reset((IMessage*) new CancelJobMessage(Descriptor));
+    Message.reset((IMessage*) DBG_NEW CancelJobMessage(Descriptor));
 }
 
 bool CancelJobParser::CanParse(const string& SMsg) const

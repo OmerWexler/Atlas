@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "IJob.h"
 #include "Logger.h"
 
@@ -60,6 +61,6 @@ public:
 
     IJob* Clone()
     {
-        return (IJob*) new JobLog();
+        return (IJob*) DBG_NEW JobLog();
     }
 };

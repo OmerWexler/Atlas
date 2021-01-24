@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include "SeperatorBasedParser.h"
 #include "SeperatorBasedMessage.h"
 
@@ -12,7 +13,7 @@ string SeperatorBasedParser::GetType() const
 
 void SeperatorBasedParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    SeperatorBasedMessage* SPBMsg = new SeperatorBasedMessage();
+    SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
     
     string Section = "";
     for (size_t i = HEADER.length(); i < SMsg.length(); i++)

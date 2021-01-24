@@ -51,21 +51,21 @@ void GridNode::SetName(string Name)
 
 void GridNode::Init()
 {
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobPolicyParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new RequestBestNodeParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendBestNodeParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new CancelJobParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) new SendJobOutputParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobPolicyParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW RequestBestNodeParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendBestNodeParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW CancelJobParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobOutputParser()));
 
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobPolicySerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new RequestBestNodeSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendBestNodeSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new CancelJobSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*)new SendJobOutputSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobPolicySerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RequestBestNodeSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendBestNodeSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW CancelJobSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobOutputSerializer()));
 
-    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) new JobCore()));
+    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore()));
 }
 
 void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection)
@@ -106,12 +106,12 @@ void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
 
 void GridNode::AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer)
 {
+    NodeServer.AddSerializer(shared_ptr<ISerializer>(Serializer));
+
     if (CollectiveSerializers.find(Serializer->GetType()) == CollectiveSerializers.end())
     {
         CollectiveSerializers[Serializer->GetType()] = Serializer;
     }
-
-    NodeServer.AddSerializer(shared_ptr<ISerializer>(Serializer));
 }
 
 void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
@@ -243,13 +243,14 @@ GridConnection& GridNode::GetMember(int MemberID)
     return Members[MemberID];
 }
 
-void GridNode::GetMemberIDs(vector<int>& OutIDs)
+vector<int> GridNode::GetMemberIDs()
 {
-    OutIDs.clear();
+    vector<int> IDs;
     for (auto& Member: Members)
     {
-        OutIDs.push_back(Member.first);
+        IDs.push_back(Member.first);
     }
+    return IDs;
 }
 
 GridConnection& GridNode::GetClient(int ClientID)
@@ -257,13 +258,14 @@ GridConnection& GridNode::GetClient(int ClientID)
     return Clients[ClientID];
 }
     
-void GridNode::GetClientIDs(vector<int>& OutIDs)
+vector<int> GridNode::GetClientIDs()
 {
-    OutIDs.clear();
+    vector<int> IDs;
     for (auto& Client: Clients)
     {
-        OutIDs.push_back(Client.first);
+        IDs.push_back(Client.first);
     }
+    return IDs;
 }
 
 void GridNode::Stop()
@@ -277,4 +279,9 @@ void GridNode::Stop()
 
     if (ClientManager.joinable())
         ClientManager.join();
+}
+
+GridNode::~GridNode()
+{
+    Stop();
 }

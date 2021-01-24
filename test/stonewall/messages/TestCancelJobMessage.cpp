@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "Utils.h"
 #include "CancelJobParser.h"
 #include "CancelJobSerializer.h"
 #include "CancelJobMessage.h"
@@ -10,7 +11,7 @@ int TestCancelJobMessage()
 {
     CancelJobParser Parser = CancelJobParser();
     CancelJobSerializer Serializer = CancelJobSerializer();
-    CancelJobMessage* Msg = new CancelJobMessage("ABCD");
+    CancelJobMessage* Msg = DBG_NEW CancelJobMessage("ABCD");
     
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 

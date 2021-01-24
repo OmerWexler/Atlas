@@ -111,7 +111,7 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
         }
         return LastError;
     } else {
-        ConnectionSocket.reset((IConnectionSocket*) new WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
+        ConnectionSocket.reset((IConnectionSocket*) DBG_NEW WinConnectionSocket(ConnectionName, ClientSocket, HomeAddress));
         Singleton<Logger>::GetInstance().Info(Name + " accepted new connection " + ConnectionName);
         return 0;
     }

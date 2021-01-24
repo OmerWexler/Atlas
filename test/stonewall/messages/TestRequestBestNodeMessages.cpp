@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "RequestBestNodeSerializer.h"
 #include "RequestBestNodeParser.h"
 #include "RequestBestNodeMessage.h"
@@ -15,7 +16,7 @@ int TestRequestBestNodeMessages()
     Performance.CPUPerformance.CPUFrequency = 20;
     Performance.CPUPerformance.CPULoad = 20;
     
-    RequestBestNodeMessage* Msg = new RequestBestNodeMessage(5, Performance);
+    RequestBestNodeMessage* Msg = DBG_NEW RequestBestNodeMessage(5, Performance);
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 
     string SMsg = Serializer.Serialize(UMsg);

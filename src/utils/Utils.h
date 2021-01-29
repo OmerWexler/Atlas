@@ -22,9 +22,9 @@ using namespace std;
 class Utils
 {
 public:
-    inline static void CPSleep(int TimeSeconds)
+    inline static void CPSleep(float TimeSeconds)
     {
-        this_thread::sleep_for(chrono::seconds(TimeSeconds));
+        this_thread::sleep_for(chrono::milliseconds((int) (TimeSeconds * 1000)));
     }
 
     inline static void SetupMemoryCheck()

@@ -12,7 +12,7 @@ private:
 
 public:
     string GetType() const;
-    void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);
+    void QueueMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);
     bool IsMessageRelated(const unique_ptr<IMessage>& Message) const;
 
     ~JobCore() {};

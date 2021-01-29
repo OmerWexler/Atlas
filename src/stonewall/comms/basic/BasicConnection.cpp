@@ -149,7 +149,7 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
         if (parser->CanParse(SMsg))
         {
             parser->Parse(SMsg, OutMsg);
-            return 0;
+            return Result;
         }
     }
     

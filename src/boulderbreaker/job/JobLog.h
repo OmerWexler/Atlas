@@ -39,6 +39,11 @@ public:
         return 0;
     }
 
+    bool IsAlive()
+    {
+        return false;
+    }
+
     int GetSuccess() const
     {
         return Success;

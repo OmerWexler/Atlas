@@ -14,7 +14,7 @@ public:
         return "TestCore";
     }
 
-    void AddMessage(unique_ptr<IMessage>& Message, GridConnection& Sender)
+    void QueueMessage(unique_ptr<IMessage>& Message, GridConnection& Sender)
     {
         Singleton<Logger>::GetInstance().Debug("SS Message - " + ((SimpleStringMessage*) Message.get())->GetValue());
         Singleton<Logger>::GetInstance().Debug("From - " + Sender.GetName());

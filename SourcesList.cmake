@@ -40,6 +40,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ThreadedFunctionCore.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
 )

@@ -78,6 +78,7 @@
         "future": "cpp",
         "string_view": "cpp",
         "xmemory0": "cpp",
-        "xxatomic": "cpp"
+        "xxatomic": "cpp",
+        "xthread": "cpp"
     }
 }

@@ -126,48 +126,55 @@ int GridNode::Setup(string Host, string Port)
     if (Result != 0)
         return Result;
 
-    ConnectionListener = thread(&GridNode::ConnectionListenerFunc, this);
-    MemberManager = thread(&GridNode::MemberManagerFunc, this);
-    ClientManager = thread(&GridNode::ClientManagerFunc, this);
-    return 0;
-}
-
-void GridNode::ConnectionListenerFunc()
-{
-    int Result = -1;
-    while (Result != 0 && ThreadsAlive)
+    Result = -1;
+    while (Result != 0)
     {
         Result = NodeServer.Listen(BACK_LOG);
         Utils::CPSleep(1);
     }
 
-    while (ThreadsAlive)
+    ConnectionListener = SmartThread(Name + " - ConnectionListener", 1.f, &GridNode::ConnectionListenerFunc, this);
+    MemberManager = SmartThread(Name + " - MemberMananger", 1.f, &GridNode::MemberListenerFunc, this);
+    ClientManager = SmartThread(Name + " - ClientMananger", 1.f, &GridNode::ClientListenerFunc, this);
+    return 0;
+}
+
+void GridNode::ConnectionListenerFunc()
+{
+    BasicConnection NewConnection{};
+    int Result = NodeServer.AcceptConnection("", NewConnection);
+    if (Result != 0)
+        return;
+
+    GridConnection NewGridConnection = move(GridConnection(NewConnection));
+
+    unique_ptr<IMessage> Msg;
+    NewGridConnection.SetName("Unnamed");
+    Result = -1;
+    while (Result <= 0)
+        Result = NewGridConnection.RecvMessage(Msg);
+
+    if (Msg->GetType() == SendJobPolicyMessage::TYPE)
     {
-        Utils::CPSleep(1);
-
-        BasicConnection NewConnection{};
-        int Result = NodeServer.AcceptConnection("", NewConnection);
-        if (Result != 0)
-            continue;
-
-        GridConnection NewGridConnection = move(GridConnection(NewConnection));
-
-        unique_ptr<IMessage> Msg;
-        NewGridConnection.SetName("Unnamed");
-        NewGridConnection.RecvMessage(Msg);
-
-        if (Msg->GetType() == SendJobPolicyMessage::TYPE)
+        if (((SendJobPolicyMessage*) Msg.get())->GetPolicy())
         {
-            if (((SendJobPolicyMessage*) Msg.get())->GetPolicy())
-            {
-                AddConnectionToMap(Members, "Member", AvailableMemberSlots, NewGridConnection);
-            }
-            else
-            {
-                AddConnectionToMap(Clients, "Client", AvailableClientSlots, NewGridConnection);
-            }
+            AddConnectionToMap(Members, "Member", AvailableMemberSlots, NewGridConnection);
+        }
+        else
+        {
+            AddConnectionToMap(Clients, "Client", AvailableClientSlots, NewGridConnection);
         }
     }
+}
+
+void GridNode::MemberListenerFunc()
+{
+    IterateOnConnectionMap(Members, AvailableMemberSlots);
+}
+
+void GridNode::ClientListenerFunc()
+{
+    IterateOnConnectionMap(Clients, AvailableClientSlots);
 }
 
 void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots)
@@ -176,7 +183,7 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
     unordered_map<int, GridConnection>::iterator Iterator = Map.begin();
 
     while (Iterator != Map.end())
-    {
+    {   
         if (!Iterator->second.IsConnected())
         {
             Slots.push_back(Iterator->first);
@@ -185,7 +192,7 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
         }
 
         int Result = Iterator->second.RecvMessage(Message);
-        if (Result != 0)
+        if (Result < 0)
         {
             Iterator++;
             continue;
@@ -195,31 +202,10 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
         {
             if (Core->IsMessageRelated(Message))
             {
-                Core->AddMessage(Message, Iterator->second);
+                Core->QueueMessage(Message, Iterator->second);
             }
         }
         Iterator++;
-    }
-}
-
-void GridNode::MemberManagerFunc()
-{
-    while (ThreadsAlive)
-    {
-        if (Members.size() > 0)
-            IterateOnConnectionMap(Members, AvailableMemberSlots);
-        Utils::CPSleep(1);
-    }
-}
-
-void GridNode::ClientManagerFunc()
-{
-    unique_ptr<IMessage> Message;
-    while (ThreadsAlive)
-    {
-        if (Clients.size() > 0)
-            IterateOnConnectionMap(Clients, AvailableClientSlots);        
-        Utils::CPSleep(1);
     }
 }
 
@@ -270,15 +256,9 @@ vector<int> GridNode::GetClientIDs()
 
 void GridNode::Stop()
 {
-    ThreadsAlive = false;
-    if (ConnectionListener.joinable())
-        ConnectionListener.join();
-    
-    if (MemberManager.joinable())
-        MemberManager.join();
-
-    if (ClientManager.joinable())
-        ClientManager.join();
+    ConnectionListener.Stop();
+    MemberManager.Stop();
+    ClientManager.Stop();
 }
 
 GridNode::~GridNode()

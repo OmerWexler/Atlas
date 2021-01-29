@@ -11,6 +11,7 @@
 #include "IParser.h"
 #include "ISerializer.h"
 #include "Logger.h"
+#include "SmartThread.h"
 
 class GridNode
 {
@@ -21,9 +22,9 @@ private:
     BasicServer NodeServer;
     GridConnection NodeAdmin;
 
-    thread ConnectionListener;
-    thread MemberManager;
-    thread ClientManager;
+    SmartThread ConnectionListener;
+    SmartThread MemberManager;
+    SmartThread ClientManager;
 
     vector<shared_ptr<IParser>> CollectiveParsers;
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
@@ -35,8 +36,6 @@ private:
     unordered_map<int, GridConnection> Clients;
     vector<int> AvailableClientSlots;
 
-    bool ThreadsAlive = true;
-    
     void Init();
     string CreateMemberName();
     string CreateClientName();
@@ -44,9 +43,9 @@ private:
     void AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection);
 
     void ConnectionListenerFunc();
+    void MemberListenerFunc();
+    void ClientListenerFunc();
     void IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots);
-    void MemberManagerFunc();
-    void ClientManagerFunc();
 
 public:
     GridNode();

@@ -168,10 +168,17 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
     else
     {
         int WSALastError = WSAGetLastError();
-        Singleton<Logger>::GetInstance().Error(Name + " - recv failed with error: " + to_string(WSALastError));
         if (WSALastError == 10054) // Disconnect
         {
             Connected = false;
+        }
+        else if (WSALastError == 10035) // Non blocking
+        {
+
+        }
+        else
+        {
+            Singleton<Logger>::GetInstance().Error(Name + " - recv failed with error: " + to_string(WSALastError));
         }
     }
     

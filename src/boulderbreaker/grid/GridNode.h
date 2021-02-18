@@ -25,9 +25,11 @@ private:
     SmartThread ConnectionListener;
     SmartThread MemberManager;
     SmartThread ClientManager;
+    SmartThread AdminManager;
 
     vector<shared_ptr<IParser>> CollectiveParsers;
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
+
     vector<unique_ptr<IFunctionCore>> FunctionCores;
 
     unordered_map<int, GridConnection> Members;
@@ -46,6 +48,10 @@ private:
     void MemberListenerFunc();
     void ClientListenerFunc();
     void IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots);
+    
+    void ManageAdminFunc();
+
+    int RecvAndRerouteMessage(GridConnection& Connection);
 
 public:
     GridNode();
@@ -64,10 +70,15 @@ public:
     GridConnection& GetAdmin() { return NodeAdmin; };
 
     GridConnection& GetMember(int MemberID);
-    vector<int> GetMemberIDs();
+    unordered_map<int, GridConnection>::iterator GridNode::GetMembersBegin();
+    unordered_map<int, GridConnection>::iterator GridNode::GetMembersEnd();
 
     GridConnection& GetClient(int ClientID);
-    vector<int> GetClientIDs();
+    unordered_map<int, GridConnection>::iterator GridNode::GetClientsBegin();
+    unordered_map<int, GridConnection>::iterator GridNode::GetClientsEnd();
+
+
+    string GetName() { return Name; };
 
     void Stop();
 

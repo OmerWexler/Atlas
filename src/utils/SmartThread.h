@@ -22,22 +22,22 @@ public:
     SmartThread() {};
 
     template<class _Fn, class... _Args>
-    SmartThread(string Name, float Interval, _Fn&& Runnable, _Args... Args)
+    SmartThread(string Name, float PollFrequency, _Fn&& Runnable, _Args... Args)
     {
         this->Name = Name;
         IsRunning = true;
         
-        RunThread = thread([this, Runnable, Interval, Args...](future<void> ShouldRunFuture){
+        RunThread = thread([this, Runnable, PollFrequency, Args...](future<void> ShouldRunFuture){
             thread TempThread;
             IsRunningPromise.set_value_at_thread_exit();
 
-            if (Interval == 0.f)
+            if (PollFrequency == 0.f)
             {
                 Singleton<Logger>::GetInstance().Debug("Statring single call to SmartThread - " + this->Name);
                 TempThread = thread(Runnable, Args...);
                 TempThread.join();
             }
-            else if (Interval > 0.f)
+            else if (PollFrequency > 0.f)
             {
                 Singleton<Logger>::GetInstance().Debug("Statring periodic call to SmartThread - " + this->Name);
 
@@ -45,7 +45,7 @@ public:
                 {
                     TempThread = thread(Runnable, Args...);
                     TempThread.join();
-                    Utils::CPSleep(Interval);
+                    Utils::CPSleep(PollFrequency);
                 }
             }
         }, move(ShouldRunPromise.get_future()));
@@ -67,7 +67,8 @@ public:
         Singleton<Logger>::GetInstance().Debug(Name + " succesfully killed");
     }
 
-    bool GetIsRunning() { 
+    bool GetIsRunning() const
+    { 
         return IsRunning; 
     }
 };

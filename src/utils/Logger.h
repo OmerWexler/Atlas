@@ -28,7 +28,6 @@ public:
     Logger() {};
 
     void SetLogFileName(string Path, string Name);
-    void SetLogFileName(string Name);
     void SetLogLevel(LogLevel Level);
     
     void Debug(string Msg);

@@ -28,12 +28,13 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     int TYPE = atoi(Values[0].c_str());
     int Success = atoi(Values[1].c_str());
     string UniqueDecriptor = Values[2];
+    string TargetPath = move(Values[3]);
 
     Argument CurrentArg = Argument("", false);
     
     vector<Argument> Inputs = vector<Argument>();
-    int NumOfInputs = atoi(Values[3].c_str());
-    for (int i = 4; i < 4 + NumOfInputs * 2; i += 2)
+    int NumOfInputs = atoi(Values[4].c_str());
+    for (int i = 5; i < 5 + NumOfInputs * 2; i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -42,7 +43,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     }
 
     vector<Argument> Outputs = vector<Argument>();
-    for (int i = 4 + NumOfInputs * 2; i < Values.size(); i += 2)
+    for (int i = 5 + NumOfInputs * 2; i < Values.size(); i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -54,7 +55,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     JobRegistry::GetJob(TYPE, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs));
+    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs, move(TargetPath)));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

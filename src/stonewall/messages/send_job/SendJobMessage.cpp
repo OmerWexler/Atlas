@@ -17,6 +17,14 @@ SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, v
     this->Output = Output;
 }
 
+SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output, string TargetNodePath)
+{
+    this->Job = Job;
+    this->Input = Input;
+    this->Output = Output;
+    this->TargetNodePath = Path(TargetNodePath);
+}
+
 string SendJobMessage::GetType() const
 {
     return TYPE;
@@ -40,4 +48,14 @@ void SendJobMessage::SetOutput(vector<Argument> Output)
 vector<Argument> SendJobMessage::GetOutput() const
 {
     return Output;
+}
+
+void SendJobMessage::SetTargetPath(string StrPath)
+{
+    TargetNodePath = Path(StrPath);
+}
+
+Path& SendJobMessage::GetTargetPath()
+{
+    return TargetNodePath;
 }

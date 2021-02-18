@@ -28,12 +28,7 @@ string Logger::GetTime()
     if (Second.size() == 1)
         Second = "0" + Second;
 
-    return  Hour + ":" + Minute + ":" + Second;
-}
-
-void Logger::SetLogFileName(string Name)
-{
-    SetLogFileName("", Name);
+    return  Hour + "_" + Minute + "_" + Second;
 }
 
 void Logger::SetLogFileName(string Path, string Name)

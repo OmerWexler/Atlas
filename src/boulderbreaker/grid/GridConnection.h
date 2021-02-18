@@ -33,21 +33,14 @@ public:
     void AddParser(shared_ptr<IParser>& Parser);
     void AddSerializer(shared_ptr<ISerializer>& Serializer);
 
-    int Connect(string Host, string Port, bool IsWorker);
+    int Connect(string Host, string Port, bool IsWorker, string NodeName);
     int IsConnected() const { return Connection.IsConnected(); };
 
     int SendMessage(const unique_ptr<IMessage>& Msg);
     int RecvMessage(unique_ptr<IMessage>& Msg);
 
-    int RequestBestNode(int Range, PCPerformance& MinimumAcceptablePerformace);
-    int SendBestNode(const PCPerformance& Performance);
-
-    int SendJob(shared_ptr<IJob>& Job, vector<Argument>& Input);
-    int SendJobOutput(shared_ptr<IJob>& Job, vector<Argument>& Output);
-    int CancelJob(shared_ptr<IJob>& Job);
-
     void SetName(string NewName);
-    string GetName() { return Name; }
+    string GetName() const { return Name; }
 
     int Disconnect();
 };

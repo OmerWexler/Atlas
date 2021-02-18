@@ -1,6 +1,10 @@
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameparser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameSerializer.cpp
+
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobparser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobSerializer.cpp
@@ -29,18 +33,23 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/seperator_based/SeperatorBasedParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/seperator_based/SeperatorBasedSerializer.cpp
     
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/set_name/SetNameMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/set_name/SetNameParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/set_name/SetNameSerializer.cpp
+    
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringSerializer.cpp
-
+    
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicServer.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ThreadedFunctionCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
 )

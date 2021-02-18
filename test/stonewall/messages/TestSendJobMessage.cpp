@@ -21,11 +21,11 @@ int TestSendJobMessage()
     shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) DBG_NEW JobLog());
     Job->SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, Job->Execute(Inputs)));
+    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, Job->Execute(Inputs), "TestPath/"));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJSEPB0@@@0@@@Test@@@2@@@AAA@@@0@@@BB@@@1@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJSEPB0@@@0@@@Test@@@TestPath/@@@2@@@AAA@@@0@@@BB@@@1@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }

@@ -20,6 +20,8 @@ using namespace std;
 int main() {
     Utils::SetupMemoryCheck();
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
+    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Server.txt");
+    
     Singleton<GridNode>::GetInstance().SetName("Server");
     Singleton<GridNode>::GetInstance().AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
     Singleton<GridNode>::GetInstance().AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW TestCore()));
@@ -32,14 +34,8 @@ int main() {
         exit(Result);
     }
 
-    Utils::CPSleep(5);
-    while(Singleton<GridNode>::GetInstance().GetMemberIDs().size() > 0)
-    {
-        Utils::CPSleep(5);
-    }
-
+    system("pause");
     Singleton<GridNode>::GetInstance().Stop();
     system("pause");
-
     return 0;
 }

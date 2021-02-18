@@ -13,7 +13,7 @@ private:
     
 public:
     static Singleton& Singleton::GetInstance() 
-    {      
+    {
         static Singleton Instance;
         return Instance;
     }

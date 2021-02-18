@@ -9,6 +9,8 @@
 #include "SendJobSerializer.h"
 #include "CancelJobSerializer.h"
 #include "SendJobOutputSerializer.h"
+#include "SetNameSerializer.h"
+#include "AcceptNameSerializer.h"
 
 #include "SendJobPolicyParser.h"
 #include "RequestBestNodeParser.h"
@@ -16,6 +18,8 @@
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
+#include "SetNameParser.h"
+#include "AcceptNameParser.h"
 
 #include "SendJobPolicyMessage.h"
 #include "RequestBestNodeMessage.h"
@@ -23,8 +27,11 @@
 #include "SendJobMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobOutputMessage.h"
+#include "SetNameMessage.h"
 
+#include "ASyncFunctionCore.h"
 #include "JobCore.h"
+#include "GeneralPurposeCore.h"
 
 #include "Utils.h"
 #include "Logger.h"
@@ -33,7 +40,6 @@ GridNode::GridNode()
 {
     this->Name = "";
     this->NodeServer = move(BasicServer("", false));
-    Init();
 }
 
 GridNode::GridNode(string Name)
@@ -47,6 +53,7 @@ void GridNode::SetName(string Name)
 {
     this->Name = Name;
     this->NodeServer.SetName("BasicServer - " + Name);
+    Init();
 }
 
 void GridNode::Init()
@@ -57,6 +64,8 @@ void GridNode::Init()
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobParser()));
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW CancelJobParser()));
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobOutputParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SetNameParser()));
+    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW AcceptNameParser()));
 
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobPolicySerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RequestBestNodeSerializer()));
@@ -64,8 +73,11 @@ void GridNode::Init()
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW CancelJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobOutputSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SetNameSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW AcceptNameSerializer()));
 
-    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore()));
+    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore(Name + " - JobCore")));
+    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW GeneralPurposeCore()));
 }
 
 void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection)
@@ -82,11 +94,10 @@ void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, strin
         NewID = (int) Map.size();
     }
 
-    string NewName = this->Name + "::" + Type + to_string(NewID);
-    Connection.SetName(NewName);
     Map[NewID] = move(Connection);
+    Map[NewID].SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
 
-    Singleton<Logger>::GetInstance().Info(Name + " registered - " + NewName);
+    Singleton<Logger>::GetInstance().Info(Name + " registered new connection.");
 }
 
 void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
@@ -116,6 +127,14 @@ void GridNode::AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer)
 
 void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
 {
+    for (unique_ptr<IFunctionCore>& ExistCore: FunctionCores)
+    {
+        if (ExistCore->GetType() == Core->GetType())
+        {
+            return;
+        }
+    }
+
     FunctionCores.push_back(unique_ptr<IFunctionCore>(Core.release()));
 }
 
@@ -126,16 +145,25 @@ int GridNode::Setup(string Host, string Port)
     if (Result != 0)
         return Result;
 
-    Result = -1;
-    while (Result != 0)
-    {
-        Result = NodeServer.Listen(BACK_LOG);
-        Utils::CPSleep(1);
-    }
+    Result = NodeServer.Listen(BACK_LOG);
+    if (Result != 0)
+        return Result;
 
     ConnectionListener = SmartThread(Name + " - ConnectionListener", 1.f, &GridNode::ConnectionListenerFunc, this);
     MemberManager = SmartThread(Name + " - MemberMananger", 1.f, &GridNode::MemberListenerFunc, this);
     ClientManager = SmartThread(Name + " - ClientMananger", 1.f, &GridNode::ClientListenerFunc, this);
+    AdminManager = SmartThread(Name + " - AdminManager", 1.f, &GridNode::ManageAdminFunc, this);
+
+    for (unique_ptr<IFunctionCore>& Core: FunctionCores)
+    {
+        ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get());
+
+        if (ACore != nullptr)
+        {
+            ACore->StartCore();
+        }
+    }
+
     return 0;
 }
 
@@ -179,9 +207,8 @@ void GridNode::ClientListenerFunc()
 
 void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots)
 {
-    unique_ptr<IMessage> Message;
     unordered_map<int, GridConnection>::iterator Iterator = Map.begin();
-
+    
     while (Iterator != Map.end())
     {   
         if (!Iterator->second.IsConnected())
@@ -191,30 +218,48 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
             continue;
         }
 
-        int Result = Iterator->second.RecvMessage(Message);
-        if (Result < 0)
-        {
-            Iterator++;
-            continue;
-        }
-        
-        for (unique_ptr<IFunctionCore>& Core: FunctionCores)
-        {
-            if (Core->IsMessageRelated(Message))
-            {
-                Core->QueueMessage(Message, Iterator->second);
-            }
-        }
+        int Result = RecvAndRerouteMessage(Iterator->second);
         Iterator++;
     }
 }
 
+void GridNode::ManageAdminFunc()
+{
+    if (NodeAdmin.IsConnected())
+    {
+        RecvAndRerouteMessage(NodeAdmin);
+    }
+}
+
+
+int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
+{
+    unique_ptr<IMessage> Message;
+    int Result = Connection.RecvMessage(Message);
+    if (Result < 0)
+    {
+        return Result;
+    }
+    
+    int NumOfMatches = 0;
+    for (unique_ptr<IFunctionCore>& Core: FunctionCores)
+    {
+        if (Core->IsMessageRelated(Message))
+        {
+            Core->QueueMessage(Message, Connection);
+            NumOfMatches++;
+        }
+    }
+
+    return NumOfMatches;
+}
+
 int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
 {
-    GridConnection NewConnection{"Connection To - " + Name};
+    GridConnection NewConnection = move(GridConnection());
     NewConnection.CopyCommInterfaces(CollectiveParsers, CollectiveSerializers);
     
-    int Result = NewConnection.Connect(Host, Port, IsWorker);
+    int Result = NewConnection.Connect(Host, Port, IsWorker, Name);
     if (Result != 0)
     {
         return Result;
@@ -229,29 +274,29 @@ GridConnection& GridNode::GetMember(int MemberID)
     return Members[MemberID];
 }
 
-vector<int> GridNode::GetMemberIDs()
+unordered_map<int, GridConnection>::iterator GridNode::GetMembersBegin()
 {
-    vector<int> IDs;
-    for (auto& Member: Members)
-    {
-        IDs.push_back(Member.first);
-    }
-    return IDs;
+    return Members.begin();
+}
+
+unordered_map<int, GridConnection>::iterator GridNode::GetMembersEnd()
+{
+    return Members.end();
 }
 
 GridConnection& GridNode::GetClient(int ClientID)
 {
     return Clients[ClientID];
 }
-    
-vector<int> GridNode::GetClientIDs()
+ 
+unordered_map<int, GridConnection>::iterator GridNode::GetClientsBegin()
 {
-    vector<int> IDs;
-    for (auto& Client: Clients)
-    {
-        IDs.push_back(Client.first);
-    }
-    return IDs;
+    return Clients.begin();
+}
+ 
+unordered_map<int, GridConnection>::iterator GridNode::GetClientsEnd()
+{
+    return Clients.end();
 }
 
 void GridNode::Stop()
@@ -259,6 +304,17 @@ void GridNode::Stop()
     ConnectionListener.Stop();
     MemberManager.Stop();
     ClientManager.Stop();
+    AdminManager.Stop();
+
+    for (unique_ptr<IFunctionCore>& Core: FunctionCores)
+    {
+        ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get());
+
+        if (ACore != nullptr)
+        {
+            ACore->StopCore();
+        }
+    }
 }
 
 GridNode::~GridNode()

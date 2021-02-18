@@ -26,6 +26,7 @@ string SendJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
     SPBMsg->AddValue(to_string(SJMsg->GetJob()->GetType()));
     SPBMsg->AddValue(to_string(SJMsg->GetJob()->GetSuccess()));
     SPBMsg->AddValue(SJMsg->GetJob()->GetUniqueDescriptor());
+    SPBMsg->AddValue(SJMsg->GetTargetPath().GetStrPath());
     
     vector<Argument> Inputs = SJMsg->GetInput();
     SPBMsg->AddValue(to_string(Inputs.size()));

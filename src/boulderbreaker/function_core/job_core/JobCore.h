@@ -1,19 +1,25 @@
 #pragma once
 
-#include "IFunctionCore.h"
+#include "ASyncFunctionCore.h"
 
+#define DEFAULT_POLL_FREQUENCY 1.f
 using namespace std;
 
-class JobCore: IFunctionCore
+class JobCore: public ASyncFunctionCore
 {
 private:
-    unordered_map<string, unique_ptr<IJob>> LocalJobs;
-    unordered_map<int, unordered_map<string, unique_ptr<IJob>>> MemberJobs;
+    unordered_map<string, shared_ptr<IJob>> LocalJobs;
+
+protected:
+    void HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);
 
 public:
-    string GetType() const;
-    void QueueMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);
-    bool IsMessageRelated(const unique_ptr<IMessage>& Message) const;
+    JobCore(string Name, float PollFrequency): ASyncFunctionCore(Name, PollFrequency) {};
+    JobCore(string Name): ASyncFunctionCore(Name, DEFAULT_POLL_FREQUENCY) {};
 
-    ~JobCore() {};
+    string GetType() const;
+    bool IsMessageRelated(const unique_ptr<IMessage>& Message) const;
+    void StopCore() override;
+    
+    ~JobCore()=default;
 };

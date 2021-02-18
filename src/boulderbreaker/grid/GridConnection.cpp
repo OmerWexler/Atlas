@@ -1,34 +1,24 @@
 #include "GridConnection.h"
 #include "BasicConnection.h"
 
-#include "RequestBestNodeSerializer.h"
-#include "SendBestNodeSerializer.h"
-#include "CancelJobSerializer.h"
-#include "SendJobPolicySerializer.h"
-#include "SendJobSerializer.h"
-#include "SendJobOutputSerializer.h"
-
-#include "RequestBestNodeParser.h"
-#include "SendBestNodeParser.h"
-#include "CancelJobParser.h"
-#include "SendJobPolicyParser.h"
-#include "SendJobParser.h"
-#include "SendJobOutputParser.h"
-
 #include "RequestBestNodeMessage.h"
 #include "SendBestNodeMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobPolicyMessage.h"
 #include "SendJobMessage.h"
 #include "SendJobOutputMessage.h"
+#include "SetNameMessage.h"
+#include "AcceptNameMessage.h"
 
 #include "Utils.h"
 #include "IJob.h"
+#include "Logger.h"
+#include "Singleton.h"
 
 using namespace std;
 GridConnection::GridConnection()
 {
-    Name = "";
+    Name = "UnnamedConnection";
     this->Connection = move(BasicConnection(Name, false));
 }
 
@@ -122,7 +112,7 @@ void GridConnection::AddSerializer(shared_ptr<ISerializer>& Serializer)
     this->Serializers[Serializer->GetType()] = shared_ptr<ISerializer>(Serializer);
 }
 
-int GridConnection::Connect(string Host, string Port, bool IsWorker)
+int GridConnection::Connect(string Host, string Port, bool IsWorker, string NodeName)
 {
     int Result = Connection.Connect(Host, Port); 
     if (Result == 0)
@@ -130,6 +120,7 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker)
         Connection.AddParsers(Parsers);
         Connection.AddSerializers(Serializers);
         Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobPolicyMessage(IsWorker)));
+        Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(NodeName)));
     }
 
     return Result;
@@ -143,41 +134,6 @@ int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 int GridConnection::RecvMessage(unique_ptr<IMessage>& Msg)
 {
     return Connection.Recv(Msg);
-}
-
-int GridConnection::SendJob(shared_ptr<IJob>& Job, vector<Argument>& Input)
-{
-    return Connection.Send(
-        unique_ptr<IMessage>((IMessage*) 
-            DBG_NEW SendJobMessage(Job, Input)));
-}
-
-int GridConnection::SendJobOutput(shared_ptr<IJob>& Job, vector<Argument>& Output)
-{
-    return Connection.Send(
-        unique_ptr<IMessage>((IMessage*) 
-            DBG_NEW SendJobOutputMessage(Job->GetUniqueDescriptor(), Output)));
-}
-
-int GridConnection::CancelJob(shared_ptr<IJob>& Job)
-{
-    return Connection.Send(
-        unique_ptr<IMessage>((IMessage*) 
-            DBG_NEW CancelJobMessage(Job->GetUniqueDescriptor())));
-}
-
-int GridConnection::RequestBestNode(int Range, PCPerformance& MinimumAcceptablePerformace)
-{
-    return Connection.Send(
-        unique_ptr<IMessage>((IMessage*) 
-            DBG_NEW RequestBestNodeMessage(Range, MinimumAcceptablePerformace)));
-}
-
-int GridConnection::SendBestNode(const PCPerformance& Performance)
-{
-    return Connection.Send(
-        unique_ptr<IMessage>((IMessage*) 
-            DBG_NEW SendBestNodeMessage(Performance)));
 }
 
 int GridConnection::Disconnect()

@@ -53,27 +53,29 @@ int WinServerSocket::Bind(string Host, string Port)
     {
         Singleton<Logger>::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
         WSACleanup();
-        return 1;
+        return Result;
     }
 
     Socket = socket(ResolvedAddress->ai_family, ResolvedAddress->ai_socktype, ResolvedAddress->ai_protocol);
     if (Socket == INVALID_SOCKET)
     {
-        Singleton<Logger>::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSAGetLastError()));
+        int WSALastError = WSAGetLastError();
+        Singleton<Logger>::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSALastError));
         freeaddrinfo(ResolvedAddress);
         WSACleanup();
-        return -1;
+        return WSALastError;
     }
     ioctlsocket(Socket, FIONBIO, &BlockMode);
 
     Result = ::bind(Socket, ResolvedAddress->ai_addr, (int)ResolvedAddress->ai_addrlen);
     if (Result == SOCKET_ERROR)
     {
-        Singleton<Logger>::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSAGetLastError()));
+        int WSALastError = WSAGetLastError();
+        Singleton<Logger>::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSALastError));
         freeaddrinfo(ResolvedAddress);
         closesocket(Socket);
         WSACleanup();
-        return 1;
+        return WSALastError;
     }
 
     freeaddrinfo(ResolvedAddress);

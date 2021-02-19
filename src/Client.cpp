@@ -12,7 +12,9 @@
 #include "RequestBestNodeParser.h"
 #include "RequestBestNodeMessage.h"
 #include "SeperatorBasedMessage.h"
-#include "SimpleStringMessage.h"
+#include "SendJobMessage.h"
+#include "JobLog.h"
+#include "Argument.h"
 #include "Utils.h"
 
 #define _CRTDBG_MAP_ALLOC
@@ -49,7 +51,13 @@ int main(int argc, char** argv) {
     Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
     while (true)
     {
-        Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SimpleStringMessage("AAAAA")));
+        // Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SimpleStringMessage("AAAAA")));
+        Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobMessage(
+            shared_ptr<IJob>((IJob*) DBG_NEW JobLog()),
+            vector<Argument>{Argument("TESTING TESTING", false), Argument("TESTING22 TESTING22", false)},
+            "/Server/Client"
+        )));
+
         if (Result < 0)
         {
             break;

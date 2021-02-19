@@ -44,30 +44,35 @@ void JobCore::HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sende
             if (TargetPath.size() == 0) // Target is this Node
             {
                 shared_ptr<IJob>& Job = SJMsg->GetJob();
-                LocalJobs[SJMsg->GetJob()->GetUniqueDescriptor()] = SJMsg->GetJob();
+                LocalJobs[Job->GetUniqueDescriptor()] = Job;
+                Job->Execute(SJMsg->GetInput());
             }
             else // Target is a member Node
             {   
-                // bool TargetFound;
+                int TargetID = -1;
+                auto& It = Singleton<GridNode>::GetInstance().GetMembersBegin();
+                auto& End = Singleton<GridNode>::GetInstance().GetMembersEnd();
 
-                // for (int ID: IDs)
-                // {
-                //     if (Singleton<GridNode>::GetInstance().GetMember(ID).GetName() == TargetPath[0])
-                //     {
-                //         TargetID = ID;
-                //         break;
-                //     }
-                // }
+                while (It != End)
+                {
+                    if (It->second.GetName() == TargetPath[0])
+                    {
+                        TargetID = It->first;
+                        break;
+                    }
 
-                // if (TargetID != -1)
-                // {
-                //     Singleton<GridNode>::GetInstance().GetMember(TargetID).SendMessage(Message);
-                // }
-                // else
-                // {
-                //     Singleton<Logger>::GetInstance().Warning(
-                //         "Got a SendJob message with an unmatching path.\nNode name - " + CurrentNodeName + "\nPath - " + TargetPath.GetStrPath());
-                // }
+                    It++;
+                }
+
+                if (TargetID != -1)
+                {
+                    Singleton<GridNode>::GetInstance().GetMember(TargetID).SendMessage(Message);
+                }
+                else
+                {
+                    Singleton<Logger>::GetInstance().Warning(
+                        "Got a SendJob message with an unmatching path.\nNode name - " + CurrentNodeName + "\nPath - " + TargetPath.GetStrPath());
+                }
             }
         }
         else
@@ -75,6 +80,27 @@ void JobCore::HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sende
             Singleton<Logger>::GetInstance().Warning(
                 "Got a SendJob message with an unmatching path.\n Node name - " + CurrentNodeName + "\nPath - " + TargetPath.GetStrPath());
         }
+    }
+}
+
+void JobCore::Periodic() 
+{
+    ASyncFunctionCore::Periodic();
+
+    auto& It = LocalJobs.begin();
+
+    while (It != LocalJobs.end())
+    {
+        if (!It->second->IsAlive())
+        {
+            Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(
+                unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobOutputMessage(It->second->GetUniqueDescriptor(), It->second->GetOutput()))
+            );
+
+            It = LocalJobs.erase(It);
+        }
+        else
+            It++;
     }
 }
 

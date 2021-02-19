@@ -20,9 +20,9 @@ private:
 public:
     const static string TYPE;
 
-    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input);
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, string TargetNodePath);
     SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output);
-    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output, string TargetNodePath);
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, string TargetNodePath, vector<Argument>& Output);
     string GetType() const override;
     shared_ptr<IJob>& GetJob();
     
@@ -33,4 +33,7 @@ public:
 
     void SetTargetPath(string Path);
     Path& GetTargetPath();
+
+    void SetSourcePath(string Path);
+    Path& GetSourcePath();
 };

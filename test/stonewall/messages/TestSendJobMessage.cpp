@@ -21,7 +21,9 @@ int TestSendJobMessage()
     shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) DBG_NEW JobLog());
     Job->SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, Job->Execute(Inputs), "TestPath/"));
+    Job->Execute(Inputs);
+    
+    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, "TestPath/", Job->GetOutput()));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);

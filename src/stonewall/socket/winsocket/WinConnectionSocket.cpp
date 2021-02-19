@@ -69,7 +69,6 @@ int WinConnectionSocket::Connect(string Host, string Port)
     if (Result != 0)
     {
         Singleton<Logger>::GetInstance().Error(Name + " couldn't get server address info: " + to_string(Result));
-        WSACleanup();
         return -1;
     }
 
@@ -81,7 +80,6 @@ int WinConnectionSocket::Connect(string Host, string Port)
         if (Socket == INVALID_SOCKET)
         {
             Singleton<Logger>::GetInstance().Error(Name + " - socket instantiation failed with WAS error: " + to_string(WSAGetLastError()));
-            WSACleanup();
             return -1;
         }
 
@@ -101,7 +99,6 @@ int WinConnectionSocket::Connect(string Host, string Port)
     if (Socket == INVALID_SOCKET)
     {
         Singleton<Logger>::GetInstance().Warning(Name + " unable to connect to " + Host + ":" + Port + "!");
-        WSACleanup();
         return -1;
     }
 
@@ -131,7 +128,6 @@ int WinConnectionSocket::Send(string Msg)
         int WSALastError = WSAGetLastError();
         Singleton<Logger>::GetInstance().Error(Name + " failed to send: \"" + Msg + "\" to " + ServerAddress + " with error: " + to_string(WSALastError));
         closesocket(Socket);
-        WSACleanup();
 
         if (WSALastError == 10054) // Disconnect
         {

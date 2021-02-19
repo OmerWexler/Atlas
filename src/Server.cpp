@@ -24,7 +24,6 @@ int main() {
     
     Singleton<GridNode>::GetInstance().SetName("Server");
     Singleton<GridNode>::GetInstance().AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
-    Singleton<GridNode>::GetInstance().AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW TestCore()));
 
     int Result;
     Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "64000");

@@ -10,7 +10,7 @@ ASyncFunctionCore::ASyncFunctionCore(string Name, float PollFrequency)
 
 void ASyncFunctionCore::StartCore()
 {
-    QueueThread = SmartThread(Name, PollFrequency, &ASyncFunctionCore::HandleMessageFromQueue, this);
+    QueueThread = SmartThread(Name, PollFrequency, &ASyncFunctionCore::Periodic, this);
 }
 
 void ASyncFunctionCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnection& Sender)
@@ -19,6 +19,11 @@ void ASyncFunctionCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnecti
         Message,
         Sender
     ));
+}
+
+void ASyncFunctionCore::Periodic()
+{
+    this->HandleMessageFromQueue();
 }
 
 void ASyncFunctionCore::HandleMessageFromQueue()

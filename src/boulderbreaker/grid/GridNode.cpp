@@ -149,16 +149,14 @@ int GridNode::Setup(string Host, string Port)
     if (Result != 0)
         return Result;
 
-    ConnectionListener = SmartThread(Name + " - ConnectionListener", 1.f, &GridNode::ConnectionListenerFunc, this);
-    MemberManager = SmartThread(Name + " - MemberMananger", 1.f, &GridNode::MemberListenerFunc, this);
-    ClientManager = SmartThread(Name + " - ClientMananger", 1.f, &GridNode::ClientListenerFunc, this);
-    AdminManager = SmartThread(Name + " - AdminManager", 1.f, &GridNode::ManageAdminFunc, this);
+    ConnectionListener = SmartThread(Name + " - ConnectionListener", 0.02f, &GridNode::ConnectionListenerFunc, this);
+    MemberManager = SmartThread(Name + " - MemberMananger", 0.02f, &GridNode::MemberListenerFunc, this);
+    ClientManager = SmartThread(Name + " - ClientMananger", 0.02f, &GridNode::ClientListenerFunc, this);
+    AdminManager = SmartThread(Name + " - AdminManager", 0.02f, &GridNode::ManageAdminFunc, this);
 
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {
-        ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get());
-
-        if (ACore != nullptr)
+        if (ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get()))
         {
             ACore->StartCore();
         }
@@ -241,17 +239,16 @@ int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
         return Result;
     }
     
-    int NumOfMatches = 0;
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {
         if (Core->IsMessageRelated(Message))
         {
             Core->QueueMessage(Message, Connection);
-            NumOfMatches++;
+            return 0;
         }
     }
 
-    return NumOfMatches;
+    return -1;
 }
 
 int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
@@ -308,9 +305,7 @@ void GridNode::Stop()
 
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {
-        ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get());
-
-        if (ACore != nullptr)
+        if (ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get()))
         {
             ACore->StopCore();
         }

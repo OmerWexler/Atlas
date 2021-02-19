@@ -55,7 +55,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     JobRegistry::GetJob(TYPE, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Outputs, move(TargetPath)));
+    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, move(TargetPath), Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

@@ -11,7 +11,7 @@ class IJob: public Cloneable<IJob*>
 {
 public: 
     virtual int GetType() const = 0;
-    virtual vector<Argument> Execute(vector<Argument>& Input) = 0;
+    virtual void Execute(vector<Argument>& Input) = 0;
     virtual int Kill() = 0;
     virtual bool IsAlive() = 0;
     
@@ -20,6 +20,7 @@ public:
 
     virtual string GetUniqueDescriptor() const = 0;
     virtual void SetUniqueDescriptor(string UniqueDescriptor) = 0;
+    virtual vector<Argument> GetOutput() const = 0;
 
     virtual ~IJob() {};
 };

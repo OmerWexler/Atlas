@@ -20,7 +20,7 @@ struct QueuedSet
     }
 };
 
-class ASyncFunctionCore: IFunctionCore
+class ASyncFunctionCore: public IFunctionCore
 {
 private:
     string Name = "UnnamedCore";
@@ -32,6 +32,7 @@ private:
 
 protected:
     virtual void HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sender) = 0;
+    virtual void Periodic();
 
 public:
     ASyncFunctionCore(string Name, float PollFrequency);

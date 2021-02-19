@@ -28,6 +28,12 @@ void SeperatorBasedParser::Parse(const string& SMsg, unique_ptr<IMessage>& Messa
                 Section = "";
                 i += SEPERATOR.length();
             }
+            else if (SMsg.substr(i, SEPERATOR.length()) == SEPERATOR)
+            {
+                SPBMsg->AddValue(Section.substr(0, Section.length() - 1));
+                Section = "";
+                i += SEPERATOR.length() - 1;
+            }
         }
     }
 

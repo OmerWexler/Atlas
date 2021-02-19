@@ -52,7 +52,6 @@ int WinServerSocket::Bind(string Host, string Port)
     if (Result != 0)
     {
         Singleton<Logger>::GetInstance().Error(Name + " couldn't resolve bind address of " + HomeAddress + " with error: " + to_string(Result));
-        WSACleanup();
         return Result;
     }
 
@@ -62,7 +61,6 @@ int WinServerSocket::Bind(string Host, string Port)
         int WSALastError = WSAGetLastError();
         Singleton<Logger>::GetInstance().Error(Name + " couldn't instantiate socket " + to_string(WSALastError));
         freeaddrinfo(ResolvedAddress);
-        WSACleanup();
         return WSALastError;
     }
     ioctlsocket(Socket, FIONBIO, &BlockMode);
@@ -74,7 +72,6 @@ int WinServerSocket::Bind(string Host, string Port)
         Singleton<Logger>::GetInstance().Error(Name + " had error binding to " + HomeAddress + ": " + to_string(WSALastError));
         freeaddrinfo(ResolvedAddress);
         closesocket(Socket);
-        WSACleanup();
         return WSALastError;
     }
 
@@ -91,7 +88,6 @@ int WinServerSocket::Listen(int Backlog)
     {
         Singleton<Logger>::GetInstance().Error(Name + " had error listening to connections: " + to_string(WSAGetLastError()));
         closesocket(Socket);
-        WSACleanup();
         return -1;
     }
 

@@ -73,7 +73,11 @@ public:
             StrPath += SEP + Section;
         }
 
-        StrPath = StrPath.substr(1);
+        if (StrPath.length() > 0)
+        {
+            StrPath = StrPath.substr(1);
+        }
+        
         return StrPath;
     }
 };

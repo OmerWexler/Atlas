@@ -11,6 +11,7 @@ class JobLog: public IJob
 private:
     int Success;
     string UniqueDescriptor;
+    vector<Argument> Output;
 
 public:
     JobLog() {};
@@ -20,9 +21,9 @@ public:
         return 0;
     }
     
-    vector<Argument> Execute(vector<Argument>& Inputs)
+    void Execute(vector<Argument>& Inputs)
     {
-        vector<Argument> Output = vector<Argument>();
+        Output = vector<Argument>();
 
         for (Argument Input: Inputs)
         {
@@ -31,7 +32,6 @@ public:
         }
 
         Success = 0;
-        return Output;
     }
 
     int Kill()
@@ -62,6 +62,11 @@ public:
     void SetUniqueDescriptor(string UniqueDescriptor)
     {
         this->UniqueDescriptor = UniqueDescriptor;
+    }
+
+    vector<Argument> GetOutput() const
+    {
+        return Output;
     }
 
     IJob* Clone()

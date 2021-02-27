@@ -1,18 +1,10 @@
-#pragma once
+// For compilers that support precompilation, includes "wx/wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+    #include <wx/wx.h>
+#endif
 
-#include "Path.h"
-#include "Utils.h"
+#include "AtlasApp.h"
+#include "MainFrame.h"
 
-using namespace std;
-
-int main(int argc, char** argv) 
-{
-    Utils::SetupMemoryCheck();
-
-    Path P("/mnt/share/SomeServer");
-    P.RemoveFromEnd();
-    P.AddToStart("Something");
-    P.RemoveFromStart();
-    P.AddToEnd("AAA");
-    string S = P.GetStrPath();
-}
+wxIMPLEMENT_APP(AtlasApp);

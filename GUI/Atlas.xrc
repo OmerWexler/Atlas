@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
+    <object class="wxPanel" name="Home">
+        <style>wxTAB_TRAVERSAL</style>
+        <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
+        <size>400,300</size>
+        <title>Home</title>
+        <centered>1</centered>
+        <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>0</border>
+                <object class="wxPanel" name="ID_PANEL">
+                    <style>wxTAB_TRAVERSAL</style>
+                    <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
+                    <bg>#7A7A7A</bg>
+                    <object class="wxBoxSizer">
+                        <orient>wxVERTICAL</orient>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                            <border>5</border>
+                            <object class="wxTextCtrl" name="ID_NodeName">
+                                <size>100,20</size>
+                            </object>
+                        </object>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                            <border>5</border>
+                            <object class="wxTextCtrl" name="ID_HostName">
+                            </object>
+                        </object>
+                        <object class="sizeritem">
+                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                            <border>5</border>
+                            <object class="wxButton" name="ID_ConnectToAdmin">
+                                <label>Connect</label>
+                            </object>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="spacer">
+                <flag>wxALIGN_CENTER_VERTICAL</flag>
+                <border>5</border>
+                <size>500,500</size>
+            </object>
+            <object class="sizeritem">
+                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+                <border>5</border>
+                <option>100</option>
+                <object class="wxSplitterWindow" name="ID_SPLITTERWINDOW">
+                    <size>100,100</size>
+                    <style>wxSP_3DBORDER|wxSIMPLE_BORDER</style>
+                    <orientation>vertical</orientation>
+                    <sashpos>50</sashpos>
+                    <minsize>10</minsize>
+                    <gravity>0.50</gravity>
+                    <object class="wxTextCtrl" name="ID_TEXTCTRL">
+                    </object>
+                </object>
+            </object>
+        </object>
+    </object>
+</resource>

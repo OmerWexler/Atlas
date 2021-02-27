@@ -52,6 +52,9 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
+
+    ${CMAKE_SOURCE_DIR}/src/MainFrame.cpp
+    ${CMAKE_SOURCE_DIR}/src/AtlasApp.cpp
 )
 
 if (WIN32)

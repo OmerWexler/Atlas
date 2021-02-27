@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+	<object class="wxFrame" name="Home">
+		<title>Frame</title>
+		<size>1500,712</size>
+		<object class="wxBoxSizer">
+			<object class="sizeritem">
+				<object class="wxBoxSizer">
+					<object class="sizeritem">
+						<object class="wxTextCtrl" name="ID_NodeNameTextCtrl">
+							<value>Node Name</value>
+							<size>100,10d</size>
+						</object>
+						<flag>wxALL|wxSHAPED|wxFIXED_MINSIZE</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALL|wxALIGN_TOP</flag>
+				<border>10</border>
+				<option>1</option>
+			</object>
+			<object class="spacer">
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+				<size>469,601</size>
+			</object>
+		</object>
+	</object>
+</resource>

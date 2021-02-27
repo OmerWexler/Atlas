@@ -11,10 +11,10 @@ add_subdirectory(test)
 add_subdirectory(src)
 
 set(wxBUILD_SHARED FALSE)
-# add_subdirectory(wxWidgets)
+add_subdirectory(wxWidgets)
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /W4 /D_DEBUG /MDd")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc /D_DEBUG /MDd")
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

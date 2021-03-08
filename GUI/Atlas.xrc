@@ -1,62 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
-    <object class="wxPanel" name="Home">
-        <style>wxTAB_TRAVERSAL</style>
-        <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
-        <size>400,300</size>
-        <title>Home</title>
+    <object class="wxFrame" name="Home">
+        <style>wxDEFAULT_FRAME_STYLE|wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxCLOSE_BOX|wxTAB_TRAVERSAL</style>
+        <title>Atlas</title>
         <centered>1</centered>
         <object class="wxBoxSizer">
             <orient>wxHORIZONTAL</orient>
             <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
+                <flag>0</flag>
                 <border>0</border>
-                <object class="wxPanel" name="ID_PANEL">
-                    <style>wxTAB_TRAVERSAL</style>
-                    <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
-                    <bg>#7A7A7A</bg>
-                    <object class="wxBoxSizer">
-                        <orient>wxVERTICAL</orient>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxTextCtrl" name="ID_NodeName">
-                                <size>100,20</size>
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxTextCtrl" name="ID_HostName">
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxButton" name="ID_ConnectToAdmin">
-                                <label>Connect</label>
+                <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticBoxSizer" name="wxID_ANY">
+                            <orient>wxVERTICAL</orient>
+                            <label>Node Name</label>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxTextCtrl" name="ID_NodeName">
+                                    <tooltip>Node Name</tooltip>
+                                    <help>Node Name</help>
+                                    <style>wxBORDER_THEME</style>
+                                </object>
                             </object>
                         </object>
                     </object>
-                </object>
-            </object>
-            <object class="spacer">
-                <flag>wxALIGN_CENTER_VERTICAL</flag>
-                <border>5</border>
-                <size>500,500</size>
-            </object>
-            <object class="sizeritem">
-                <flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
-                <border>5</border>
-                <option>100</option>
-                <object class="wxSplitterWindow" name="ID_SPLITTERWINDOW">
-                    <size>100,100</size>
-                    <style>wxSP_3DBORDER|wxSIMPLE_BORDER</style>
-                    <orientation>vertical</orientation>
-                    <sashpos>50</sashpos>
-                    <minsize>10</minsize>
-                    <gravity>0.50</gravity>
-                    <object class="wxTextCtrl" name="ID_TEXTCTRL">
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticBoxSizer" name="wxID_ANY">
+                            <orient>wxVERTICAL</orient>
+                            <label>Host Name</label>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                <border>5</border>
+                                <object class="wxTextCtrl" name="ID_HostName">
+                                    <help>Host Name</help>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxButton" name="ID_ConnectToAdmin">
+                            <label>Connect</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticLine" name="wxID_STATIC">
+                            <style>wxLI_HORIZONTAL</style>
+                        </object>
                     </object>
                 </object>
             </object>

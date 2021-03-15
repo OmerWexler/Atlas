@@ -1,4 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/src/utils)
+include_directories(${CMAKE_SOURCE_DIR}/src/atlas_app)
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket)
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/socket/winsocket)
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages)

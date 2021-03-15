@@ -53,8 +53,8 @@ set(SOURCES
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/MainFrame.cpp
-    ${CMAKE_SOURCE_DIR}/src/AtlasApp.cpp
+    ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
+    ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp
 )
 
 if (WIN32)

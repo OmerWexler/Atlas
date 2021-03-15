@@ -21,6 +21,7 @@
 
 ////@begin includes
 #include "wx/xrc/xmlres.h"
+#include "wx/frame.h"
 ////@end includes
 
 /*!
@@ -35,12 +36,12 @@
  */
 
 ////@begin control identifiers
-#define ID_WXPANEL 10000
-#define SYMBOL_WXPANEL_STYLE wxTAB_TRAVERSAL
-#define SYMBOL_WXPANEL_TITLE _("Home")
-#define SYMBOL_WXPANEL_IDNAME ID_WXPANEL
-#define SYMBOL_WXPANEL_SIZE wxSize(400, 300)
-#define SYMBOL_WXPANEL_POSITION wxDefaultPosition
+#define ID_WXFRAME 10000
+#define SYMBOL_WXFRAME_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
+#define SYMBOL_WXFRAME_TITLE _("Home")
+#define SYMBOL_WXFRAME_IDNAME ID_WXFRAME
+#define SYMBOL_WXFRAME_SIZE wxSize(400, 300)
+#define SYMBOL_WXFRAME_POSITION wxDefaultPosition
 ////@end control identifiers
 
 
@@ -71,9 +72,11 @@ public:
     void CreateControls();
 
 ////@begin wxPanel event handler declarations
+
 ////@end wxPanel event handler declarations
 
 ////@begin wxPanel member function declarations
+
     /// Retrieves bitmap resources
     wxBitmap GetBitmapResource( const wxString& name );
 
@@ -86,6 +89,51 @@ public:
 
 ////@begin wxPanel member variables
 ////@end wxPanel member variables
+};
+
+/*!
+ * wxFrame class declaration
+ */
+
+class wxFrame: public wxFrame
+{    
+    DECLARE_CLASS( wxFrame )
+    DECLARE_EVENT_TABLE()
+
+public:
+    /// Constructors
+    wxFrame();
+    wxFrame( wxWindow* parent, wxWindowID id = SYMBOL_WXFRAME_IDNAME, const wxString& caption = SYMBOL_WXFRAME_TITLE, const wxPoint& pos = SYMBOL_WXFRAME_POSITION, const wxSize& size = SYMBOL_WXFRAME_SIZE, long style = SYMBOL_WXFRAME_STYLE );
+
+    bool Create( wxWindow* parent, wxWindowID id = SYMBOL_WXFRAME_IDNAME, const wxString& caption = SYMBOL_WXFRAME_TITLE, const wxPoint& pos = SYMBOL_WXFRAME_POSITION, const wxSize& size = SYMBOL_WXFRAME_SIZE, long style = SYMBOL_WXFRAME_STYLE );
+
+    /// Destructor
+    ~wxFrame();
+
+    /// Initialises member variables
+    void Init();
+
+    /// Creates the controls and sizers
+    void CreateControls();
+
+////@begin wxFrame event handler declarations
+
+////@end wxFrame event handler declarations
+
+////@begin wxFrame member function declarations
+
+    /// Retrieves bitmap resources
+    wxBitmap GetBitmapResource( const wxString& name );
+
+    /// Retrieves icon resources
+    wxIcon GetIconResource( const wxString& name );
+////@end wxFrame member function declarations
+
+    /// Should we show tooltips?
+    static bool ShowToolTips();
+
+////@begin wxFrame member variables
+////@end wxFrame member variables
 };
 
 #endif

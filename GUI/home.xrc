@@ -1,36 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource version="2.3.0.1" xmlns="http://www.wxwidgets.org/wxxrc">
-    <object class="wxPanel" name="Home">
-        <style>wxTAB_TRAVERSAL</style>
-        <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
-        <size>400,300</size>
-        <title>Home</title>
+    <object class="wxFrame" name="Atlas">
+        <style>wxDEFAULT_FRAME_STYLE|wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxCLOSE_BOX</style>
+        <size>900,450</size>
+        <title>Atlas</title>
         <centered>1</centered>
-        <object class="wxBoxSizer">
-            <orient>wxHORIZONTAL</orient>
-            <object class="sizeritem">
-                <flag>wxGROW|wxALL</flag>
-                <border>0</border>
+        <font>
+            <size>9</size>
+            <family>swiss</family>
+            <face>Assistant</face>
+        </font>
+        <object class="wxNotebook" name="Atlas">
+            <font>
+                <size>10</size>
+                <family>swiss</family>
+                <face>Tahoma</face>
+            </font>
+            <style>wxBK_DEFAULT</style>
+            <object class="notebookpage">
+                <label>Home Node</label>
                 <object class="wxPanel" name="ID_PANEL">
-                    <style>wxTAB_TRAVERSAL</style>
+                    <font>
+                        <size>8</size>
+                        <family>swiss</family>
+                        <face>Tahoma</face>
+                    </font>
+                    <style>wxSUNKEN_BORDER|wxTAB_TRAVERSAL</style>
                     <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
-                    <bg>#7A7A7A</bg>
-                    <object class="wxBoxSizer">
-                        <orient>wxVERTICAL</orient>
+                    <bg>#C4C4C4</bg>
+                    <object class="wxGridSizer">
+                        <cols>3</cols>
+                        <rows>0</rows>
+                        <vgap>0</vgap>
+                        <hgap>0</hgap>
+                        <object class="sizeritem">
+                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                            <border>0</border>
+                            <object class="wxBoxSizer">
+                                <orient>wxVERTICAL</orient>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxALL</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                        <orient>wxVERTICAL</orient>
+                                        <label>Config</label>
+                                        <font>
+                                            <size>9</size>
+                                            <family>swiss</family>
+                                            <face>Tahoma</face>
+                                        </font>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                            <border>5</border>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxALL|wxFIXED_MINSIZE</flag>
+                                                    <border>4</border>
+                                                    <object class="wxStaticText" name="wxID_STATIC">
+                                                        <fg>#000000</fg>
+                                                        <label>Node Name</label>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxFIXED_MINSIZE</flag>
+                                                    <border>6</border>
+                                                    <object class="wxTextCtrl" name="ID_TEXTCTRL">
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxHORIZONTAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxLEFT|wxTOP|wxBOTTOM|wxFIXED_MINSIZE</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxButton" name="ID_BUTTON1">
+                                                        <label>Apply</label>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxRIGHT|wxTOP|wxBOTTOM|wxFIXED_MINSIZE</flag>
+                                                    <border>5</border>
+                                                    <option>1</option>
+                                                    <object class="wxButton" name="ID_BUTTON">
+                                                        <label>Cancel</label>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxALL</flag>
+                                    <border>5</border>
+                                    <option>1</option>
+                                    <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                        <orient>wxVERTICAL</orient>
+                                        <label>Connection</label>
+                                        <font>
+                                            <size>9</size>
+                                            <family>swiss</family>
+                                            <face>Tahoma</face>
+                                        </font>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                            <border>4</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <fg>#000000</fg>
+                                                <label>Connected to - &lt;Admin&gt;</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                                <orient>wxVERTICAL</orient>
+                                                <label>Members</label>
+                                                <font>
+                                                    <size>9</size>
+                                                    <family>swiss</family>
+                                                    <face>Tahoma</face>
+                                                </font>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                                                    <border>5</border>
+                                                    <object class="wxStaticText" name="wxID_STATIC">
+                                                        <label>Static text</label>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+                                                    <border>5</border>
+                                                    <object class="wxStaticText" name="wxID_STATIC">
+                                                        <label>Static text</label>
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticLine" name="wxID_STATIC">
+                                                <style>wxLI_HORIZONTAL</style>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                            <border>5</border>
+                                            <object class="wxBoxSizer">
+                                                <orient>wxVERTICAL</orient>
+                                                <object class="sizeritem">
+                                                    <flag>wxALIGN_LEFT|wxALL|wxFIXED_MINSIZE</flag>
+                                                    <border>4</border>
+                                                    <object class="wxStaticText" name="wxID_STATIC">
+                                                        <fg>#000000</fg>
+                                                        <label>Target IP
+</label>
+                                                    </object>
+                                                </object>
+                                                <object class="sizeritem">
+                                                    <flag>wxGROW|wxLEFT|wxRIGHT|wxFIXED_MINSIZE</flag>
+                                                    <border>6</border>
+                                                    <object class="wxTextCtrl" name="ID_TEXTCTRL1">
+                                                    </object>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
                         <object class="sizeritem">
                             <flag>wxGROW|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxStaticBoxSizer" name="wxID_ANY">
-                                <orient>wxVERTICAL</orient>
-                                <label>Node Name</label>
+                            <border>0</border>
+                            <object class="wxGridSizer">
+                                <cols>1</cols>
+                                <rows>2</rows>
+                                <vgap>0</vgap>
+                                <hgap>0</hgap>
                                 <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
                                     <border>5</border>
-                                    <object class="wxTextCtrl" name="ID_NodeName">
-                                        <size>100,20</size>
-                                        <tooltip>Node Name</tooltip>
-                                        <help>Node Name</help>
-                                        <style>wxBORDER_THEME</style>
+                                    <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                        <orient>wxVERTICAL</orient>
+                                        <label>Parsers</label>
+                                        <font>
+                                            <size>9</size>
+                                            <family>swiss</family>
+                                            <face>Tahoma</face>
+                                        </font>
+                                    </object>
+                                </object>
+                                <object class="sizeritem">
+                                    <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                    <border>5</border>
+                                    <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                        <orient>wxVERTICAL</orient>
+                                        <label>Serializers</label>
+                                        <font>
+                                            <size>9</size>
+                                            <family>swiss</family>
+                                            <face>Tahoma</face>
+                                        </font>
                                     </object>
                                 </object>
                             </object>
@@ -40,37 +216,59 @@
                             <border>5</border>
                             <object class="wxStaticBoxSizer" name="wxID_ANY">
                                 <orient>wxVERTICAL</orient>
-                                <label>Host Name</label>
+                                <label>Jobs</label>
+                                <font>
+                                    <size>9</size>
+                                    <family>swiss</family>
+                                    <face>Tahoma</face>
+                                </font>
                                 <object class="sizeritem">
-                                    <flag>wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxBOTTOM</flag>
+                                    <flag>wxGROW|wxALL</flag>
                                     <border>5</border>
-                                    <object class="wxTextCtrl" name="ID_HostName">
-                                        <help>Host Name</help>
+                                    <object class="wxStaticBoxSizer" name="JobInterface">
+                                        <orient>wxVERTICAL</orient>
+                                        <label>JobName</label>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_LEFT|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Type - &lt;Type&gt;</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_LEFT|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Is Alive - &lt;IsAlive&gt;</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_LEFT|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Success - &lt;Success&gt;</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxALIGN_LEFT|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxStaticText" name="wxID_STATIC">
+                                                <label>Unique Descriptor - &lt;Unique Descriptor&gt;</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL</flag>
+                                            <border>5</border>
+                                            <object class="wxButton" name="ID_BUTTON2">
+                                                <label>Kill Job</label>
+                                            </object>
+                                        </object>
                                     </object>
                                 </object>
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxGROW|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxButton" name="ID_ConnectToAdmin">
-                                <label>Connect</label>
-                            </object>
-                        </object>
-                        <object class="sizeritem">
-                            <flag>wxGROW|wxALL</flag>
-                            <border>5</border>
-                            <object class="wxStaticLine" name="wxID_STATIC">
-                                <style>wxLI_HORIZONTAL</style>
                             </object>
                         </object>
                     </object>
                 </object>
-            </object>
-            <object class="spacer">
-                <flag>wxALIGN_CENTER_VERTICAL</flag>
-                <border>5</border>
-                <size>500,500</size>
             </object>
         </object>
     </object>

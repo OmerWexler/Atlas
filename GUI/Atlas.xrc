@@ -161,7 +161,7 @@
                                                 <object class="sizeritem">
                                                     <flag>wxGROW|wxALIGN_TOP|wxALL|wxFIXED_MINSIZE</flag>
                                                     <border>4</border>
-                                                    <object class="wxToggleButton" name="ID_STATICTEXT">
+                                                    <object class="wxToggleButton" name="IsWorkerToggle">
                                                         <fg>#000000</fg>
                                                         <label>Is Worker</label>
                                                         <checked>0</checked>

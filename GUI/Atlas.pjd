@@ -1451,7 +1451,7 @@
                         <long name="proxy-Height">-1</long>
                         <string name="proxy-Help text">""</string>
                         <bool name="proxy-Hidden">0</bool>
-                        <string name="proxy-Id name">"ID_STATICTEXT"</string>
+                        <string name="proxy-Id name">"IsWorkerToggle"</string>
                         <long name="proxy-Id value">10000</long>
                         <string name="proxy-Implementation filename">""</string>
                         <bool name="proxy-Initial value">0</bool>
@@ -1482,7 +1482,7 @@
                         <bool name="proxy-wxWANTS_CHARS">0</bool>
                         <long name="proxy-X">-1</long>
                         <long name="proxy-Y">-1</long>
-                        <string name="title">"wxToggleButton: ID_STATICTEXT"</string>
+                        <string name="title">"wxToggleButton: IsWorkerToggle"</string>
                         <long name="title-mode">0</long>
                         <string name="type">"dialog-control-document"</string>
                       </document>

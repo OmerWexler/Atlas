@@ -6,7 +6,7 @@
     #include <wx/wx.h>
 #endif
 
-#include "AtlasApp.h"
 #include "MainFrame.h"
+#include "AtlasApp.h"
 
 wxIMPLEMENT_APP(AtlasApp);

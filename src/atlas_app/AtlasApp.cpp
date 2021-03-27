@@ -3,21 +3,22 @@
 #include "Utils.h"
 #include "Singleton.h"
 #include "Logger.h"
+#include "GridNode.h"
 
 #include "wx/xrc/xmlres.h"
 
 bool AtlasApp::OnInit()
 {
     Utils::SetupMemoryCheck();
-
     wxXmlResource::Get()->InitAllHandlers();
     wxXmlResource::Get()->Load("E:\\Desktop\\2021 Cyber Project\\Atlas\\GUI\\Atlas.xrc");
-    
-    Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
-    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Server.txt");
-    
-    MainFrame *frame = new MainFrame();
+
+    frame = new MainFrame();
     frame->Show(true);
 
+    Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
+    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Server.txt");
+
+    Singleton<GridNode>::GetInstance(); // Init the local GridNode
     return true;
 }

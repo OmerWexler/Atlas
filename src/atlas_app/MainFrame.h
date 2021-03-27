@@ -1,18 +1,18 @@
 #pragma once
 
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-#endif
-
-using namespace std;
+#include <wx/frame.h>
+#include <wx/event.h>
 
 class MainFrame : public wxFrame
 {
 public:
     MainFrame();
-    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE();
 
 private:
     void RenameLocalNode(wxCommandEvent& event);
+    void CancelNodeRename(wxCommandEvent& event);
+    void ConnectToNode(wxCommandEvent& event);
 };
+
+wxDECLARE_EVENT(EVT_NODE_NAME_CHANGED, wxCommandEvent);

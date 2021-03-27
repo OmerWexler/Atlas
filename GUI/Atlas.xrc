@@ -14,7 +14,7 @@
             <style>wxBK_DEFAULT</style>
             <object class="notebookpage">
                 <label>Home Node</label>
-                <object class="wxPanel" name="ID_PANEL">
+                <object class="wxPanel" name="HomeNodePanel">
                     <font>
                         <size>9</size>
                         <family>swiss</family>
@@ -77,7 +77,7 @@
                                                     <flag>wxGROW|wxRIGHT|wxTOP|wxBOTTOM|wxFIXED_MINSIZE</flag>
                                                     <border>5</border>
                                                     <option>1</option>
-                                                    <object class="wxButton" name="ID_BUTTON">
+                                                    <object class="wxButton" name="CancelRenameButton">
                                                         <label>Cancel</label>
                                                     </object>
                                                 </object>
@@ -132,20 +132,39 @@
                                         <object class="sizeritem">
                                             <flag>wxGROW</flag>
                                             <border>5</border>
-                                            <object class="wxBoxSizer">
-                                                <orient>wxVERTICAL</orient>
+                                            <object class="wxGridSizer">
+                                                <cols>2</cols>
+                                                <rows>0</rows>
+                                                <vgap>0</vgap>
+                                                <hgap>0</hgap>
                                                 <object class="sizeritem">
-                                                    <flag>wxALIGN_LEFT|wxALL|wxFIXED_MINSIZE</flag>
-                                                    <border>4</border>
-                                                    <object class="wxStaticText" name="wxID_STATIC1">
-                                                        <fg>#000000</fg>
-                                                        <label>Target IP</label>
+                                                    <flag>wxGROW</flag>
+                                                    <border>5</border>
+                                                    <object class="wxBoxSizer">
+                                                        <orient>wxVERTICAL</orient>
+                                                        <object class="sizeritem">
+                                                            <flag>wxALIGN_LEFT|wxALL|wxFIXED_MINSIZE</flag>
+                                                            <border>4</border>
+                                                            <object class="wxStaticText" name="wxID_STATIC1">
+                                                                <fg>#000000</fg>
+                                                                <label>Target IP</label>
+                                                            </object>
+                                                        </object>
+                                                        <object class="sizeritem">
+                                                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                                            <border>6</border>
+                                                            <object class="wxTextCtrl" name="ConnectionTarget">
+                                                            </object>
+                                                        </object>
                                                     </object>
                                                 </object>
                                                 <object class="sizeritem">
-                                                    <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
-                                                    <border>6</border>
-                                                    <object class="wxTextCtrl" name="ID_TEXTCTRL1">
+                                                    <flag>wxGROW|wxALIGN_TOP|wxALL|wxFIXED_MINSIZE</flag>
+                                                    <border>4</border>
+                                                    <object class="wxToggleButton" name="ID_STATICTEXT">
+                                                        <fg>#000000</fg>
+                                                        <label>Is Worker</label>
+                                                        <checked>0</checked>
                                                     </object>
                                                 </object>
                                             </object>

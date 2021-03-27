@@ -26,7 +26,7 @@ int main() {
     Singleton<GridNode>::GetInstance().AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
 
     int Result;
-    Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "64000");
+    Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "22000");
     if (Result != 0)
     {
         Singleton<GridNode>::GetInstance().Stop();

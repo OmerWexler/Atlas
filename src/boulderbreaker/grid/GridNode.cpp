@@ -36,16 +36,20 @@
 #include "Utils.h"
 #include "Logger.h"
 
-GridNode::GridNode()
+#include "AtlasApp.h"
+#include "MainFrame.h"
+
+#undef SendMessage
+
+GridNode::GridNode() : NodeServer("BasicServer - UnnamedNode", false)
 {
-    this->Name = "";
-    this->NodeServer = move(BasicServer("", false));
+    SetName("UnnamedNode");
+    Init();
 }
 
-GridNode::GridNode(string Name)
+GridNode::GridNode(string Name) : NodeServer("BasicServer - " + Name, false)
 {
-    this->Name = Name;
-    this->NodeServer = move(BasicServer("BasicServer - " + Name, false));
+    SetName(Name);
     Init();
 }
 
@@ -53,7 +57,10 @@ void GridNode::SetName(string Name)
 {
     this->Name = Name;
     this->NodeServer.SetName("BasicServer - " + Name);
-    Init();
+
+    wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
+    event->SetString(wxString(Name));
+    wxQueueEvent(wxGetApp().GetMainFrame(), event);
 }
 
 void GridNode::Init()
@@ -96,7 +103,6 @@ void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, strin
 
     Map[NewID] = move(Connection);
     Map[NewID].SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
-
     Singleton<Logger>::GetInstance().Info(Name + " registered new connection.");
 }
 

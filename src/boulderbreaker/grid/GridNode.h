@@ -13,6 +13,8 @@
 #include "Logger.h"
 #include "SmartThread.h"
 
+#define DEFAULT_NODE_CONNECTION_PORT "22000"
+
 class GridNode
 {
 private:

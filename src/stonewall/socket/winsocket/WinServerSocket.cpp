@@ -115,8 +115,14 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
     }
 }
 
-WinServerSocket::~WinServerSocket()
+void WinServerSocket::Close()
 {
     closesocket(Socket);
     WSACleanup();
+}
+
+
+WinServerSocket::~WinServerSocket()
+{
+    Close();
 }

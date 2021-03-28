@@ -41,6 +41,8 @@ private:
     vector<int> AvailableClientSlots;
 
     void Init();
+    void BroadcastNameRequest(string Name);
+
     string CreateMemberName();
     string CreateClientName();
 
@@ -59,7 +61,7 @@ public:
     GridNode();
     GridNode(string Name);
 
-    void SetName(string Name);
+    void SetName(string Name, bool BroadcastRequest=true);
 
     void AddCollectiveParser(shared_ptr<IParser>& Parser);
     void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
@@ -82,7 +84,14 @@ public:
 
     string GetName() { return Name; };
 
-    void Stop();
+
+    void CloseServer();
+    void DisconnectFromAdmin();
+    void DisconnectMembers();
+    void StopPeriodics();
+
+    void CloseNode();
+    void ReloadNode();
 
     ~GridNode();
 };

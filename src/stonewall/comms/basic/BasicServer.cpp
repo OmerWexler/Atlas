@@ -109,3 +109,14 @@ int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
     }
     return 0;
 }
+
+void BasicServer::Close()
+{
+    if (ServerSocket.get())
+        ServerSocket->Close();
+}
+
+BasicServer::~BasicServer()
+{
+    Close();
+}

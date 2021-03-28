@@ -41,6 +41,7 @@ public:
     int Bind(string Host, string Port);
     int Listen(int Backlog);
     int AcceptConnection(string ConnectionName, unique_ptr<IConnectionSocket>& ConnectionSocket);
+    void Close();
 
     virtual ~WinServerSocket();
 };

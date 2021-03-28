@@ -1,14 +1,14 @@
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameMessage.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameparser.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/accept_name/AcceptNameSerializer.cpp
-
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobparser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobSerializer.cpp
-
+    
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameparser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameSerializer.cpp
+    
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeSerializer.cpp

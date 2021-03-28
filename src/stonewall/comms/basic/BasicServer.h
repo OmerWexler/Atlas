@@ -33,4 +33,7 @@ public:
     int Bind(string Host, string Port);
     int Listen(int Backlog);
     int AcceptConnection(string Name, BasicConnection& OutConnection);
+    void Close();
+
+    ~BasicServer();
 };

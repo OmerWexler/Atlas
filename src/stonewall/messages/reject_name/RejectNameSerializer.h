@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class AcceptNameSerializer: public ISerializer
+class RejectNameSerializer: public ISerializer
 {
 public:
     string GetType() const override;

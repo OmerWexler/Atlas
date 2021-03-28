@@ -10,7 +10,7 @@
 #include "CancelJobSerializer.h"
 #include "SendJobOutputSerializer.h"
 #include "SetNameSerializer.h"
-#include "AcceptNameSerializer.h"
+#include "RejectNameSerializer.h"
 
 #include "SendJobPolicyParser.h"
 #include "RequestBestNodeParser.h"
@@ -19,7 +19,7 @@
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
 #include "SetNameParser.h"
-#include "AcceptNameParser.h"
+#include "RejectNameParser.h"
 
 #include "SendJobPolicyMessage.h"
 #include "RequestBestNodeMessage.h"
@@ -43,28 +43,46 @@
 
 GridNode::GridNode() : NodeServer("BasicServer - UnnamedNode", false)
 {
-    SetName("UnnamedNode");
+    SetName("UnnamedNode", false);
     Init();
 }
 
 GridNode::GridNode(string Name) : NodeServer("BasicServer - " + Name, false)
 {
-    SetName(Name);
+    SetName(Name, false);
     Init();
 }
 
-void GridNode::SetName(string Name)
+void GridNode::SetName(string Name, bool BroadcastRequest)
 {
     this->Name = Name;
     this->NodeServer.SetName("BasicServer - " + Name);
+
+    if (BroadcastRequest)
+    {
+        BroadcastNameRequest(Name);
+    }
 
     wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
     event->SetString(wxString(Name));
     wxQueueEvent(wxGetApp().GetMainFrame(), event);
 }
 
+void GridNode::BroadcastNameRequest(string Name)
+{
+    for (auto& Pair: Members)
+    {
+        if (Pair.second.IsConnected())
+            Pair.second.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+    }
+
+    if (NodeAdmin.IsConnected())
+        NodeAdmin.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+}
+
 void GridNode::Init()
 {
+    CollectiveParsers = vector<shared_ptr<IParser>>();
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobPolicyParser()));
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW RequestBestNodeParser()));
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendBestNodeParser()));
@@ -74,6 +92,7 @@ void GridNode::Init()
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SetNameParser()));
     AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW AcceptNameParser()));
 
+    CollectiveSerializers = unordered_map<string, shared_ptr<ISerializer>>();
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobPolicySerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RequestBestNodeSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendBestNodeSerializer()));
@@ -81,8 +100,9 @@ void GridNode::Init()
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW CancelJobSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobOutputSerializer()));
     AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SetNameSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW AcceptNameSerializer()));
+    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RejectNameSerializer()));
 
+    FunctionCores = vector<unique_ptr<IFunctionCore>>();
     AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore(Name + " - JobCore")));
     AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW GeneralPurposeCore()));
 }
@@ -146,6 +166,8 @@ void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
 
 int GridNode::Setup(string Host, string Port)
 {
+    Singleton<Logger>::GetInstance().Info("Setting up at " + Host + ":" + Port);
+
     int Result;
     Result = NodeServer.Bind(Host, Port);
     if (Result != 0)
@@ -155,11 +177,14 @@ int GridNode::Setup(string Host, string Port)
     if (Result != 0)
         return Result;
 
+    Singleton<Logger>::GetInstance().Info("Initiating threads...");
     ConnectionListener = SmartThread(Name + " - ConnectionListener", 0.02f, &GridNode::ConnectionListenerFunc, this);
     MemberManager = SmartThread(Name + " - MemberMananger", 0.02f, &GridNode::MemberListenerFunc, this);
     ClientManager = SmartThread(Name + " - ClientMananger", 0.02f, &GridNode::ClientListenerFunc, this);
     AdminManager = SmartThread(Name + " - AdminManager", 0.02f, &GridNode::ManageAdminFunc, this);
+    Singleton<Logger>::GetInstance().Info("Threads running.");
 
+    Singleton<Logger>::GetInstance().Info("Initiating cores...");
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {
         if (ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get()))
@@ -167,6 +192,7 @@ int GridNode::Setup(string Host, string Port)
             ACore->StartCore();
         }
     }
+    Singleton<Logger>::GetInstance().Info("Cores ready.");
 
     return 0;
 }
@@ -302,23 +328,68 @@ unordered_map<int, GridConnection>::iterator GridNode::GetClientsEnd()
     return Clients.end();
 }
 
-void GridNode::Stop()
+void GridNode::CloseServer()
 {
-    ConnectionListener.Stop();
-    MemberManager.Stop();
-    ClientManager.Stop();
-    AdminManager.Stop();
+    NodeServer.Close();
+}
+
+void GridNode::DisconnectFromAdmin()
+{
+    for (auto& Pair: Members)
+    {
+        if (Pair.second.IsConnected())
+            Pair.second.Disconnect();
+    }
+}
+
+void GridNode::DisconnectMembers()
+{
+    if (NodeAdmin.IsConnected())
+        NodeAdmin.Disconnect();
+}
+
+void GridNode::StopPeriodics()
+{
+    if (ConnectionListener.GetIsRunning())
+        ConnectionListener.Stop();
+    
+    if (MemberManager.GetIsRunning())
+        MemberManager.Stop();
+    
+    if (ClientManager.GetIsRunning())
+        ClientManager.Stop();
+    
+    if (AdminManager.GetIsRunning())
+        AdminManager.Stop();
 
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {
         if (ASyncFunctionCore* ACore = dynamic_cast<ASyncFunctionCore*>(Core.get()))
         {
-            ACore->StopCore();
+            if (ACore->IsRunning())
+                ACore->StopCore();
         }
     }
 }
 
+void GridNode::CloseNode()
+{
+    DisconnectFromAdmin();
+    DisconnectMembers();
+    CloseServer();
+    StopPeriodics();
+}
+
+void GridNode::ReloadNode()
+{
+    CloseNode();
+    NodeServer = move(BasicServer("BasicServer - UnnamedNode", false));
+
+    SetName("UnnamedNode");
+    Init();
+}
+
 GridNode::~GridNode()
 {
-    Stop();
+    CloseNode();
 }

@@ -17,7 +17,7 @@ bool AtlasApp::OnInit()
     frame->Show(true);
 
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
-    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Server.txt");
+    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Atlas.txt");
 
     Singleton<GridNode>::GetInstance(); // Init the local GridNode
     return true;

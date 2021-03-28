@@ -17,7 +17,7 @@ string SendJobPolicySerializer::Serialize(const unique_ptr<IMessage>& Message) c
     if (PolicyMsg->GetPolicy())
         SMsg += "1";
     else
-        SMsg =+ "0";
+        SMsg += "0";
     
     return SMsg;
 }

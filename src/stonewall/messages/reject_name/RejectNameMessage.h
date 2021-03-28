@@ -4,17 +4,15 @@
 
 using namespace std;
 
-class AcceptNameMessage: IMessage
+class RejectNameMessage: IMessage
 {
 private:
-    bool Accepted;
     string Name;
 
 public:
     const static string TYPE;
 
-    AcceptNameMessage(bool Accepted, string Name);
+    RejectNameMessage(string Name);
     string GetType() const override;
-    bool IsAccepted() const;
     string GetInvalidName() const;
 };

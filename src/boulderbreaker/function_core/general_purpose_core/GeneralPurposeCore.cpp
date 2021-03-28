@@ -4,7 +4,7 @@
 #include "GridNode.h"
 #include "Singleton.h"
 #include "SetNameMessage.h"
-#include "AcceptNameMessage.h"
+#include "RejectNameMessage.h"
 
 string GeneralPurposeCore::GetType() const 
 {
@@ -20,9 +20,13 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
         string OriginalName = Sender.GetName();
         bool NameAccepted;
 
-        if (OriginalName == NewName)
+        if (Sender == Singleton<GridNode>::GetInstance().GetAdmin())
         {
-            NameAccepted = false;
+            NameAccepted = true;
+        }
+        else if (OriginalName == NewName)
+        {
+            NameAccepted = true;
         }
         else
         {
@@ -34,7 +38,7 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
             {
                 if (Iterator->second.GetName() == NewName)
                 {
-                    // Singleton<Logger>::GetInstance().Info("Rejected request to rename " + OriginalName + " to - " + NewName);
+                    Singleton<Logger>::GetInstance().Info("Rejected request to rename " + OriginalName + " to - " + NewName);
                     NameAccepted = false;
                 }
 
@@ -42,7 +46,6 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
             }
         }
 
-        Sender.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW AcceptNameMessage(NameAccepted, NewName)));
         if (NameAccepted)
         {
             Sender.SetName(NewName);
@@ -50,64 +53,57 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
         }
         else
         {
+            Sender.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW RejectNameMessage(NewName)));
             Singleton<Logger>::GetInstance().Info("Rejected request to rename " + OriginalName + " to - " + NewName);
         }
     }
 
-    // ACCEPT NAME
-    if (Message->GetType() == AcceptNameMessage::TYPE)
+    // REJECT NAME
+    if (Message->GetType() == RejectNameMessage::TYPE)
     {
-        AcceptNameMessage* ANMsg = (AcceptNameMessage*) Message.get();
+        RejectNameMessage* ANMsg = (RejectNameMessage*) Message.get();
         
-        bool IsAccepted = ANMsg->IsAccepted();
         string ReturnedName = ANMsg->GetInvalidName();
 
         size_t TagStart = ReturnedName.find_last_of('(');
         string DuplicateTag, NewName;
         
-        if (IsAccepted) 
+        if (TagStart > 0 && TagStart < ReturnedName.length())
         {
-            Singleton<GridNode>::GetInstance().SetName(ReturnedName);
+            DuplicateTag = ReturnedName.substr(TagStart);
         }
         else
         {
-            if (TagStart > 0 && TagStart < ReturnedName.length())
-            {
-                DuplicateTag = ReturnedName.substr(TagStart);
-            }
-            else
-            {
-                DuplicateTag = "";
-            }
+            DuplicateTag = "";
+        }
 
-            if (DuplicateTag != "" && DuplicateTag[0] == '(' && DuplicateTag[DuplicateTag.length() - 1] == ')')
+        if (DuplicateTag != "" && DuplicateTag[0] == '(' && DuplicateTag[DuplicateTag.length() - 1] == ')')
+        {
+            try
             {
-                try
-                {
-                    int Num = stoi(DuplicateTag.substr(1, DuplicateTag.length() - 2));
-                    DuplicateTag = "(" + to_string(Num + 1) + ")";
-                    
-                    NewName = ReturnedName.substr(0, TagStart) + DuplicateTag;
-                }
-                catch (exception)
-                {
-                    DuplicateTag = "(1)"; 
-                    NewName = ReturnedName + DuplicateTag;
-                }
+                int Num = stoi(DuplicateTag.substr(1, DuplicateTag.length() - 2));
+                DuplicateTag = "(" + to_string(Num + 1) + ")";
+                
+                NewName = ReturnedName.substr(0, TagStart) + DuplicateTag;
             }
-            else
+            catch (exception)
             {
-                DuplicateTag = "(1)";
+                DuplicateTag = "(1)"; 
                 NewName = ReturnedName + DuplicateTag;
             }
-            
-            Sender.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(NewName)));
         }
+        else
+        {
+            DuplicateTag = "(1)";
+            NewName = ReturnedName + DuplicateTag;
+        }
+        
+        Singleton<GridNode>::GetInstance().SetName(NewName);
     }
 }
 
 bool GeneralPurposeCore::IsMessageRelated(const unique_ptr<IMessage>& Message) const
 {
     return Message->GetType() == SetNameMessage::TYPE ||
-            Message->GetType() == AcceptNameMessage::TYPE;
+            Message->GetType() == RejectNameMessage::TYPE;
 }

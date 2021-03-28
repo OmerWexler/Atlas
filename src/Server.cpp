@@ -29,12 +29,12 @@ int main() {
     Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "22000");
     if (Result != 0)
     {
-        Singleton<GridNode>::GetInstance().Stop();
+        Singleton<GridNode>::GetInstance().StopPeriodics();
         exit(Result);
     }
 
     system("pause");
-    Singleton<GridNode>::GetInstance().Stop();
+    Singleton<GridNode>::GetInstance().StopPeriodics();
     system("pause");
     return 0;
 }

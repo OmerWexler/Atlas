@@ -8,7 +8,6 @@
 #include "SendJobMessage.h"
 #include "SendJobOutputMessage.h"
 #include "SetNameMessage.h"
-#include "AcceptNameMessage.h"
 
 #include "Utils.h"
 #include "IJob.h"
@@ -39,17 +38,13 @@ GridConnection::GridConnection(GridConnection&& Other)
     *this = move(Other);
 }
 
-void GridConnection::SetName(string NewName)
-{
-    this->Name = NewName;
-    this->Connection.SetName(NewName);
-}
-
 GridConnection& GridConnection::operator=(GridConnection&& Other)
 {
     this->Connection = move(Other.Connection);
     
     this->Name = Other.Name;
+    this->Host = Other.Host;
+    this->Port = Other.Port;
     this->Connection.SetName(Name);
 
     for (shared_ptr<IParser> Parser: Other.Parsers)
@@ -65,6 +60,12 @@ GridConnection& GridConnection::operator=(GridConnection&& Other)
     Other.Serializers.clear();
     
     return *this;
+}
+
+void GridConnection::SetName(string NewName)
+{
+    this->Name = NewName;
+    this->Connection.SetName(NewName);
 }
 
 bool GridConnection::operator==(GridConnection& Other)
@@ -122,6 +123,9 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker, string Node
         Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobPolicyMessage(IsWorker)));
         Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(NodeName)));
     }
+
+    this->Host = Host;
+    this->Port = Port;
 
     return Result;
 }

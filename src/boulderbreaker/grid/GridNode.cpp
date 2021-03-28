@@ -64,13 +64,17 @@ void GridNode::SetName(string Name, bool BroadcastRequest)
     }
 
     wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
-    event->SetString(wxString(Name));
     wxQueueEvent(wxGetApp().GetMainFrame(), event);
 }
 
 void GridNode::BroadcastNameRequest(string Name)
 {
     for (auto& Pair: Members)
+    {
+        if (Pair.second.IsConnected())
+            Pair.second.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+    }
+    for (auto& Pair: Clients)
     {
         if (Pair.second.IsConnected())
             Pair.second.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
@@ -194,6 +198,9 @@ int GridNode::Setup(string Host, string Port)
     }
     Singleton<Logger>::GetInstance().Info("Cores ready.");
 
+    wxCommandEvent* event = new wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
+    event->SetString(wxString(Host + ":" + Port));
+    wxQueueEvent(wxGetApp().GetMainFrame(), event);
     return 0;
 }
 
@@ -295,6 +302,9 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     }
 
     NodeAdmin = move(NewConnection);
+    wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
+    event->SetString(wxString("Unnamed (" + NodeAdmin.GetHost() + ":" + NodeAdmin.GetPort() + ")"));
+    wxQueueEvent(wxGetApp().GetMainFrame(), event);
     return 0;
 }
 

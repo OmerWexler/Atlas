@@ -15,6 +15,8 @@ class GridConnection
 {
 private:
     string Name;
+    string Host;
+    string Port;
 
     BasicConnection Connection;
     vector<shared_ptr<IParser>> Parsers;
@@ -41,6 +43,8 @@ public:
 
     void SetName(string NewName);
     string GetName() const { return Name; }
+    string GetHost() const { return Host; }
+    string GetPort() const { return Port; }
 
     int Disconnect();
 };

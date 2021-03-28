@@ -95,9 +95,17 @@
                                         <object class="sizeritem">
                                             <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
                                             <border>4</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
+                                            <object class="wxStaticText" name="AdminNameDisplay">
                                                 <fg>#000000</fg>
-                                                <label>Connected to - &lt;Admin&gt;</label>
+                                                <label>Node is not connected to any admin...</label>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                            <border>4</border>
+                                            <object class="wxStaticText" name="ListenAddressDisplay">
+                                                <fg>#000000</fg>
+                                                <label>Node is not listening...</label>
                                             </object>
                                         </object>
                                         <object class="sizeritem">
@@ -211,8 +219,8 @@
                                         <object class="sizeritem">
                                             <flag>wxGROW|wxALL</flag>
                                             <border>5</border>
-                                            <object class="wxButton" name="ListenOnTargetButton">
-                                                <label>Listen On Target</label>
+                                            <object class="wxButton" name="SetupOnTargetButton">
+                                                <label>Setup On Target</label>
                                             </object>
                                         </object>
                                         <object class="sizeritem">

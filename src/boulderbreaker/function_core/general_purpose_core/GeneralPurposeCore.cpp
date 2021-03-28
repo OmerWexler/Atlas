@@ -6,6 +6,11 @@
 #include "SetNameMessage.h"
 #include "RejectNameMessage.h"
 
+#include "MainFrame.h"
+#include "AtlasApp.h"
+
+#undef SendMessage
+
 string GeneralPurposeCore::GetType() const 
 {
     return "GeneralPurposeCore";
@@ -19,10 +24,12 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
         string NewName = ((SetNameMessage*) Message.get())->GetName();
         string OriginalName = Sender.GetName();
         bool NameAccepted;
+        bool IsAdmin = false;
 
         if (Sender == Singleton<GridNode>::GetInstance().GetAdmin())
         {
             NameAccepted = true;
+            IsAdmin = true;
         }
         else if (OriginalName == NewName)
         {
@@ -44,12 +51,33 @@ void GeneralPurposeCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnect
 
                 Iterator++;
             }
+
+            Iterator = Singleton<GridNode>::GetInstance().GetClientsBegin();
+            End = Singleton<GridNode>::GetInstance().GetClientsEnd();
+
+            while(Iterator != End)
+            {
+                if (Iterator->second.GetName() == NewName)
+                {
+                    Singleton<Logger>::GetInstance().Info("Rejected request to rename " + OriginalName + " to - " + NewName);
+                    NameAccepted = false;
+                }
+
+                Iterator++;
+            }
         }
 
         if (NameAccepted)
         {
             Sender.SetName(NewName);
             Singleton<Logger>::GetInstance().Info("Renamed " + OriginalName + " to - " + NewName);
+
+            if (IsAdmin) 
+            {
+                wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
+                event->SetString(wxString(NewName + " (" + Sender.GetHost() + ":" + Sender.GetPort() + ")"));
+                wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            }
         }
         else
         {

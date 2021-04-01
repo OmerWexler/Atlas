@@ -94,7 +94,7 @@ void JobCore::Periodic()
         if (!It->second->IsAlive())
         {
             Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(
-                unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobOutputMessage(It->second->GetUniqueDescriptor(), It->second->GetOutput()))
+                ATLS_CREATE_UNIQUE_MSG(SendJobOutputMessage, It->second->GetUniqueDescriptor(), It->second->GetOutput())
             );
 
             It = LocalJobs.erase(It);

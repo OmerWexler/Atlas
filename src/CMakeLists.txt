@@ -1,3 +1,5 @@
+set(IS_TEST, false, PARENT_SCOPE)
+
 add_executable(
     Atlas
     WIN32

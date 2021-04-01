@@ -3,7 +3,8 @@
 #include "TestSeperatorBasedMessages.cpp"
 #include "TestSendJobPolicyMessages.cpp"
 #include "TestCancelJobMessage.cpp"
-#include "TestRequestBestNodeMessages.cpp"
+#include "TestSendNodePerformanceMessages.cpp"
+#include "WinPerformanceAnalyzerTest.cpp"
 #include "TestSendJobMessage.cpp"
 #include "TestSendJobOutputMessage.cpp"
 #include "Logger.h"
@@ -18,6 +19,8 @@ using namespace std;
 int main(int argc, char** argv)
 {   
     Utils::SetupMemoryCheck();
+    Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
+    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\test\\Debug", "Tests.txt");
 
     int ExitCode = 0;
     
@@ -47,7 +50,7 @@ int main(int argc, char** argv)
             break;
 
         case 5:
-            ExitCode = TestRequestBestNodeMessages();
+            ExitCode = TestSendNodePerformanceMessages();
             break;
 
         case 6:
@@ -58,13 +61,16 @@ int main(int argc, char** argv)
             ExitCode = TestSendJobOutputMessage();
             break;
 
+        case 8:
+            ExitCode = WinPerformanceAnalyzerTest();
+            break;
+
         default:
             break;
         }
     }
     else 
     {
-        Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
 
         Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
         ExitCode = TestWinSocketCommunications();
@@ -96,8 +102,8 @@ int main(int argc, char** argv)
             return ExitCode;
         printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestRequestBestNodeMessages...");
-        ExitCode = TestRequestBestNodeMessages();
+        Singleton<Logger>::GetInstance().Info("Starting TestSendNodePerformanceMessages...");
+        ExitCode = TestSendNodePerformanceMessages();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");
@@ -110,6 +116,12 @@ int main(int argc, char** argv)
         
         Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
         ExitCode = TestSendJobOutputMessage();
+        if (ExitCode != 0)
+            return ExitCode;
+        printf("\n");
+        
+        Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
+        ExitCode = WinPerformanceAnalyzerTest();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");

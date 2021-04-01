@@ -16,3 +16,5 @@ public:
 
     virtual ~ISerializer() {};
 };
+
+#define ATLS_CREATE_SHARED_SRLZR(type) shared_ptr<ISerializer>((ISerializer*) DBG_NEW type())

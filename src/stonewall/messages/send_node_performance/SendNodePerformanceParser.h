@@ -5,14 +5,14 @@
 
 using namespace std;
 
-class RequestBestNodeParser: public IParser
+class SendNodePerformanceParser: public IParser
 {
 private:
     string HEADER = "RBN";
     SeperatorBasedParser SPBParser;
 
 public:
-    RequestBestNodeParser();
+    SendNodePerformanceParser();
 
     string GetType() const override;
     void Parse(const string& SMsg, unique_ptr<IMessage>& Message) override;

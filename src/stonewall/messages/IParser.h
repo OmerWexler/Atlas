@@ -16,3 +16,5 @@ public:
     
     virtual ~IParser() {};
 };
+
+#define ATLS_CREATE_SHARED_PRSR(type) shared_ptr<IParser>((IParser*) DBG_NEW type())

@@ -23,11 +23,11 @@ int TestSendJobMessage()
     
     Job->Execute(Inputs);
     
-    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobMessage(Job, Inputs, "TestPath/", Job->GetOutput()));
+    unique_ptr<IMessage> UMsg(ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Inputs, "TestPath/", Job->GetOutput()));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJSEPB0@@@0@@@Test@@@TestPath/@@@2@@@AAA@@@0@@@BB@@@1@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJSEPB0@@@0@@@Test@@@TestPath@@@2@@@AAA@@@0@@@BB@@@1@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }

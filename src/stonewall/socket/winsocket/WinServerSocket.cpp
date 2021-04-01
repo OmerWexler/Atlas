@@ -78,6 +78,7 @@ int WinServerSocket::Bind(string Host, string Port)
     freeaddrinfo(ResolvedAddress);
 
     Singleton<Logger>::GetInstance().Info(Name + " bound to " + HomeAddress);
+    IsUp = true;
     return 0;
 }
 
@@ -117,8 +118,12 @@ int WinServerSocket::AcceptConnection(string ConnectionName, unique_ptr<IConnect
 
 void WinServerSocket::Close()
 {
-    closesocket(Socket);
-    WSACleanup();
+    if (IsUp)
+    {
+        int Result = closesocket(Socket);
+        if (Result == 0)
+            WSACleanup();
+    }
 }
 
 

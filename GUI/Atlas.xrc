@@ -200,15 +200,15 @@
                                                 <vgap>0</vgap>
                                                 <hgap>0</hgap>
                                                 <object class="sizeritem">
-                                                    <flag>wxGROW|wxALIGN_TOP|wxALL|wxFIXED_MINSIZE</flag>
-                                                    <border>4</border>
+                                                    <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                                    <border>5</border>
                                                     <object class="wxButton" name="ConnectAsWorkerButton">
                                                         <fg>#000000</fg>
                                                         <label>Connect As Worker</label>
                                                     </object>
                                                 </object>
                                                 <object class="sizeritem">
-                                                    <flag>wxGROW|wxALIGN_TOP|wxALL</flag>
+                                                    <flag>wxGROW|wxALL</flag>
                                                     <border>5</border>
                                                     <object class="wxButton" name="ConnectAsClientButton">
                                                         <label>Connect As Client</label>
@@ -273,50 +273,63 @@
                             <object class="wxStaticBoxSizer" name="wxID_ANY">
                                 <orient>wxVERTICAL</orient>
                                 <label>Jobs</label>
-                                <object class="sizeritem">
-                                    <flag>wxGROW|wxALL</flag>
-                                    <border>5</border>
-                                    <object class="wxStaticBoxSizer" name="wxID_ANY">
-                                        <orient>wxVERTICAL</orient>
-                                        <label>JobName</label>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_LEFT|wxALL</flag>
-                                            <border>5</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
-                                                <label>Type - &lt;Type&gt;</label>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_LEFT|wxALL</flag>
-                                            <border>5</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
-                                                <label>Is Alive - &lt;IsAlive&gt;</label>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_LEFT|wxALL</flag>
-                                            <border>5</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
-                                                <label>Success - &lt;Success&gt;</label>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxALIGN_LEFT|wxALL</flag>
-                                            <border>5</border>
-                                            <object class="wxStaticText" name="wxID_STATIC">
-                                                <label>Unique Descriptor - &lt;Unique Descriptor&gt;</label>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <flag>wxGROW|wxALL</flag>
-                                            <border>5</border>
-                                            <object class="wxButton" name="ID_BUTTON2">
-                                                <label>Kill Job</label>
-                                            </object>
-                                        </object>
-                                    </object>
-                                </object>
                             </object>
+                        </object>
+                    </object>
+                </object>
+            </object>
+        </object>
+    </object>
+    <object class="wxPanel" name="ID_WXPANEL">
+        <style>wxTAB_TRAVERSAL</style>
+        <exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
+        <size>400,300</size>
+        <title>ExtraWindows</title>
+        <centered>1</centered>
+        <object class="wxGridSizer">
+            <cols>2</cols>
+            <rows>0</rows>
+            <vgap>0</vgap>
+            <hgap>0</hgap>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALIGN_TOP|wxALL</flag>
+                <border>5</border>
+                <object class="wxStaticBoxSizer" name="JobComponent">
+                    <orient>wxVERTICAL</orient>
+                    <label>JobName</label>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Type - &lt;Type&gt;</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Is Alive - &lt;IsAlive&gt;</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Success - &lt;Success&gt;</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxALIGN_LEFT|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticText" name="wxID_STATIC">
+                            <label>Unique Descriptor - &lt;Unique Descriptor&gt;</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxButton" name="ID_BUTTON2">
+                            <label>Kill Job</label>
                         </object>
                     </object>
                 </object>

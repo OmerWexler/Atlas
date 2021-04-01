@@ -30,6 +30,7 @@ private:
 
     string Name = "";
     string HomeAddress = "";
+    bool IsUp = false;
 
 public:
     WinServerSocket(string Name, bool Blocking, SOCKET Socket);

@@ -7,9 +7,6 @@ using namespace std;
 
 int TestWinSocketCommunications() 
 {
-    Singleton<Logger>::GetInstance().SetLogLevel(LogLevel::L_ERROR);
-    Singleton<Logger>::GetInstance().SetLogFileName("Debug", "WinSocketCommsSequence.txt");
-
     WinConnectionSocket Connection = WinConnectionSocket("Connection", true);
     WinServerSocket Server = WinServerSocket("Server", true);
 

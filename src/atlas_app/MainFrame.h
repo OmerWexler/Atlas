@@ -23,6 +23,7 @@ private:
     wxButton* ConnectAsWorkerButton;
     wxButton* ConnectAsClientButton;
     wxButton* SetupOnTargetButton;
+    wxButton* ReloadNodeButton;
 
     void ConnectUsingCTRLs(bool IsWorker);
 
@@ -33,6 +34,7 @@ private:
     void Setup(wxCommandEvent& event); 
     void SetListenAddress(wxCommandEvent& event); 
     void ReloadNode(wxCommandEvent& event);
+    void AdminDisconnected(wxCommandEvent& event);
 
     void RenameNodeAdmin(wxCommandEvent& event);
 };
@@ -40,3 +42,4 @@ private:
 wxDECLARE_EVENT(EVT_NODE_NAME_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_NODE_ADMIN_NAME_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_LISTEN_ADDRESS_CHANGED, wxCommandEvent);
+wxDECLARE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);

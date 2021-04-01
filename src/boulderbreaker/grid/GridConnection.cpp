@@ -1,8 +1,9 @@
 #include "GridConnection.h"
 #include "BasicConnection.h"
 
-#include "RequestBestNodeMessage.h"
-#include "SendBestNodeMessage.h"
+#include "DisconnectMessage.h"
+#include "RequestNodePerformanceMessage.h"
+#include "SendNodePerformanceMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobPolicyMessage.h"
 #include "SendJobMessage.h"
@@ -120,8 +121,8 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker, string Node
     {
         Connection.AddParsers(Parsers);
         Connection.AddSerializers(Serializers);
-        Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobPolicyMessage(IsWorker)));
-        Connection.Send(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(NodeName)));
+        Connection.Send(ATLS_CREATE_UNIQUE_MSG(SendJobPolicyMessage, IsWorker));
+        Connection.Send(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, NodeName));
     }
 
     this->Host = Host;
@@ -142,5 +143,6 @@ int GridConnection::RecvMessage(unique_ptr<IMessage>& Msg)
 
 int GridConnection::Disconnect()
 {
+    Connection.Send(ATLS_CREATE_UNIQUE_MSG(DisconnectMessage));
     return Connection.Disconnect();
 }

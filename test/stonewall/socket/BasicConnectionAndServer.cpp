@@ -18,11 +18,11 @@ int TestBasicCommunications()
     BasicConnection Connection("Connection", true);
     BasicServer Server("Server", true);
 
-    Connection.AddParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
-    Connection.AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
+    Connection.AddParser(ATLS_CREATE_SHARED_PRSR(SimpleStringParser));
+    Connection.AddSerializer(ATLS_CREATE_SHARED_SRLZR(SimpleStringSerializer));
 
-    Server.AddParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
-    Server.AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
+    Server.AddParser(ATLS_CREATE_SHARED_PRSR(SimpleStringParser));
+    Server.AddSerializer(ATLS_CREATE_SHARED_SRLZR(SimpleStringSerializer));
 
     Server.Bind("127.0.0.1", "17000");
     Server.Listen(1);

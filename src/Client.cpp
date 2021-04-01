@@ -8,9 +8,9 @@
 #include "GridNode.h"
 
 #include "SimpleStringSerializer.h"
-#include "RequestBestNodeSerializer.h"
-#include "RequestBestNodeParser.h"
-#include "RequestBestNodeMessage.h"
+#include "RequestNodePerformanceSerializer.h"
+#include "RequestNodePerformanceParser.h"
+#include "RequestNodePerformanceMessage.h"
 #include "SeperatorBasedMessage.h"
 #include "SendJobMessage.h"
 #include "JobLog.h"
@@ -48,15 +48,14 @@ int main(int argc, char** argv) {
         Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", Port);
     }
 
-    Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SimpleStringSerializer()));
+    Singleton<GridNode>::GetInstance().GetAdmin().AddSerializer(ATLS_CREATE_SHARED_SRLZR(SimpleStringSerializer));
     while (true)
     {
-        // Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SimpleStringMessage("AAAAA")));
-        Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SendJobMessage(
+        Result = Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(ATLS_CREATE_UNIQUE_MSG(SendJobMessage,
             shared_ptr<IJob>((IJob*) DBG_NEW JobLog()),
             vector<Argument>{Argument("TESTING TESTING", false), Argument("TESTING22 TESTING22", false)},
             "/Server/Client"
-        )));
+        ));
 
         if (Result < 0)
         {

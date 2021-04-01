@@ -23,7 +23,7 @@ int main() {
     Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Server.txt");
     
     Singleton<GridNode>::GetInstance().SetName("Server");
-    Singleton<GridNode>::GetInstance().AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SimpleStringParser()));
+    Singleton<GridNode>::GetInstance().AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SimpleStringParser)));
 
     int Result;
     Result = Singleton<GridNode>::GetInstance().Setup("127.0.0.1", "22000");

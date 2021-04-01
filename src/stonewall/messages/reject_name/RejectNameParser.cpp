@@ -14,7 +14,7 @@ string AcceptNameParser::GetType() const
 
 void AcceptNameParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    string Name = SMsg.substr(GetType().length() + 1);
+    string Name = SMsg.substr(GetType().length());
 
     Message.reset((IMessage*) DBG_NEW RejectNameMessage(Name));
 }

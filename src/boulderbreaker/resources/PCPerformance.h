@@ -2,12 +2,20 @@
 
 struct CPUPerformance
 {
-    int CPUCores;
-    int CPUFrequency;
-    int CPULoad; // 0 - 100
+    int Cores;
+    unsigned long long int FrequencyHZ;
+    int CPULoad; 
+};
+
+struct RAMPerformance
+{
+    unsigned long long int TotalPhysicalBytes;
+    unsigned long long int AvailablePhysicalBytes;
+    int MemoryLoad;
 };
 
 struct PCPerformance
 {
     CPUPerformance CPUPerformance;
+    RAMPerformance RAMPerformance;
 };

@@ -4,8 +4,9 @@
 #include "BasicServer.h"
 
 #include "SendJobPolicySerializer.h"
-#include "RequestBestNodeSerializer.h"
-#include "SendBestNodeSerializer.h"
+#include "DisconnectSerializer.h"
+#include "RequestNodePerformanceSerializer.h"
+#include "SendNodePerformanceSerializer.h"
 #include "SendJobSerializer.h"
 #include "CancelJobSerializer.h"
 #include "SendJobOutputSerializer.h"
@@ -13,8 +14,9 @@
 #include "RejectNameSerializer.h"
 
 #include "SendJobPolicyParser.h"
-#include "RequestBestNodeParser.h"
-#include "SendBestNodeParser.h"
+#include "DisconnectParser.h"
+#include "RequestNodePerformanceParser.h"
+#include "SendNodePerformanceParser.h"
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
 #include "SendJobOutputParser.h"
@@ -22,8 +24,9 @@
 #include "RejectNameParser.h"
 
 #include "SendJobPolicyMessage.h"
-#include "RequestBestNodeMessage.h"
-#include "SendBestNodeMessage.h"
+#include "DisconnectMessage.h"
+#include "RequestNodePerformanceMessage.h"
+#include "SendNodePerformanceMessage.h"
 #include "SendJobMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobOutputMessage.h"
@@ -72,39 +75,41 @@ void GridNode::BroadcastNameRequest(string Name)
     for (auto& Pair: Members)
     {
         if (Pair.second.IsConnected())
-            Pair.second.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+            Pair.second.SendMessage(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, Name));
     }
     for (auto& Pair: Clients)
     {
         if (Pair.second.IsConnected())
-            Pair.second.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+            Pair.second.SendMessage(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, Name));
     }
 
     if (NodeAdmin.IsConnected())
-        NodeAdmin.SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, Name));
 }
 
 void GridNode::Init()
 {
     CollectiveParsers = vector<shared_ptr<IParser>>();
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobPolicyParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW RequestBestNodeParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendBestNodeParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW CancelJobParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SendJobOutputParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW SetNameParser()));
-    AddCollectiveParser(shared_ptr<IParser>((IParser*) DBG_NEW AcceptNameParser()));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobPolicyParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(DisconnectParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(RequestNodePerformanceParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendNodePerformanceParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(CancelJobParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobOutputParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SetNameParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(AcceptNameParser));
 
     CollectiveSerializers = unordered_map<string, shared_ptr<ISerializer>>();
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobPolicySerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RequestBestNodeSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendBestNodeSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW CancelJobSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SendJobOutputSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW SetNameSerializer()));
-    AddCollectiveSerializer(shared_ptr<ISerializer>((ISerializer*) DBG_NEW RejectNameSerializer()));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobPolicySerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(DisconnectSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(RequestNodePerformanceSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendNodePerformanceSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(CancelJobSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobOutputSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SetNameSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(RejectNameSerializer));
 
     FunctionCores = vector<unique_ptr<IFunctionCore>>();
     AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore(Name + " - JobCore")));
@@ -126,7 +131,7 @@ void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, strin
     }
 
     Map[NewID] = move(Connection);
-    Map[NewID].SendMessage(unique_ptr<IMessage>((IMessage*) DBG_NEW SetNameMessage(Name)));
+    Map[NewID].SendMessage(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, Name));
     Singleton<Logger>::GetInstance().Info(Name + " registered new connection.");
 }
 
@@ -302,9 +307,11 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     }
 
     NodeAdmin = move(NewConnection);
+    
     wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
     event->SetString(wxString("Unnamed (" + NodeAdmin.GetHost() + ":" + NodeAdmin.GetPort() + ")"));
     wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    
     return 0;
 }
 

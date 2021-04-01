@@ -22,9 +22,11 @@ MainFrame::MainFrame()
     ConnectAsWorkerButton = XRCCTRL(*this, "ConnectAsWorkerButton", wxButton);
     ConnectAsClientButton = XRCCTRL(*this, "ConnectAsClientButton", wxButton);
     SetupOnTargetButton = XRCCTRL(*this, "SetupOnTargetButton", wxButton);
+    ReloadNodeButton = XRCCTRL(*this, "ReloadNode", wxButton);
 
     ConnectAsWorkerButton->Disable();
     ConnectAsClientButton->Disable();
+    ReloadNodeButton->Disable();
 }
 
 void MainFrame::ConnectUsingCTRLs(bool IsWorker)
@@ -35,6 +37,7 @@ void MainFrame::ConnectUsingCTRLs(bool IsWorker)
 wxDEFINE_EVENT(EVT_NODE_NAME_CHANGED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_NODE_ADMIN_NAME_CHANGED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_LISTEN_ADDRESS_CHANGED, wxCommandEvent);
+wxDEFINE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
     EVT_BUTTON ( XRCID("ApplyNameButton"), MainFrame::RenameLocalNode )
@@ -49,6 +52,8 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
     EVT_COMMAND ( wxID_ANY, EVT_LISTEN_ADDRESS_CHANGED, MainFrame::SetListenAddress )
     
     EVT_BUTTON ( XRCID("ReloadNode"), MainFrame::ReloadNode )
+
+    EVT_COMMAND ( wxID_ANY, EVT_ADMIN_DISCONNECTED, MainFrame::AdminDisconnected )
 END_EVENT_TABLE()
 
 void MainFrame::RenameLocalNode(wxCommandEvent& event)
@@ -75,6 +80,7 @@ void MainFrame::Setup(wxCommandEvent& event)
 {
     Singleton<GridNode>::GetInstance().Setup(string(TargetIP->GetValue().mb_str()), string(TargetPort->GetValue().mb_str()));
     SetupOnTargetButton->Disable();
+    ReloadNodeButton->Enable();
     ConnectAsWorkerButton->Enable();
     ConnectAsClientButton->Enable();
 }
@@ -94,6 +100,15 @@ void MainFrame::ReloadNode(wxCommandEvent& event)
     Singleton<GridNode>::GetInstance().ReloadNode();
 
     SetupOnTargetButton->Enable();
+    ConnectAsWorkerButton->Disable();
+    ConnectAsClientButton->Disable();
+    ReloadNodeButton->Disable();
+    
     ListenAddressDisplay->SetLabelText("Node is not listening...");
+    AdminNameDisplay->SetLabelText("Node is not connected to any admin...");
+}
+
+void MainFrame::AdminDisconnected(wxCommandEvent& event)
+{
     AdminNameDisplay->SetLabelText("Node is not connected to any admin...");
 }

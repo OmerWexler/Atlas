@@ -4,18 +4,22 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobparser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobSerializer.cpp
+
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/disconnect/DisconnectMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/disconnect/Disconnectparser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/disconnect/DisconnectSerializer.cpp
     
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameparser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameSerializer.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeMessage.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeParser.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_best_node/RequestBestNodeSerializer.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceSerializer.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_best_node/SendBestNodeMessage.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_best_node/SendBestNodeParser.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_best_node/SendBestNodeSerializer.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceSerializer.cpp
 
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job/SendJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job/SendJobParser.cpp
@@ -44,18 +48,26 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicServer.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
-
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
-
-    ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
-    ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
 )
+
+if (!IS_TEST)
+    set(
+        SOURCES, 
+        ${SOURCES}
+        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
+        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
+
+
+        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
+        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
+        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
+
+        ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
+        ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp
+    )
+endif()
 
 if (WIN32)
     list(APPEND SOURCES

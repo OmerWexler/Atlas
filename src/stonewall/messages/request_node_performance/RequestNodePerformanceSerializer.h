@@ -11,8 +11,6 @@ private:
     string HEADER = "RBN";
 
 public:
-    RequestNodePerformanceSerializer();
-    
     string GetType() const override;
     string Serialize(const unique_ptr<IMessage>& Message) const override;
 };

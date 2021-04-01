@@ -52,22 +52,18 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
 )
 
-if (!IS_TEST)
-    set(
-        SOURCES, 
-        ${SOURCES}
-        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
-        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
+set(
+    APP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
 
-        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
-        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
-        ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
-
-        ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
-        ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp
-    )
-endif()
+    ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
+    ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp
+)
 
 if (WIN32)
     list(APPEND SOURCES

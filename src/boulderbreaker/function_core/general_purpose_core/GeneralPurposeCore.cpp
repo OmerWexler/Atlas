@@ -101,6 +101,11 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
             event->SetString(wxString(NewName + " (" + Sender.GetHost() + ":" + Sender.GetPort() + ")"));
             wxQueueEvent(wxGetApp().GetMainFrame(), event);
         }
+        else
+        {
+            wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+        }
     }
     else
     {

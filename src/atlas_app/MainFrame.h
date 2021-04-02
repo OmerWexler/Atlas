@@ -19,10 +19,12 @@ private:
 
     wxStaticText* AdminNameDisplay;
     wxStaticText* ListenAddressDisplay;
+    wxStaticBox* MemberNamesBox;
+    wxStaticBox* ClientNamesBox;
 
-    wxButton* ConnectAsWorkerButton;
+    wxButton* ConnectAsMemberButton;
     wxButton* ConnectAsClientButton;
-    wxButton* SetupOnTargetButton;
+    wxButton* ListenOnTargetButton;
     wxButton* ReloadNodeButton;
 
     void ConnectUsingCTRLs(bool IsWorker);
@@ -31,15 +33,19 @@ private:
     void CancelNodeRename(wxCommandEvent& event);
     void ConnectAsWorker(wxCommandEvent& event);
     void ConnectAsClient(wxCommandEvent& event);
-    void Setup(wxCommandEvent& event); 
+    void Listen(wxCommandEvent& event); 
     void SetListenAddress(wxCommandEvent& event); 
     void ReloadNode(wxCommandEvent& event);
     void AdminDisconnected(wxCommandEvent& event);
 
     void RenameNodeAdmin(wxCommandEvent& event);
+    void ReloadConnectionsDisplay(wxCommandEvent& event);
+
+    bool Close(bool force=false);	
 };
 
 wxDECLARE_EVENT(EVT_NODE_NAME_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_NODE_ADMIN_NAME_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_LISTEN_ADDRESS_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);
+wxDECLARE_EVENT(EVT_NODE_CONNECTIONS_CHANGED, wxCommandEvent);

@@ -67,7 +67,8 @@ public:
     void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
     void AddFunctionCore(unique_ptr<IFunctionCore>& Core);
 
-    int Setup(string Host, string Port);
+    int Listen(string Host, string Port);
+    void StartNode();
 
     int ConnectToNode(string Host, string Port, bool IsWorker);
 
@@ -91,7 +92,6 @@ public:
     void StopPeriodics();
 
     void CloseNode();
-    void ReloadNode();
 
     ~GridNode();
 };

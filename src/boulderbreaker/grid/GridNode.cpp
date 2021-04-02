@@ -173,21 +173,9 @@ void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
     FunctionCores.push_back(unique_ptr<IFunctionCore>(Core.release()));
 }
 
-int GridNode::Setup(string Host, string Port)
+void GridNode::StartNode()
 {
-    Singleton<Logger>::GetInstance().Info("Setting up at " + Host + ":" + Port);
-
-    int Result;
-    Result = NodeServer.Bind(Host, Port);
-    if (Result != 0)
-        return Result;
-
-    Result = NodeServer.Listen(BACK_LOG);
-    if (Result != 0)
-        return Result;
-
     Singleton<Logger>::GetInstance().Info("Initiating threads...");
-    ConnectionListener = SmartThread(Name + " - ConnectionListener", 0.02f, &GridNode::ConnectionListenerFunc, this);
     MemberManager = SmartThread(Name + " - MemberMananger", 0.02f, &GridNode::MemberListenerFunc, this);
     ClientManager = SmartThread(Name + " - ClientMananger", 0.02f, &GridNode::ClientListenerFunc, this);
     AdminManager = SmartThread(Name + " - AdminManager", 0.02f, &GridNode::ManageAdminFunc, this);
@@ -202,6 +190,22 @@ int GridNode::Setup(string Host, string Port)
         }
     }
     Singleton<Logger>::GetInstance().Info("Cores ready.");
+}
+
+int GridNode::Listen(string Host, string Port)
+{
+    Singleton<Logger>::GetInstance().Info("Setting up at " + Host + ":" + Port);
+
+    int Result;
+    Result = NodeServer.Bind(Host, Port);
+    if (Result != 0)
+        return Result;
+
+    Result = NodeServer.Listen(BACK_LOG);
+    if (Result != 0)
+        return Result;
+
+    ConnectionListener = SmartThread(Name + " - ConnectionListener", 0.02f, &GridNode::ConnectionListenerFunc, this);
 
     wxCommandEvent* event = new wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
     event->SetString(wxString(Host + ":" + Port));
@@ -257,6 +261,10 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
         {
             Slots.push_back(Iterator->first);
             Iterator = Map.erase(Iterator);
+
+            wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            
             continue;
         }
 
@@ -306,6 +314,9 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
         return Result;
     }
 
+    if (NodeAdmin.IsConnected())
+        NodeAdmin.Disconnect();
+    
     NodeAdmin = move(NewConnection);
     
     wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
@@ -395,15 +406,6 @@ void GridNode::CloseNode()
     DisconnectMembers();
     CloseServer();
     StopPeriodics();
-}
-
-void GridNode::ReloadNode()
-{
-    CloseNode();
-    NodeServer = move(BasicServer("BasicServer - UnnamedNode", false));
-
-    SetName("UnnamedNode");
-    Init();
 }
 
 GridNode::~GridNode()

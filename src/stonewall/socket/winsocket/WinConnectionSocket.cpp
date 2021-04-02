@@ -164,7 +164,7 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
     else
     {
         int WSALastError = WSAGetLastError();
-        if (WSALastError == 10054) // Disconnect
+        if (WSALastError == 10054 || WSALastError == 10038) // Disconnect
         {
             Connected = false;
         }
@@ -194,6 +194,8 @@ int WinConnectionSocket::Disconnect()
     }
 
     Singleton<Logger>::GetInstance().Info(Name + " shutdown");
+
+    Connected = false;
     return 0;
 }
 

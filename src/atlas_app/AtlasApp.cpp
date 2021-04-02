@@ -19,6 +19,6 @@ bool AtlasApp::OnInit()
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
     Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\src\\Debug", "Atlas.txt");
 
-    Singleton<GridNode>::GetInstance(); // Init the local GridNode
+    Singleton<GridNode>::GetInstance().StartNode(); // Init the local GridNode
     return true;
 }

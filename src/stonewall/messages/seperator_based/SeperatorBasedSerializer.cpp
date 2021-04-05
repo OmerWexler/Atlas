@@ -21,7 +21,7 @@ string SeperatorBasedSerializer::Serialize(const unique_ptr<IMessage>& Message) 
     {
         SMsg += Values[0];
 
-        for (int i = 1; i < Values.size(); i++)
+        for (unsigned int i = 1; i < Values.size(); i++)
         {
             SMsg += SEPERATOR + Values[i];
         }

@@ -57,7 +57,7 @@ BasicServer& BasicServer::operator=(BasicServer&& Other)
 
 void BasicServer::AddParser(shared_ptr<IParser>& Parser)
 {
-    for(int i = 0; i < Parsers.size(); i++)
+    for(unsigned int i = 0; i < Parsers.size(); i++)
     {
         if (Parsers[i]->GetType() == Parser->GetType())
         {

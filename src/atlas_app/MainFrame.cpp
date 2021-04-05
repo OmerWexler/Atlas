@@ -162,6 +162,7 @@ void MainFrame::ReloadConnectionsDisplay(wxCommandEvent& event)
     }
 
     Fit();
+    UpdateTopPerformance(event);
 }
 
 void MainFrame::UpdateCurrentPerformance(wxCommandEvent& event)
@@ -210,7 +211,7 @@ void MainFrame::UpdateTopPerformance(wxCommandEvent& event)
     TopMemoryLoad->SetLabelText(
         "Memory Load - " + to_string(TopPerformance.RAMPerformance.MemoryLoad) + "%");
 
-    TopPath->SetLabelText("Node Path (relative) - " + TopPathObj.GetStrPath());
+    TopPath->SetLabelText("Node Path (relative) - \"" + TopPathObj.GetStrPath() + "\"");
 }
 
 bool MainFrame::Close(bool force)

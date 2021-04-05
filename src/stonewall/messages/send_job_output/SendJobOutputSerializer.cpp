@@ -25,7 +25,7 @@ string SendJobOutputSerializer::Serialize(const unique_ptr<IMessage>& Message) c
     SPBMsg->AddValue(SJOMsg->GetDescriptor());
 
     vector<Argument> Output = SJOMsg->GetOutput();
-    for (int i = 0; i < Output.size(); i++)
+    for (unsigned int i = 0; i < Output.size(); i++)
     {
         SPBMsg->AddValue(Output[i].Value);
         if (Output[i].IsFile)

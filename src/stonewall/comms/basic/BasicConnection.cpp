@@ -75,7 +75,7 @@ int BasicConnection::Connect(string Host, string Port)
 
 void BasicConnection::AddParser(shared_ptr<IParser>& Parser)
 {
-    for(int i = 0; i < Parsers.size(); i++)
+    for(unsigned int i = 0; i < Parsers.size(); i++)
     {
         if (Parsers[i]->GetType() == Parser->GetType())
         {
@@ -123,7 +123,7 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
     string SMsg = Serializers[Msg->GetType()]->Serialize(Msg);
     string SMsgSize = to_string(SMsg.length());
 
-    for(size_t i = SMsgSize.length(); i < NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
+    for(int i = SMsgSize.length(); i < NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
     {
         SMsgSize = "0" + SMsgSize;
     }

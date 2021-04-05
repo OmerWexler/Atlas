@@ -43,7 +43,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     }
 
     vector<Argument> Outputs = vector<Argument>();
-    for (int i = 5 + NumOfInputs * 2; i < Values.size(); i += 2)
+    for (unsigned int i = 5 + NumOfInputs * 2; i < Values.size(); i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";

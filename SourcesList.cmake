@@ -73,3 +73,7 @@ if (WIN32)
         ${CMAKE_SOURCE_DIR}/src/stonewall/socket/winsocket/WinServerSocket.cpp
     )
 endif()
+
+
+set(GUI_XRC_FILE
+    ${CMAKE_SOURCE_DIR}/GUI/Atlas.xrc)

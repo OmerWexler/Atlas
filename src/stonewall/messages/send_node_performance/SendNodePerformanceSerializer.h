@@ -8,7 +8,7 @@ using namespace std;
 class SendNodePerformanceSerializer: public ISerializer
 {
 private:
-    string HEADER = "RBN";
+    string HEADER = "SNP";
     SeperatorBasedSerializer SPBSerializer;
 
 public:

@@ -27,6 +27,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/search_policy)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core)
+include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/resource_core)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/log)

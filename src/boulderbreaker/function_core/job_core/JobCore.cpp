@@ -37,7 +37,7 @@ void JobCore::HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sende
         SendJobMessage* SJMsg = (SendJobMessage*) Message.get();
         Path& TargetPath = SJMsg->GetTargetPath();
 
-        if (TargetPath[0] == CurrentNodeName)
+        if (TargetPath.size() > 0 && TargetPath[0] == CurrentNodeName)
         {
             TargetPath.RemoveFromStart();
             

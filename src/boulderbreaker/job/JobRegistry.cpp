@@ -6,6 +6,8 @@
 #include "JobLog.h"
 #include "Utils.h"
 
+#undef GetJob
+
 using namespace std;
 
 void JobRegistry::GetJob(int Type, shared_ptr<IJob>& OutJob)

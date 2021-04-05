@@ -11,6 +11,12 @@ SendNodePerformanceMessage::SendNodePerformanceMessage(const PCPerformance& Node
     this->NodePerformance = NodePerformance;
 }
 
+SendNodePerformanceMessage::SendNodePerformanceMessage(const PCPerformance& NodePerformance, Path NodePath)
+{
+    this->NodePerformance = NodePerformance;
+    this->NodePath = NodePath;
+}
+
 string SendNodePerformanceMessage::GetType() const
 {
     return TYPE;
@@ -19,4 +25,9 @@ string SendNodePerformanceMessage::GetType() const
 PCPerformance& SendNodePerformanceMessage::GetNodePerformance()
 {
     return NodePerformance;
+}
+
+Path& SendNodePerformanceMessage::GetPath()
+{
+    return NodePath;
 }

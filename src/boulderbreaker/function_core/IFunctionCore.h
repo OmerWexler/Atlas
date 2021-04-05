@@ -12,3 +12,5 @@ public:
 
     virtual ~IFunctionCore() {};
 };
+
+#define ATLS_CREATE_UNIQUE_CORE(type, ...) unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW type(__VA_ARGS__))

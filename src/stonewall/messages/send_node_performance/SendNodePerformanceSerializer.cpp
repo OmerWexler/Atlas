@@ -21,8 +21,10 @@ string SendNodePerformanceSerializer::Serialize(const unique_ptr<IMessage>& Mess
 {
     string SMsg = HEADER + "";
     PCPerformance& Performance = ((SendNodePerformanceMessage*) Message.get())->GetNodePerformance();
+    Path& NodePath = ((SendNodePerformanceMessage*) Message.get())->GetPath();
 
     SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
+    SPBMsg->AddValue(NodePath.GetStrPath());
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.Cores));
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.FrequencyHZ));
     SPBMsg->AddValue(to_string(Performance.CPUPerformance.CPULoad));

@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "PCPerformance.h"
+#include "Path.h"
 #include "IJob.h"
 
 #include "BasicConnection.h"
@@ -17,6 +18,8 @@ private:
     string Name;
     string Host;
     string Port;
+    PCPerformance TopPerformance;
+    Path TopPerformancePath;
 
     BasicConnection Connection;
     vector<shared_ptr<IParser>> Parsers;
@@ -36,13 +39,20 @@ public:
     void AddSerializer(shared_ptr<ISerializer>& Serializer);
 
     int Connect(string Host, string Port, bool IsWorker, string NodeName);
-    int IsConnected() const { return Connection.IsConnected(); };
+    bool IsConnected() const { return Connection.IsConnected(); };
 
     int SendMessage(const unique_ptr<IMessage>& Msg);
     int RecvMessage(unique_ptr<IMessage>& Msg);
 
     void SetName(string NewName);
     string GetName() const { return Name; }
+    
+    void SetTopPerformance(PCPerformance& TopPerformance) { this->TopPerformance = TopPerformance; };
+    PCPerformance GetTopPerformance() { return TopPerformance; }
+    
+    void SetTopPerformancePath(Path& TopPerformancePath) { this->TopPerformancePath = TopPerformancePath; };
+    Path GetTopPerformancePath() { return TopPerformancePath; }
+    
     string GetHost() const { return Host; }
     string GetPort() const { return Port; }
 

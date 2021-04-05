@@ -5,7 +5,6 @@
 
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
-#include <crtdbg.h>
 
 #ifdef _DEBUG
     #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
@@ -16,8 +15,11 @@
 #endif
 
 #pragma comment(lib, "user32.lib")
+#pragma warning( disable : 4244 ) 
+#pragma warning( disable : 4996 ) 
 
 using namespace std;
+using namespace std::chrono;
 
 class Utils
 {
@@ -25,6 +27,43 @@ public:
     inline static void CPSleep(float TimeSeconds)
     {
         this_thread::sleep_for(chrono::milliseconds((int) (TimeSeconds * 1000)));
+    }
+
+    inline static uint64_t GetTimeNS()
+    {
+        high_resolution_clock::time_point tp = high_resolution_clock::now();
+
+        return (tp - high_resolution_clock::time_point()).count();
+    }
+
+    inline static double NanoToMilli(uint64_t Nano)
+    {
+        return Nano / 1e6;
+    }
+
+    inline static double NanoToSec(uint64_t Nano)
+    {
+        return Nano / 1e9;
+    }
+
+    inline static uint64_t SecToNano(uint64_t Sec)
+    {
+        return Sec * (uint64_t) 1e9;
+    }
+
+    inline static double HZToGHZ(uint64_t Nano)
+    {
+        return Nano / 1e9;
+    }
+
+    inline static uint64_t BytesToMegabytes(uint64_t Bytes)
+    {
+        return Bytes / 1000000;
+    }
+
+    inline static uint64_t SafeRound(double Value)
+    {
+        return (uint64_t) Value;
     }
 
     inline static void SetupMemoryCheck()

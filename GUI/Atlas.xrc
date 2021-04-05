@@ -3,7 +3,7 @@
     <object class="wxFrame" name="Atlas">
         <style>wxDEFAULT_FRAME_STYLE|wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxCLOSE_BOX</style>
         <bg>#c4c4c4</bg>
-        <size>1000,500</size>
+        <size>1200,450</size>
         <title>Atlas</title>
         <centered>1</centered>
         <font>
@@ -12,7 +12,7 @@
             <face>Tahoma</face>
         </font>
         <object class="wxGridSizer">
-            <cols>2</cols>
+            <cols>3</cols>
             <rows>0</rows>
             <vgap>0</vgap>
             <hgap>0</hgap>
@@ -236,6 +236,156 @@
                                 <border>5</border>
                                 <object class="wxButton" name="ReloadNode">
                                     <label>Reload Node</label>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW|wxALL</flag>
+                <border>5</border>
+                <option>1</option>
+                <object class="wxStaticBoxSizer" name="wxID_ANY">
+                    <orient>wxVERTICAL</orient>
+                    <label>Resources</label>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticBoxSizer" name="wxID_ANY">
+                            <orient>wxVERTICAL</orient>
+                            <label>Current Node Performance</label>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeCPUCores">
+                                            <fg>#000000</fg>
+                                            <label>CPU Cores - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeCPUFrequency">
+                                            <fg>#000000</fg>
+                                            <label>CPU Frequency - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeCPULoad">
+                                            <fg>#000000</fg>
+                                            <label>CPU Load - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeTotalPhysicalMemory">
+                                            <fg>#000000</fg>
+                                            <label>Total Physical Memory - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeAvailablePhysicalMemory">
+                                            <fg>#000000</fg>
+                                            <label>Available Physical Memory - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="NodeMemoryLoad">
+                                            <fg>#000000</fg>
+                                            <label>Memory Load - </label>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW</flag>
+                        <border>5</border>
+                        <object class="wxStaticLine" name="ID_STATICLINE1">
+                            <style>wxLI_HORIZONTAL</style>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <object class="wxStaticBoxSizer" name="wxID_ANY">
+                            <orient>wxVERTICAL</orient>
+                            <label>Top Grid Performance</label>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxBoxSizer">
+                                    <orient>wxVERTICAL</orient>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopCPUCores">
+                                            <fg>#000000</fg>
+                                            <label>CPU Cores - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopCPUFrequency">
+                                            <fg>#000000</fg>
+                                            <label>CPU Frequency - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopCPULoad">
+                                            <fg>#000000</fg>
+                                            <label>CPU Load - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopTotalPhysicalMemory">
+                                            <fg>#000000</fg>
+                                            <label>Total Physical Memory - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopAvailablePhysicalMemory">
+                                            <fg>#000000</fg>
+                                            <label>Available Physical Memory - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopMemoryLoad">
+                                            <fg>#000000</fg>
+                                            <label>Memory Load - </label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxStaticText" name="TopPath">
+                                            <fg>#000000</fg>
+                                            <label>Path - </label>
+                                        </object>
+                                    </object>
                                 </object>
                             </object>
                         </object>

@@ -98,13 +98,19 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
         if (IsAdmin) 
         {
             wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
-            event->SetString(wxString(NewName + " (" + Sender.GetHost() + ":" + Sender.GetPort() + ")"));
-            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            if (wxGetApp().GetMainFrame())
+            {
+                event->SetString(wxString(NewName + " (" + Sender.GetHost() + ":" + Sender.GetPort() + ")"));
+                wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            }
         }
         else
         {
-            wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
-            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            if (wxGetApp().GetMainFrame())
+            {
+                wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+                wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            }
         }
     }
     else
@@ -160,8 +166,11 @@ void GeneralPurposeCore::DisconnectCallback(unique_ptr<IMessage>& Message, GridC
 {
     if (Sender == Singleton<GridNode>::GetInstance().GetAdmin()) 
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_ADMIN_DISCONNECTED);
-        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+        if (wxGetApp().GetMainFrame())
+        {
+            wxCommandEvent* event = new wxCommandEvent(EVT_ADMIN_DISCONNECTED);
+            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+        }
     }
     Sender.Disconnect();
 }

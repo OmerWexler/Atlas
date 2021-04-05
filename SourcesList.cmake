@@ -50,6 +50,7 @@ set(SOURCES
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/PCPerformance.cpp
 )
 
 set(
@@ -60,6 +61,7 @@ set(
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/ASyncFunctionCore.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/resource_core/ResourceCore.cpp
 
     ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
     ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp

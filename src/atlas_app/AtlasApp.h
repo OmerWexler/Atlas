@@ -12,7 +12,10 @@ public:
     virtual bool OnInit();
     MainFrame* GetMainFrame()
     {
-        return frame;
+        if (this && frame)
+            return frame;
+        else
+            return nullptr;
     } 
 };
 

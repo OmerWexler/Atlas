@@ -24,3 +24,5 @@ public:
 
     virtual ~IJob() {};
 };
+
+#define ATLS_CREATE_SHARED_JOB(type) shared_ptr<IJob>((IJob*) DBG_NEW type())

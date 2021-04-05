@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class AcceptNameParser: IParser
+class RejectNameParser: IParser
 {
 public:
     string GetType() const override;

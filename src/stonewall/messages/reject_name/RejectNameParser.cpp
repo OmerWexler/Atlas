@@ -6,20 +6,19 @@
 
 using namespace std;
 
-
-string AcceptNameParser::GetType() const
+string RejectNameParser::GetType() const
 {
     return RejectNameMessage::TYPE;
 }
 
-void AcceptNameParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
+void RejectNameParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
     string Name = SMsg.substr(GetType().length());
 
     Message.reset((IMessage*) DBG_NEW RejectNameMessage(Name));
 }
 
-bool AcceptNameParser::CanParse(const string& SMsg) const
+bool RejectNameParser::CanParse(const string& SMsg) const
 {
     return SMsg.substr(0, GetType().length()) == GetType();
 }

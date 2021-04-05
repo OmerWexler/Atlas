@@ -2,7 +2,8 @@
 #include "Windows.h"
 #include "winternl.h"
 #include "Utils.h"
-
+#include "Singleton.h"
+#include "GridNode.h"
 
 int WinPerformanceAnalyzer::LoadDryStats(PCPerformance& Performance)
 {
@@ -22,18 +23,18 @@ int WinPerformanceAnalyzer::LoadDryStats(PCPerformance& Performance)
     return 0;
 }
 
-int WinPerformanceAnalyzer::MeasureCPUFrequency(PCPerformance& PCPerformance)
+int WinPerformanceAnalyzer::MeasureCPUFrequency(PCPerformance& PCPerformance, float Timelapse)
 {
-    unsigned long long int StartCycles = __rdtsc();
-    unsigned long long int StartTime = GetTickCount64();
+    uint64_t StartCycles = __rdtsc();
+    uint64_t StartTime = Utils::GetTimeNS();
  
-    Utils::CPSleep(1.f);
-    unsigned long long int EndCycles = __rdtsc();
-    unsigned long long int EndTime = GetTickCount64();
+    Utils::CPSleep(Timelapse);
+    uint64_t EndCycles = __rdtsc();
+    uint64_t EndTime = Utils::GetTimeNS();
  
-    unsigned long long int msDiff = (EndTime - StartTime);
-    unsigned long long int CycleDiff = EndCycles - StartCycles;
-    unsigned long long int Freq = CycleDiff / msDiff / 1000;
+    uint64_t NanoDiff = EndTime - StartTime;
+    uint64_t CycleDiff = EndCycles - StartCycles;
+    uint64_t Freq = Utils::SafeRound(CycleDiff / Utils::NanoToSec(NanoDiff));
 
     PCPerformance.CPUPerformance.FrequencyHZ = Freq;
     return 0;
@@ -66,7 +67,7 @@ int WinPerformanceAnalyzer::MeasureCPULoad(PCPerformance& PCPerformance)
     {
         Filter.Feed((int) (GetMomenteryCPULoad(FileTimeToInt64(idleTime), FileTimeToInt64(kernelTime) + FileTimeToInt64(userTime)) * 100.f));  
     }
-
+    
     PCPerformance.CPUPerformance.CPULoad = Filter.GetValue();
     return 0;
 }

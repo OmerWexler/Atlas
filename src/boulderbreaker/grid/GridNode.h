@@ -12,6 +12,11 @@
 #include "ISerializer.h"
 #include "Logger.h"
 #include "SmartThread.h"
+#include "Path.h"
+
+#ifdef WIN32
+    #include "WinPerformanceAnalyzer.h"
+#endif
 
 #define DEFAULT_NODE_CONNECTION_PORT "22000"
 
@@ -21,13 +26,20 @@ private:
     int BACK_LOG = 5;
     
     string Name;
+    bool IsWorker;
     BasicServer NodeServer;
     GridConnection NodeAdmin;
+
+    PCPerformance CurrentPerformance;
+    PCPerformance GridTopPerformance;
+    WinPerformanceAnalyzer PerformanceAnalyzer;
+    Path TopPerformancePath;
 
     SmartThread ConnectionListener;
     SmartThread MemberManager;
     SmartThread ClientManager;
     SmartThread AdminManager;
+    SmartThread ResourceReporter;
 
     vector<shared_ptr<IParser>> CollectiveParsers;
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
@@ -54,6 +66,7 @@ private:
     void IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, vector<int>& Slots);
     
     void ManageAdminFunc();
+    void ResourceManager();
 
     int RecvAndRerouteMessage(GridConnection& Connection);
 
@@ -62,6 +75,9 @@ public:
     GridNode(string Name);
 
     void SetName(string Name, bool BroadcastRequest=true);
+    string GetName() { return Name; };
+
+    void ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath);
 
     void AddCollectiveParser(shared_ptr<IParser>& Parser);
     void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
@@ -82,9 +98,11 @@ public:
     unordered_map<int, GridConnection>::iterator GridNode::GetClientsBegin();
     unordered_map<int, GridConnection>::iterator GridNode::GetClientsEnd();
 
-
-    string GetName() { return Name; };
-
+    void SendJobToMembers();
+    PCPerformance GetNodePerformance() { return CurrentPerformance; };
+    PCPerformance GetGridTopPerformance() { return GridTopPerformance; };
+    
+    Path GetTopPerformancePath() { return TopPerformancePath; };
 
     void CloseServer();
     void DisconnectFromAdmin();

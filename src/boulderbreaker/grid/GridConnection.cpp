@@ -2,7 +2,6 @@
 #include "BasicConnection.h"
 
 #include "DisconnectMessage.h"
-#include "RequestNodePerformanceMessage.h"
 #include "SendNodePerformanceMessage.h"
 #include "CancelJobMessage.h"
 #include "SendJobPolicyMessage.h"

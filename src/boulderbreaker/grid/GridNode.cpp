@@ -5,7 +5,6 @@
 
 #include "SendJobPolicySerializer.h"
 #include "DisconnectSerializer.h"
-#include "RequestNodePerformanceSerializer.h"
 #include "SendNodePerformanceSerializer.h"
 #include "SendJobSerializer.h"
 #include "CancelJobSerializer.h"
@@ -15,7 +14,6 @@
 
 #include "SendJobPolicyParser.h"
 #include "DisconnectParser.h"
-#include "RequestNodePerformanceParser.h"
 #include "SendNodePerformanceParser.h"
 #include "SendJobParser.h"
 #include "CancelJobParser.h"
@@ -25,7 +23,6 @@
 
 #include "SendJobPolicyMessage.h"
 #include "DisconnectMessage.h"
-#include "RequestNodePerformanceMessage.h"
 #include "SendNodePerformanceMessage.h"
 #include "SendJobMessage.h"
 #include "CancelJobMessage.h"
@@ -33,24 +30,27 @@
 #include "SetNameMessage.h"
 
 #include "ASyncFunctionCore.h"
+
 #include "JobCore.h"
 #include "GeneralPurposeCore.h"
+#include "ResourceCore.h"
 
 #include "Utils.h"
 #include "Logger.h"
+#include "Path.h"
 
 #include "AtlasApp.h"
 #include "MainFrame.h"
 
 #undef SendMessage
 
-GridNode::GridNode() : NodeServer("BasicServer - UnnamedNode", false)
+GridNode::GridNode() : NodeServer("BasicServer - UnnamedNode", false), PerformanceAnalyzer(10)
 {
     SetName("UnnamedNode", false);
     Init();
 }
 
-GridNode::GridNode(string Name) : NodeServer("BasicServer - " + Name, false)
+GridNode::GridNode(string Name) : NodeServer("BasicServer - " + Name, false), PerformanceAnalyzer(10)
 {
     SetName(Name, false);
     Init();
@@ -66,8 +66,11 @@ void GridNode::SetName(string Name, bool BroadcastRequest)
         BroadcastNameRequest(Name);
     }
 
-    wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
-    wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
 }
 
 void GridNode::BroadcastNameRequest(string Name)
@@ -92,18 +95,16 @@ void GridNode::Init()
     CollectiveParsers = vector<shared_ptr<IParser>>();
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobPolicyParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(DisconnectParser));
-    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(RequestNodePerformanceParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendNodePerformanceParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(CancelJobParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobOutputParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SetNameParser));
-    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(AcceptNameParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(RejectNameParser));
 
     CollectiveSerializers = unordered_map<string, shared_ptr<ISerializer>>();
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobPolicySerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(DisconnectSerializer));
-    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(RequestNodePerformanceSerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendNodePerformanceSerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobSerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(CancelJobSerializer));
@@ -112,8 +113,12 @@ void GridNode::Init()
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(RejectNameSerializer));
 
     FunctionCores = vector<unique_ptr<IFunctionCore>>();
-    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW JobCore(Name + " - JobCore")));
-    AddFunctionCore(unique_ptr<IFunctionCore>((IFunctionCore*) DBG_NEW GeneralPurposeCore()));
+    AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(JobCore, Name + " - JobCore"));
+    AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(GeneralPurposeCore));
+    AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(ResourceCore));
+
+    TopPerformancePath = Path();
+    TopPerformancePath.AddToEnd(Name);
 }
 
 void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, string Type, vector<int>& Slots, GridConnection& Connection)
@@ -176,9 +181,10 @@ void GridNode::AddFunctionCore(unique_ptr<IFunctionCore>& Core)
 void GridNode::StartNode()
 {
     Singleton<Logger>::GetInstance().Info("Initiating threads...");
-    MemberManager = SmartThread(Name + " - MemberMananger", 0.02f, &GridNode::MemberListenerFunc, this);
-    ClientManager = SmartThread(Name + " - ClientMananger", 0.02f, &GridNode::ClientListenerFunc, this);
-    AdminManager = SmartThread(Name + " - AdminManager", 0.02f, &GridNode::ManageAdminFunc, this);
+    MemberManager = SmartThread(Name + " - MemberMananger", ST_UNLIMITED_RUNTIME, &GridNode::MemberListenerFunc, this);
+    ClientManager = SmartThread(Name + " - ClientMananger", ST_UNLIMITED_RUNTIME, &GridNode::ClientListenerFunc, this);
+    AdminManager = SmartThread(Name + " - AdminManager", ST_UNLIMITED_RUNTIME, &GridNode::ManageAdminFunc, this);
+    ResourceReporter = SmartThread(Name + " - ResourceManager", 1.f, &GridNode::ResourceManager, this);
     Singleton<Logger>::GetInstance().Info("Threads running.");
 
     Singleton<Logger>::GetInstance().Info("Initiating cores...");
@@ -207,9 +213,13 @@ int GridNode::Listen(string Host, string Port)
 
     ConnectionListener = SmartThread(Name + " - ConnectionListener", 0.02f, &GridNode::ConnectionListenerFunc, this);
 
-    wxCommandEvent* event = new wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
-    event->SetString(wxString(Host + ":" + Port));
-    wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
+        event->SetString(wxString(Host + ":" + Port));
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+
     return 0;
 }
 
@@ -262,8 +272,11 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
             Slots.push_back(Iterator->first);
             Iterator = Map.erase(Iterator);
 
-            wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
-            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            if (wxGetApp().GetMainFrame())
+            {
+                wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+                wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            }
             
             continue;
         }
@@ -281,6 +294,33 @@ void GridNode::ManageAdminFunc()
     }
 }
 
+void GridNode::ResourceManager()
+{
+    PCPerformance NodePerformance = PCPerformance();
+
+    PerformanceAnalyzer.LoadDryStats(NodePerformance);
+    PerformanceAnalyzer.MeasureCPUFrequency(NodePerformance);
+    for (int i = 0; i < 5; i++)
+    {
+        PerformanceAnalyzer.MeasureCPULoad(NodePerformance);
+        Utils::CPSleep(0.1f);
+    }
+
+    CurrentPerformance = NodePerformance;
+    
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_CURRENT_PERFORMANCE);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+
+    if (NodeAdmin.IsConnected() && IsWorker && Members.size() == 0) // If is a grid leaf and connected to admin as worker
+    {
+        Path PathFromAdmin = Path();
+        PathFromAdmin.AddToEnd(Name);
+        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NodePerformance, PathFromAdmin));
+    }
+}
 
 int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
 {
@@ -319,11 +359,34 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     
     NodeAdmin = move(NewConnection);
     
-    wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
-    event->SetString(wxString("Unnamed (" + NodeAdmin.GetHost() + ":" + NodeAdmin.GetPort() + ")"));
-    wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    this->IsWorker = IsWorker;
+
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
+        event->SetString(wxString("Unnamed (" + NodeAdmin.GetHost() + ":" + NodeAdmin.GetPort() + ")"));
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
     
     return 0;
+}
+
+void GridNode::SendJobToMembers()
+{
+
+}
+
+void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath)
+{
+    TopPerformancePath = NewNodePath;
+    GridTopPerformance = NewPerformance;
+
+    if (NodeAdmin.IsConnected())
+    {
+        Path NewPathFromAdmin = NewNodePath;
+        NewPathFromAdmin.AddToStart(Name);
+        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin));
+    }
 }
 
 GridConnection& GridNode::GetMember(int MemberID)
@@ -389,6 +452,9 @@ void GridNode::StopPeriodics()
     
     if (AdminManager.GetIsRunning())
         AdminManager.Stop();
+    
+    if (ResourceReporter.GetIsRunning())
+        ResourceReporter.Stop();
 
     for (unique_ptr<IFunctionCore>& Core: FunctionCores)
     {

@@ -21,11 +21,26 @@ private:
     wxStaticText* ListenAddressDisplay;
     wxStaticBox* MemberNamesBox;
     wxStaticBox* ClientNamesBox;
-
+    
     wxButton* ConnectAsMemberButton;
     wxButton* ConnectAsClientButton;
     wxButton* ListenOnTargetButton;
     wxButton* ReloadNodeButton;
+
+    wxStaticText* NodeCPUCores;
+    wxStaticText* NodeCPUFrequency;
+    wxStaticText* NodeCPULoad;
+    wxStaticText* NodeTotalPhysicalMemory;
+    wxStaticText* NodeAvailablePhysicalMemory;
+    wxStaticText* NodeMemoryLoad;
+
+    wxStaticText* TopCPUCores;
+    wxStaticText* TopCPUFrequency;
+    wxStaticText* TopCPULoad;
+    wxStaticText* TopTotalPhysicalMemory;
+    wxStaticText* TopAvailablePhysicalMemory;
+    wxStaticText* TopMemoryLoad;
+    wxStaticText* TopPath;
 
     void ConnectUsingCTRLs(bool IsWorker);
 
@@ -40,6 +55,8 @@ private:
 
     void RenameNodeAdmin(wxCommandEvent& event);
     void ReloadConnectionsDisplay(wxCommandEvent& event);
+    void UpdateCurrentPerformance(wxCommandEvent& event);
+    void UpdateTopPerformance(wxCommandEvent& event);
 
     bool Close(bool force=false);	
 };
@@ -49,3 +66,5 @@ wxDECLARE_EVENT(EVT_NODE_ADMIN_NAME_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_LISTEN_ADDRESS_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_NODE_CONNECTIONS_CHANGED, wxCommandEvent);
+wxDECLARE_EVENT(EVT_UPDATE_CURRENT_PERFORMANCE, wxCommandEvent);
+wxDECLARE_EVENT(EVT_UPDATE_TOP_PERFORMANCE, wxCommandEvent);

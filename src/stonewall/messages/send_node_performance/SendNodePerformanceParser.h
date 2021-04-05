@@ -8,7 +8,7 @@ using namespace std;
 class SendNodePerformanceParser: public IParser
 {
 private:
-    string HEADER = "RBN";
+    string HEADER = "SNP";
     SeperatorBasedParser SPBParser;
 
 public:

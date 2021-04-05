@@ -18,4 +18,8 @@ struct PCPerformance
 {
     CPUPerformance CPUPerformance;
     RAMPerformance RAMPerformance;
+
+    bool operator > (PCPerformance& Other);
+    bool operator < (PCPerformance& Other);
+    PCPerformance& operator = (const PCPerformance& Other);
 };

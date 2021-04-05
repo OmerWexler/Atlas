@@ -7,6 +7,9 @@
 #include "Logger.h"
 #include "Singleton.h"
 
+#define ST_SINGLE_CALL -1000.f
+#define ST_UNLIMITED_RUNTIME -2000.f
+
 using namespace std;
 
 class SmartThread
@@ -31,21 +34,43 @@ public:
             thread TempThread;
             IsRunningPromise.set_value_at_thread_exit();
 
-            if (PollFrequency == 0.f)
+            if (PollFrequency == ST_SINGLE_CALL)
             {
                 Singleton<Logger>::GetInstance().Debug("Statring single call to SmartThread - " + this->Name);
                 TempThread = thread(Runnable, Args...);
                 TempThread.join();
             }
-            else if (PollFrequency > 0.f)
+            else
             {
                 Singleton<Logger>::GetInstance().Debug("Statring periodic call to SmartThread - " + this->Name);
-
-                while (ShouldRunFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout)
+                if (PollFrequency == ST_UNLIMITED_RUNTIME)
                 {
-                    TempThread = thread(Runnable, Args...);
-                    TempThread.join();
-                    Utils::CPSleep(PollFrequency);
+                    while (ShouldRunFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout)
+                    {   
+                        TempThread = thread(Runnable, Args...);
+                        TempThread.join();
+                    }
+                }
+                else
+                {
+                    double StartTime;
+                    double EndTime;
+                    double CallTime;
+                    while (ShouldRunFuture.wait_for(std::chrono::milliseconds(1)) == std::future_status::timeout)
+                    {   
+                        StartTime = Utils::NanoToSec(Utils::GetTimeNS());
+                        
+                        TempThread = thread(Runnable, Args...);
+                        TempThread.join();
+
+                        EndTime = Utils::NanoToSec(Utils::GetTimeNS());
+                        
+                        CallTime = (EndTime - StartTime);
+                        if (PollFrequency > CallTime) 
+                        {
+                            Utils::CPSleep(PollFrequency - CallTime);
+                        }
+                    }
                 }
             }
         }, move(ShouldRunPromise.get_future()));

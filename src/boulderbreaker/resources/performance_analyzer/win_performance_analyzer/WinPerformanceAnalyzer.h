@@ -11,8 +11,9 @@ private:
 
 public:
     WinPerformanceAnalyzer() : Filter(3) {}
+    WinPerformanceAnalyzer(int KalmanFilterSize) : Filter(KalmanFilterSize) {}
     
     int LoadDryStats(PCPerformance& PCPerformance);
-    int MeasureCPUFrequency(PCPerformance& PCPerformance);
+    int MeasureCPUFrequency(PCPerformance& PCPerformance, float Timelapse=0.02f);
     int MeasureCPULoad(PCPerformance& PCPerformance);
 };

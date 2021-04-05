@@ -7,7 +7,7 @@ using namespace std;
 class CyclicKalmanFilter
 {
 private:
-    int Size;
+    unsigned int Size;
     int Index;
     vector<int> Buffer;
 

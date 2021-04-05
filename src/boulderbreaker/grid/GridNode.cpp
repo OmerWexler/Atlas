@@ -144,7 +144,7 @@ void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
 {
     NodeServer.AddParser(Parser);
 
-    for(int i = 0; i < CollectiveParsers.size(); i++)
+    for(unsigned int i = 0; i < CollectiveParsers.size(); i++)
     {
         if (CollectiveParsers[i]->GetType() == Parser->GetType())
         {

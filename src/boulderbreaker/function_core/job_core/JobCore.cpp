@@ -174,7 +174,9 @@ void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnec
     {
         if (PathToTarget.size() > 0)
             PathToTarget.RemoveFromEnd();
-        Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(Message);
+        
+        if (Singleton<GridNode>::GetInstance().GetAdmin().IsConnected())
+            Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(Message);
     }
 }
 

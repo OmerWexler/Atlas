@@ -31,6 +31,11 @@ public:
 
         Success = 0;
     }
+    
+    bool IsInputValid(vector<Argument>& Inputs)
+    {
+        return true;
+    }
 
     int Kill()
     {

@@ -10,6 +10,10 @@
 #include <wx/tglbtn.h>
 #include <wx/popupwin.h>
 
+#undef GetJob
+
+#include "JobRegistry.h"
+
 using namespace std;
 
 MainFrame::MainFrame()
@@ -31,6 +35,18 @@ MainFrame::MainFrame()
     ReloadNodeButton = XRCCTRL(*this, "ReloadNode", wxButton);
     SendJobButton = XRCCTRL(*this, "SendJobButton", wxButton);
     JobsListSizer = XRCCTRL(*this, "JobsListSizer", wxStaticBox);
+
+    JobTypeChoice = XRCCTRL(*this, "JobTypeChoice", wxChoice);
+    
+    vector<wxString> JobList{};
+    JobRegistry::GetJobList(JobList);
+    JobTypeChoice->Set(JobList);
+
+    AddArgumentButton = XRCCTRL(*this, "AddArgumentButton", wxButton);
+    ClearArgumentButton = XRCCTRL(*this, "ClearArgumentButton", wxButton);
+    ArgumentText = XRCCTRL(*this, "ArgumentText", wxTextCtrl);
+    IsArgumentFile = XRCCTRL(*this, "IsArgumentFile", wxCheckBox);
+    ArgumentsBox = XRCCTRL(*this, "ArgumentsBox", wxStaticBox);
 
     NodeCPUCores = XRCCTRL(*this, "NodeCPUCores", wxStaticText);
     NodeCPUFrequency = XRCCTRL(*this, "NodeCPUFrequency", wxStaticText);
@@ -77,7 +93,10 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
     EVT_COMMAND ( wxID_ANY, EVT_LISTEN_ADDRESS_CHANGED, MainFrame::SetListenAddress )
     
     EVT_BUTTON ( XRCID("ReloadNode"), MainFrame::ReloadNode )
+
     EVT_BUTTON ( XRCID("SendJobButton"), MainFrame::SendJob )
+    EVT_BUTTON ( XRCID("AddArgumentButton"), MainFrame::AddArgument )
+    EVT_BUTTON ( XRCID("ClearArgumentButton"), MainFrame::ClearArguments )
 
     EVT_COMMAND ( wxID_ANY, EVT_ADMIN_DISCONNECTED, MainFrame::AdminDisconnected )
     EVT_COMMAND ( wxID_ANY, EVT_NODE_CONNECTIONS_CHANGED, MainFrame::ReloadConnectionsDisplay )
@@ -222,13 +241,56 @@ void MainFrame::UpdateTopPerformance(wxCommandEvent& event)
     TopPath->SetLabelText("Node Path (relative) - \"" + TopPathObj.GetStrPath() + "\"");
 }
 
+void MainFrame::ClearArguments(wxCommandEvent& event)
+{
+    JobArguments.clear();
+    ArgumentsBox->GetContainingSizer()->Clear(true);
+    ArgumentsBox->GetContainingSizer()->Layout();
+    Layout();
+    Fit();
+}
+
+void MainFrame::AddArgument(wxCommandEvent& event)
+{
+    string ArgumentValue = string(ArgumentText->GetValue().mb_str());
+    bool IsFile = IsArgumentFile->GetValue();
+
+    JobArguments.push_back(Argument(ArgumentValue, IsFile));
+    
+    string ArgumentDescription = "";
+    ArgumentDescription += ArgumentValue;
+
+    if (IsFile)
+        ArgumentDescription += " (File)";
+
+    ArgumentsBox->GetContainingSizer()->Add(
+        new wxStaticText(ArgumentsBox, wxID_ANY, ArgumentDescription), 
+        0, wxGROW|wxALL, 2
+    );
+    ArgumentsBox->GetContainingSizer()->Layout();
+    Layout();
+    Fit();
+}
+
 void MainFrame::SendJob(wxCommandEvent& event)
 {
-    shared_ptr<IJob> Job = ATLS_CREATE_SHARED_JOB(JobWait);
-    Singleton<GridNode>::GetInstance().SendJobToMembers(
-        Job,
-        vector<Argument>{ Argument("100") }
-    ); 
+    shared_ptr<IJob> Job;
+    
+    bool JobFound = JobRegistry::GetJob(string(JobTypeChoice->GetStringSelection().mb_str()), Job);
+    if (!JobFound)
+        return;
+
+    if (Job->IsInputValid(JobArguments))
+    {
+        Singleton<GridNode>::GetInstance().SendJobToMembers(
+            Job,
+            JobArguments
+        );
+
+        JobArguments.clear();
+        ArgumentsBox->GetContainingSizer()->Clear(true);
+        Fit();
+    }
 }
 
 void MainFrame::UpdateJobList(wxCommandEvent& event)

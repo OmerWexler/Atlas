@@ -12,6 +12,24 @@ string JobWait::GetType() const
     return "JobWait";
 }
 
+
+bool IsNumber(const string& s)
+{
+    return !s.empty() && find_if(s.begin(), 
+        s.end(), [](unsigned char c) { return !isdigit(c); }) == s.end();
+}
+
+bool JobWait::IsInputValid(vector<Argument>& Input)
+{
+    if (Input.size() != 1)
+        return false;
+
+    if (!IsNumber(Input[0].Value))
+        return false;
+    
+    return true;
+}
+
 void JobWait::Execute(vector<Argument>& Input)
 {
     m_IsAlive = true;

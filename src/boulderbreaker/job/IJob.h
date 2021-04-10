@@ -32,6 +32,7 @@ public:
 
     virtual string GetType() const = 0;
     virtual void Execute(vector<Argument>& Input) = 0;
+    virtual bool IsInputValid(vector<Argument>& Input) = 0;
     virtual int Kill() = 0;
 
     virtual IJob* Clone() = 0;

@@ -115,6 +115,7 @@ public:
     void DisconnectFromAdmin();
     void DisconnectMembers();
     void StopPeriodics();
+    void StopAllDispatchedJobs();
 
     void CloseNode();
 

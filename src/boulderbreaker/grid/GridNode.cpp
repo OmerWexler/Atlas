@@ -514,8 +514,22 @@ void GridNode::StopPeriodics()
     }
 }
 
+void GridNode::StopAllDispatchedJobs()
+{
+    for (auto& Job: DispatchedJobs)
+    {
+        RouteMessageToSelf(
+            ATLS_CREATE_UNIQUE_MSG(CancelJobMessage, Job->GetUniqueDescriptor(), Job->GetPathToTarget().GetStrPath()),
+            GridConnection()
+        );
+    }
+
+    DispatchedJobs.clear();
+}
+
 void GridNode::CloseNode()
 {
+    StopAllDispatchedJobs();
     DisconnectFromAdmin();
     DisconnectMembers();
     CloseServer();

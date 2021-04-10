@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void JobRegistry::GetJob(const string Type, shared_ptr<IJob>& OutJob)
+bool JobRegistry::GetJob(const string Type, shared_ptr<IJob>& OutJob)
 {
     IJob* Job = nullptr;
 
@@ -24,5 +24,14 @@ void JobRegistry::GetJob(const string Type, shared_ptr<IJob>& OutJob)
     if (Job != nullptr)
     {
         OutJob.reset(Job);
+        return true;
     }
+
+    return false;
+}
+
+void JobRegistry::GetJobList(vector<wxString>& OutList)
+{
+    OutList.push_back("JobLog");
+    OutList.push_back("JobWait");
 }

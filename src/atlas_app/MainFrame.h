@@ -5,6 +5,8 @@
     #include <wx/wx.h>
 #endif
 
+#include "Argument.h"
+
 using namespace std;
 
 class MainFrame : public wxFrame
@@ -30,7 +32,14 @@ private:
     wxButton* ListenOnTargetButton;
     wxButton* ReloadNodeButton;
     wxButton* SendJobButton;
+
     wxStaticBox* JobsListSizer;
+    wxChoice* JobTypeChoice;
+    wxButton* AddArgumentButton;
+    wxButton* ClearArgumentButton;
+    wxTextCtrl* ArgumentText;
+    wxCheckBox* IsArgumentFile;
+    wxStaticBox* ArgumentsBox;
 
     wxStaticText* NodeCPUCores;
     wxStaticText* NodeCPUFrequency;
@@ -46,6 +55,8 @@ private:
     wxStaticText* TopAvailablePhysicalMemory;
     wxStaticText* TopMemoryLoad;
     wxStaticText* TopPath;
+
+    vector<Argument> JobArguments;
 
     void ConnectUsingCTRLs(bool IsWorker);
 
@@ -63,6 +74,8 @@ private:
     void UpdateCurrentPerformance(wxCommandEvent& event);
     void UpdateTopPerformance(wxCommandEvent& event);
     void SendJob(wxCommandEvent& event);
+    void AddArgument(wxCommandEvent& event);
+    void ClearArguments(wxCommandEvent& event);
     void UpdateJobList(wxCommandEvent& event);
 
     bool Close(bool force=false);	

@@ -3,7 +3,7 @@
     <object class="wxFrame" name="Atlas">
         <style>wxDEFAULT_FRAME_STYLE|wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxCLOSE_BOX</style>
         <bg>#c4c4c4</bg>
-        <size>1200,450</size>
+        <size>1600,450</size>
         <title>Atlas</title>
         <centered>1</centered>
         <font>
@@ -11,11 +11,8 @@
             <family>swiss</family>
             <face>Tahoma</face>
         </font>
-        <object class="wxGridSizer">
-            <cols>3</cols>
-            <rows>0</rows>
-            <vgap>0</vgap>
-            <hgap>0</hgap>
+        <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
             <object class="sizeritem">
                 <flag>wxGROW|wxALL</flag>
                 <border>0</border>
@@ -381,6 +378,7 @@
                                     <object class="sizeritem">
                                         <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
                                         <border>4</border>
+                                        <option>1</option>
                                         <object class="wxStaticText" name="TopPath">
                                             <fg>#000000</fg>
                                             <label>Path - </label>
@@ -421,12 +419,6 @@
                                         <flag>wxGROW|wxLEFT|wxRIGHT|wxBOTTOM|wxFIXED_MINSIZE</flag>
                                         <border>6</border>
                                         <object class="wxChoice" name="JobTypeChoice">
-                                            <content>
-                                                <item>A</item>
-                                                <item>B</item>
-                                                <item>C</item>
-                                                <item>D</item>
-                                            </content>
                                         </object>
                                     </object>
                                 </object>
@@ -434,9 +426,62 @@
                             <object class="sizeritem">
                                 <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
                                 <border>6</border>
-                                <object class="wxStaticText" name="wxID_STATIC">
-                                    <fg>#000000</fg>
-                                    <label>Current Target - </label>
+                                <object class="wxStaticBoxSizer" name="wxID_ANY">
+                                    <orient>wxVERTICAL</orient>
+                                    <label>Add Argument</label>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>5</border>
+                                        <option>1</option>
+                                        <object class="wxBoxSizer">
+                                            <orient>wxHORIZONTAL</orient>
+                                            <object class="sizeritem">
+                                                <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                                <border>5</border>
+                                                <option>1</option>
+                                                <object class="wxTextCtrl" name="ArgumentText">
+                                                    <style>wxTE_MULTILINE</style>
+                                                </object>
+                                            </object>
+                                            <object class="sizeritem">
+                                                <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                                <border>5</border>
+                                                <object class="wxCheckBox" name="IsArgumentFile">
+                                                    <label>Is File</label>
+                                                    <checked>0</checked>
+                                                </object>
+                                            </object>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxButton" name="AddArgumentButton">
+                                            <label>Add Argument</label>
+                                        </object>
+                                    </object>
+                                    <object class="sizeritem">
+                                        <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                        <border>4</border>
+                                        <object class="wxButton" name="ClearArgumentButton">
+                                            <label>Clear Arguments</label>
+                                        </object>
+                                    </object>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxALL</flag>
+                                <border>5</border>
+                                <object class="wxStaticBoxSizer" name="ArgumentsBox">
+                                    <orient>wxVERTICAL</orient>
+                                    <label>Arguments</label>
+                                </object>
+                            </object>
+                            <object class="sizeritem">
+                                <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
+                                <border>5</border>
+                                <object class="wxStaticLine" name="ID_BUTTON">
+                                    <style>wxLI_HORIZONTAL</style>
                                 </object>
                             </object>
                             <object class="sizeritem">

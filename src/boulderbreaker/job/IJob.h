@@ -18,7 +18,7 @@ private:
     SmartThread ASyncThread;
 
 protected:
-    Path PathToOwner;
+    Path PathToTarget;
     int Success = 0;
     bool m_IsAlive = false;
     bool m_IsDone = false;
@@ -44,8 +44,8 @@ public:
     void SetSuccess(int Success) { this->Success = Success; };
     int GetSuccess() { return Success; };
     
-    void SetPathToOwner(Path PathToOwner) { this->PathToOwner = PathToOwner; };
-    Path& GetPathToOwner() { return PathToOwner; }
+    void SetPathToTarget(Path PathToTarget) { this->PathToTarget = PathToTarget; };
+    Path& GetPathToTarget() { return PathToTarget; }
     
     void SetOutput(vector<Argument> Output) { this->Output = Output; };
     vector<Argument> GetOutput() { return Output; };

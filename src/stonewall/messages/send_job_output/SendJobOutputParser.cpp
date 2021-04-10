@@ -27,10 +27,11 @@ void SendJobOutputParser::Parse(const string& SMsg, unique_ptr<IMessage>& Messag
     vector<string> Values = ((SeperatorBasedMessage*) USPBMsg.get())->GetValues();
     
     string Descriptor = Values[0];
+    string PathToTarget = Values[1];
 
     Argument CurrentArg = Argument();
     vector<Argument> Outputs = vector<Argument>();
-    for (unsigned int i = 1; i < Values.size(); i += 2)
+    for (unsigned int i = 2; i < Values.size(); i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -38,7 +39,7 @@ void SendJobOutputParser::Parse(const string& SMsg, unique_ptr<IMessage>& Messag
         Outputs.push_back(CurrentArg);
     }
 
-    Message.reset((IMessage*) DBG_NEW SendJobOutputMessage(Descriptor, Outputs));
+    Message.reset((IMessage*) DBG_NEW SendJobOutputMessage(Descriptor, Path(PathToTarget), Outputs));
 }
 
 bool SendJobOutputParser::CanParse(const string& SMsg) const

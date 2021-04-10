@@ -376,7 +376,7 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
 
 int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
 {
-    Job->SetPathToOwner(TopPerformancePath);
+    Job->SetPathToTarget(TopPerformancePath);
     unique_ptr<IMessage> Msg = ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Input, TopPerformancePath);
     DispatchedJobs.push_back(Job);
     
@@ -399,29 +399,7 @@ void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewN
     if (NodeAdmin.IsConnected())
     {
         Path NewPathFromAdmin = NewNodePath;
-        NewPathFromAdmin.AddToStart(Name);
         NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin));
-    }
-}
-
-void GridNode::ReportOutput(string JobDescriptor, vector<Argument>& Output)
-{
-    auto& Iterator = DispatchedJobs.begin();
-    while (Iterator != DispatchedJobs.end())
-    {
-        if (Iterator->get()->GetUniqueDescriptor() == JobDescriptor)
-        {
-            Iterator->get()->SetOutput(Output);
-            Iterator->get()->SetIsDone(true);
-            Iterator->get()->SetIsAlive(false);
-        }
-        Iterator++;
-    }
-
-    if (wxGetApp().GetMainFrame())
-    {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
-        wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }
 

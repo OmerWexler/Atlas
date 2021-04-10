@@ -257,7 +257,7 @@ void MainFrame::UpdateJobList(wxCommandEvent& event)
         }
 
         Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Status - " + Status), 0, wxGROW|wxALL, 4);
-        Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Owner - " + Iterator->get()->GetPathToOwner().GetStrPath()), 0, wxGROW|wxALL, 4);
+        Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Owner - " + Iterator->get()->GetPathToTarget().GetStrPath()), 0, wxGROW|wxALL, 4);
 
         if (Iterator->get()->IsDone())
         {
@@ -293,7 +293,7 @@ void MainFrame::UpdateJobList(wxCommandEvent& event)
                 wxEVT_BUTTON, 
                 [ Iterator ] (wxCommandEvent&) { 
                     Singleton<GridNode>::GetInstance().RouteMessageToSelf(
-                        ATLS_CREATE_UNIQUE_MSG(CancelJobMessage, Iterator->get()->GetUniqueDescriptor(), Iterator->get()->GetPathToOwner().GetStrPath()),
+                        ATLS_CREATE_UNIQUE_MSG(CancelJobMessage, Iterator->get()->GetUniqueDescriptor(), Iterator->get()->GetPathToTarget().GetStrPath()),
                         GridConnection()
                     );
                 }

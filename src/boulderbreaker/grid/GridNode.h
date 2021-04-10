@@ -80,7 +80,6 @@ public:
     string GetName() { return Name; };
 
     void ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath);
-    void ReportOutput(string JobDescriptor, vector<Argument>& Output);
     void RemoveJob(string JobDescriptor);
     int RouteMessageToSelf(unique_ptr<IMessage>& Message, GridConnection& Sender);
 

@@ -144,7 +144,37 @@ void JobCore::CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection
 void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnection& Sender)
 {
     SendJobOutputMessage* SJOMsg = (SendJobOutputMessage*) Message.get();
-    Singleton<GridNode>::GetInstance().ReportOutput(SJOMsg->GetDescriptor(), SJOMsg->GetOutput());
+    Path& PathToTarget = SJOMsg->GetPathToTarget();
+    string CurrentNodeName = Singleton<GridNode>::GetInstance().GetName();
+
+    if (PathToTarget.size() == 1 && PathToTarget[0] == CurrentNodeName) // Current node is owner
+    {
+        auto& Iterator = Singleton<GridNode>::GetInstance().GetDispatchedJobsBegin();
+        auto& End = Singleton<GridNode>::GetInstance().GetDispatchedJobsEnd();
+        
+        while (Iterator != End)
+        {
+            if (Iterator->get()->GetUniqueDescriptor() == SJOMsg->GetDescriptor())
+            {
+                Iterator->get()->SetOutput(SJOMsg->GetOutput());
+                Iterator->get()->SetIsDone(true);
+                Iterator->get()->SetIsAlive(false);
+                break;
+            }
+            Iterator++;
+        }
+
+        if (wxGetApp().GetMainFrame())
+        {
+            wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+            wxQueueEvent(wxGetApp().GetMainFrame(), event);
+        }
+    }
+    else
+    {
+        PathToTarget.RemoveFromEnd();
+        Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(Message);
+    }
 }
 
 void JobCore::Periodic() 
@@ -157,17 +187,8 @@ void JobCore::Periodic()
     {
         if (It->second->IsDone())
         {
-            auto OutputMsg = ATLS_CREATE_UNIQUE_MSG(SendJobOutputMessage, It->second->GetUniqueDescriptor(), It->second->GetOutput());
-
-            Path PathToOwner = It->second->GetPathToOwner();
-            if (PathToOwner.size() == 1 && PathToOwner[0] == Singleton<GridNode>::GetInstance().GetName())
-            {
-                QueueMessage(OutputMsg, GridConnection());
-            }
-            else
-            {
-                Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(OutputMsg);
-            }
+            auto OutputMsg = ATLS_CREATE_UNIQUE_MSG(SendJobOutputMessage, It->second->GetUniqueDescriptor(), It->second->GetPathToTarget(), It->second->GetOutput());
+            QueueMessage(OutputMsg, GridConnection());
 
             It = LocalJobs.erase(It);
         }

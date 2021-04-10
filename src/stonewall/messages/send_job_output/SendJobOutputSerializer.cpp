@@ -23,6 +23,7 @@ string SendJobOutputSerializer::Serialize(const unique_ptr<IMessage>& Message) c
     SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
 
     SPBMsg->AddValue(SJOMsg->GetDescriptor());
+    SPBMsg->AddValue(SJOMsg->GetPathToTarget().GetStrPath());
 
     vector<Argument> Output = SJOMsg->GetOutput();
     for (unsigned int i = 0; i < Output.size(); i++)

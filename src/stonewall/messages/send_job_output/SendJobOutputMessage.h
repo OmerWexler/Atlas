@@ -18,7 +18,7 @@ private:
 public:
     const static string TYPE;
 
-    SendJobOutputMessage(string Descriptor, Path& PathToTarget, vector<Argument>& Output);
+    SendJobOutputMessage(string Descriptor, Path PathToTarget, vector<Argument>& Output);
     string GetType() const override;
     string GetDescriptor();
     vector<Argument>& GetOutput();

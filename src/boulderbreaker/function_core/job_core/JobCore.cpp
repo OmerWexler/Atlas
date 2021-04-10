@@ -172,7 +172,8 @@ void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnec
     }
     else
     {
-        PathToTarget.RemoveFromEnd();
+        if (PathToTarget.size() > 0)
+            PathToTarget.RemoveFromEnd();
         Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(Message);
     }
 }

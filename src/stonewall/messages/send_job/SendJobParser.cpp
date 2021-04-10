@@ -24,17 +24,20 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     SPBParser.Parse(SMsg.substr(HEADER.length()), USPBMsg);
     
     vector<string> Values = ((SeperatorBasedMessage*) USPBMsg.get())->GetValues();
+    string MsgPathToTarget = Values[0];
 
-    string Type = Values[0];
-    int Success = atoi(Values[1].c_str());
-    string UniqueDecriptor = Values[2];
-    string PathToTarget = move(Values[3]);
+    string Type = Values[1];
+    int Success = atoi(Values[2].c_str());
+    string UniqueDecriptor = Values[3];
+    string JobPathToTarget = move(Values[4]);
 
     Argument CurrentArg = Argument("", false);
     
     vector<Argument> Inputs = vector<Argument>();
-    int NumOfInputs = atoi(Values[4].c_str());
-    for (int i = 5; i < 5 + NumOfInputs * 2; i += 2)
+    int NumOfInputs = atoi(Values[5].c_str());
+    int StartOfInputs = 6;
+
+    for (int i = StartOfInputs; i < StartOfInputs + NumOfInputs * 2; i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -43,7 +46,7 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     }
 
     vector<Argument> Outputs = vector<Argument>();
-    for (unsigned int i = 5 + NumOfInputs * 2; i < Values.size(); i += 2)
+    for (unsigned int i = StartOfInputs + NumOfInputs * 2; i < Values.size(); i += 2)
     {
         CurrentArg.Value = Values[i];
         CurrentArg.IsFile = Values[i + 1] == "1";
@@ -55,7 +58,8 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     JobRegistry::GetJob(Type, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Path(PathToTarget), Outputs));
+    Job->SetPathToTarget(Path(JobPathToTarget));
+    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Path(MsgPathToTarget), Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

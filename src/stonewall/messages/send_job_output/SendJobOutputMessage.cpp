@@ -4,7 +4,7 @@
 
 const string SendJobOutputMessage::TYPE = "SendJobOutput";
 
-SendJobOutputMessage::SendJobOutputMessage(string Descriptor, Path& PathToTarget, vector<Argument>& Output)
+SendJobOutputMessage::SendJobOutputMessage(string Descriptor, Path PathToTarget, vector<Argument>& Output)
 {
     this->Descriptor = Descriptor;
     this->Output = Output;

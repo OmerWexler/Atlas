@@ -48,6 +48,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicServer.cpp
 
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/IJob.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/PCPerformance.cpp
@@ -55,6 +56,9 @@ set(SOURCES
 
 set(
     APP_SOURCES
+
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_wait/JobWait.cpp
+
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp
 

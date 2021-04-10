@@ -9,6 +9,9 @@ class JobCore: public ASyncFunctionCore
 {
 private:
     unordered_map<string, shared_ptr<IJob>> LocalJobs;
+    void SendJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection& Sender);
+    void CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection& Sender);
+    void SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnection& Sender);
 
 protected:
     void HandleMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);

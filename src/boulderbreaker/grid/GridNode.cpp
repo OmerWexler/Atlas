@@ -294,6 +294,19 @@ void GridNode::ManageAdminFunc()
     }
 }
 
+
+int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
+{
+    unique_ptr<IMessage> Message;
+    int Result = Connection.RecvMessage(Message);
+    if (Result < 0)
+    {
+        return Result;
+    }
+    
+    return RouteMessageToSelf(Message, Connection);
+}
+
 void GridNode::ResourceManager()
 {
     PCPerformance NodePerformance = PCPerformance();
@@ -314,33 +327,23 @@ void GridNode::ResourceManager()
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 
-    if (NodeAdmin.IsConnected() && IsWorker && Members.size() == 0) // If is a grid leaf and connected to admin as worker
+    if (Members.size() == 0) // No member to compare preformance to
     {
-        Path PathFromAdmin = Path();
-        PathFromAdmin.AddToEnd(Name);
-        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NodePerformance, PathFromAdmin));
-    }
-}
-
-int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
-{
-    unique_ptr<IMessage> Message;
-    int Result = Connection.RecvMessage(Message);
-    if (Result < 0)
-    {
-        return Result;
-    }
-    
-    for (unique_ptr<IFunctionCore>& Core: FunctionCores)
-    {
-        if (Core->IsMessageRelated(Message))
+        TopPerformancePath = Path(Name);
+        GridTopPerformance = NodePerformance;
+        
+        
+        if (wxGetApp().GetMainFrame())
         {
-            Core->QueueMessage(Message, Connection);
-            return 0;
+            wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_TOP_PERFORMANCE);
+            wxQueueEvent(wxGetApp().GetMainFrame(), event);
         }
     }
 
-    return -1;
+    if (NodeAdmin.IsConnected() && IsWorker && Members.size() == 0) // If is a grid leaf and connected to admin as worker
+    {
+        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NodePerformance, Path(Name)));
+    }
 }
 
 int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
@@ -371,9 +374,21 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     return 0;
 }
 
-void GridNode::SendJobToMembers()
+int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
 {
+    Job->SetPathToOwner(TopPerformancePath);
+    unique_ptr<IMessage> Msg = ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Input, TopPerformancePath);
+    DispatchedJobs.push_back(Job);
+    
+    int Result = RouteMessageToSelf(Msg, GridConnection());
 
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+
+    return Result;
 }
 
 void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath)
@@ -387,6 +402,61 @@ void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewN
         NewPathFromAdmin.AddToStart(Name);
         NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin));
     }
+}
+
+void GridNode::ReportOutput(string JobDescriptor, vector<Argument>& Output)
+{
+    auto& Iterator = DispatchedJobs.begin();
+    while (Iterator != DispatchedJobs.end())
+    {
+        if (Iterator->get()->GetUniqueDescriptor() == JobDescriptor)
+        {
+            Iterator->get()->SetOutput(Output);
+            Iterator->get()->SetIsDone(true);
+            Iterator->get()->SetIsAlive(false);
+        }
+        Iterator++;
+    }
+
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+}
+
+void GridNode::RemoveJob(string JobDescriptor)
+{
+    auto& Iterator = DispatchedJobs.begin();
+    while (Iterator != DispatchedJobs.end())
+    {
+        if (Iterator->get()->GetUniqueDescriptor() == JobDescriptor)
+        {
+            Iterator = DispatchedJobs.erase(Iterator);
+        }
+        else
+            Iterator++;
+    }
+
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+}
+
+int GridNode::RouteMessageToSelf(unique_ptr<IMessage>& Message, GridConnection& Sender)
+{
+    for (unique_ptr<IFunctionCore>& Core: FunctionCores)
+    {
+        if (Core->IsMessageRelated(Message))
+        {
+            Core->QueueMessage(Message, Sender);
+            return 0;
+        }
+    }
+
+    return -1;
 }
 
 GridConnection& GridNode::GetMember(int MemberID)

@@ -2,10 +2,13 @@
 #include "Singleton.h"
 #include "Logger.h"
 #include "GridNode.h"
+#include "JobWait.h"
 #include "Utils.h"
+#include "CancelJobMessage.h"
 
 #include "wx/xrc/xmlres.h"
 #include <wx/tglbtn.h>
+#include <wx/popupwin.h>
 
 using namespace std;
 
@@ -26,6 +29,8 @@ MainFrame::MainFrame()
     ConnectAsClientButton = XRCCTRL(*this, "ConnectAsClientButton", wxButton);
     ListenOnTargetButton = XRCCTRL(*this, "ListenOnTargetButton", wxButton);
     ReloadNodeButton = XRCCTRL(*this, "ReloadNode", wxButton);
+    SendJobButton = XRCCTRL(*this, "SendJobButton", wxButton);
+    JobsListSizer = XRCCTRL(*this, "JobsListSizer", wxStaticBox);
 
     NodeCPUCores = XRCCTRL(*this, "NodeCPUCores", wxStaticText);
     NodeCPUFrequency = XRCCTRL(*this, "NodeCPUFrequency", wxStaticText);
@@ -57,6 +62,7 @@ wxDEFINE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_NODE_CONNECTIONS_CHANGED, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_CURRENT_PERFORMANCE, wxCommandEvent);
 wxDEFINE_EVENT(EVT_UPDATE_TOP_PERFORMANCE, wxCommandEvent);
+wxDEFINE_EVENT(EVT_UPDATE_JOB_LIST, wxCommandEvent);
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
     EVT_BUTTON ( XRCID("ApplyNameButton"), MainFrame::RenameLocalNode )
@@ -71,11 +77,13 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
     EVT_COMMAND ( wxID_ANY, EVT_LISTEN_ADDRESS_CHANGED, MainFrame::SetListenAddress )
     
     EVT_BUTTON ( XRCID("ReloadNode"), MainFrame::ReloadNode )
+    EVT_BUTTON ( XRCID("SendJobButton"), MainFrame::SendJob )
 
     EVT_COMMAND ( wxID_ANY, EVT_ADMIN_DISCONNECTED, MainFrame::AdminDisconnected )
     EVT_COMMAND ( wxID_ANY, EVT_NODE_CONNECTIONS_CHANGED, MainFrame::ReloadConnectionsDisplay )
     EVT_COMMAND ( wxID_ANY, EVT_UPDATE_CURRENT_PERFORMANCE, MainFrame::UpdateCurrentPerformance )
     EVT_COMMAND ( wxID_ANY, EVT_UPDATE_TOP_PERFORMANCE, MainFrame::UpdateTopPerformance )
+    EVT_COMMAND ( wxID_ANY, EVT_UPDATE_JOB_LIST, MainFrame::UpdateJobList )
 END_EVENT_TABLE()
 
 void MainFrame::RenameLocalNode(wxCommandEvent& event)
@@ -127,6 +135,7 @@ void MainFrame::ReloadNode(wxCommandEvent& event)
     AdminNameDisplay->SetLabelText("Node is not connected to any admin...");
 
     ReloadConnectionsDisplay(event);
+    UpdateJobList(event);
 }
 
 void MainFrame::AdminDisconnected(wxCommandEvent& event)
@@ -162,7 +171,6 @@ void MainFrame::ReloadConnectionsDisplay(wxCommandEvent& event)
     }
 
     Fit();
-    UpdateTopPerformance(event);
 }
 
 void MainFrame::UpdateCurrentPerformance(wxCommandEvent& event)
@@ -212,6 +220,93 @@ void MainFrame::UpdateTopPerformance(wxCommandEvent& event)
         "Memory Load - " + to_string(TopPerformance.RAMPerformance.MemoryLoad) + "%");
 
     TopPath->SetLabelText("Node Path (relative) - \"" + TopPathObj.GetStrPath() + "\"");
+}
+
+void MainFrame::SendJob(wxCommandEvent& event)
+{
+    shared_ptr<IJob> Job = ATLS_CREATE_SHARED_JOB(JobWait);
+    Singleton<GridNode>::GetInstance().SendJobToMembers(
+        Job,
+        vector<Argument>{ Argument("100") }
+    ); 
+}
+
+void MainFrame::UpdateJobList(wxCommandEvent& event)
+{
+    auto& Iterator = Singleton<GridNode>::GetInstance().GetDispatchedJobsBegin();
+    auto& End = Singleton<GridNode>::GetInstance().GetDispatchedJobsEnd();
+    
+    JobsListSizer->GetContainingSizer()->Clear(true);
+    Fit();
+    wxPanel* JobBanner = nullptr;
+
+    while (Iterator != End)
+    {
+        wxStaticBoxSizer* Sizer = DBG_NEW wxStaticBoxSizer(wxVERTICAL, JobsListSizer, wxString(Iterator->get()->GetType()));
+
+        Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Unique Descriptor - " + Iterator->get()->GetUniqueDescriptor()), 0, wxGROW|wxALL, 4);
+
+        string Status;
+        if (Iterator->get()->IsDone())
+        {
+            Status = "Job Done";
+        }
+        else
+        {
+            Status = "Running...";
+        }
+
+        Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Status - " + Status), 0, wxGROW|wxALL, 4);
+        Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Owner - " + Iterator->get()->GetPathToOwner().GetStrPath()), 0, wxGROW|wxALL, 4);
+
+        if (Iterator->get()->IsDone())
+        {
+            Sizer->Add(DBG_NEW wxStaticText(JobsListSizer, wxID_ANY, "Output:"), 0, wxGROW|wxALL, 4);
+            
+            wxArrayString Outputs = wxArrayString();
+            for (auto Output: Iterator->get()->GetOutput())
+            {
+                string OutputStr = Output.Value;
+                if (Output.IsFile)
+                    OutputStr += " (File)";
+
+                Outputs.Add(OutputStr);
+            }
+
+            wxListBox* OutputBox = DBG_NEW wxListBox(JobsListSizer, wxID_ANY, wxDefaultPosition, wxDefaultSize, Outputs);
+
+            Sizer->Add(OutputBox, 0, wxGROW|wxALL, 4);
+
+            wxButton* DismissJob = DBG_NEW wxButton(JobsListSizer, wxID_ANY, "Dismiss");
+            DismissJob->Bind(
+                wxEVT_BUTTON,
+                [ Iterator ] (wxCommandEvent&) {
+                    Singleton<GridNode>::GetInstance().RemoveJob(Iterator->get()->GetUniqueDescriptor());
+                }
+            );
+            Sizer->Add(DismissJob, 0, wxGROW|wxALL, 4);
+        }
+        else 
+        {
+            wxButton* KillJobButton = DBG_NEW wxButton(JobsListSizer, wxID_ANY, "Kill Job");
+            KillJobButton->Bind(
+                wxEVT_BUTTON, 
+                [ Iterator ] (wxCommandEvent&) { 
+                    Singleton<GridNode>::GetInstance().RouteMessageToSelf(
+                        ATLS_CREATE_UNIQUE_MSG(CancelJobMessage, Iterator->get()->GetUniqueDescriptor(), Iterator->get()->GetPathToOwner().GetStrPath()),
+                        GridConnection()
+                    );
+                }
+            );
+            Sizer->Add(KillJobButton, 0, wxGROW|wxALL, 4);
+        }
+        
+        JobsListSizer->GetContainingSizer()->Add(Sizer, 0, wxGROW|wxALL, 4);
+        JobsListSizer->GetContainingSizer()->Layout();
+        Iterator++;
+    }
+
+    Fit();
 }
 
 bool MainFrame::Close(bool force)

@@ -25,10 +25,10 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     
     vector<string> Values = ((SeperatorBasedMessage*) USPBMsg.get())->GetValues();
 
-    int TYPE = atoi(Values[0].c_str());
+    string Type = Values[0];
     int Success = atoi(Values[1].c_str());
     string UniqueDecriptor = Values[2];
-    string TargetPath = move(Values[3]);
+    string PathToTarget = move(Values[3]);
 
     Argument CurrentArg = Argument("", false);
     
@@ -52,10 +52,10 @@ void SendJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
     }
 
     shared_ptr<IJob> Job;
-    JobRegistry::GetJob(TYPE, Job);
+    JobRegistry::GetJob(Type, Job);
     Job->SetUniqueDescriptor(UniqueDecriptor);
     Job->SetSuccess(Success);
-    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, move(TargetPath), Outputs));
+    Message.reset((IMessage*) DBG_NEW SendJobMessage(shared_ptr<IJob>(Job), Inputs, Path(PathToTarget), Outputs));
 }
 
 bool SendJobParser::CanParse(const string& SMsg) const

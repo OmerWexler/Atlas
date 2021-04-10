@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IJob.h"
 #include "Utils.h"
 #include "CancelJobParser.h"
 #include "CancelJobMessage.h"
@@ -13,8 +14,10 @@ string CancelJobParser::GetType() const
 
 void CancelJobParser::Parse(const string& SMsg, unique_ptr<IMessage>& Message)
 {
-    string Descriptor = SMsg.substr(HEADER.length(), SMsg.length());
-    Message.reset((IMessage*) DBG_NEW CancelJobMessage(Descriptor));
+    string Descriptor = SMsg.substr(HEADER.length(), IJob::RANDOM_DESCRIPTOR_LENGTH);
+    string OwnerPath =  SMsg.substr(HEADER.length() + IJob::RANDOM_DESCRIPTOR_LENGTH);
+    
+    Message.reset((IMessage*) DBG_NEW CancelJobMessage(Descriptor, OwnerPath));
 }
 
 bool CancelJobParser::CanParse(const string& SMsg) const

@@ -11,5 +11,6 @@ string CancelJobSerializer::GetType() const
 string CancelJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
 {
     string SMsg = HEADER + ((CancelJobMessage*) Message.get())->GetDescriptor();
+    SMsg += ((CancelJobMessage*) Message.get())->GetPathToTarget().GetStrPath();
     return SMsg;
 };

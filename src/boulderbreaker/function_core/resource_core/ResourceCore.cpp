@@ -17,10 +17,14 @@ void ResourceCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnection& S
     {
         SendNodePerformanceMessage* SNPMsg = (SendNodePerformanceMessage*) Message.get();
         Sender.SetTopPerformance(SNPMsg->GetNodePerformance());
-        Sender.SetTopPerformancePath(SNPMsg->GetPath());
+
+        Path SenderPath = SNPMsg->GetPath();
+        SenderPath.AddToStart(Singleton<GridNode>::GetInstance().GetName());
+        
+        Sender.SetTopPerformancePath(SenderPath);
 
         PCPerformance TopPerformance = Singleton<GridNode>::GetInstance().GetNodePerformance();
-        Path TopPerformancePath = Path();
+        Path TopPerformancePath = Path(Singleton<GridNode>::GetInstance().GetName());
         
         auto& Iterator = Singleton<GridNode>::GetInstance().GetMembersBegin();
         auto& End = Singleton<GridNode>::GetInstance().GetMembersEnd();

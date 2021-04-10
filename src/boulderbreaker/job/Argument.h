@@ -9,6 +9,12 @@ struct Argument
         this->Value = "";
         this->IsFile = false;
     }
+
+    Argument(string Value)
+    {
+        this->Value = Value;
+        this->IsFile = false;
+    }
     
     Argument(string Value, bool IsFile)
     {

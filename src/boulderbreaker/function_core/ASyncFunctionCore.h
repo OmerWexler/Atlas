@@ -26,8 +26,9 @@ private:
     string Name = "UnnamedCore";
     float PollFrequency;
     SmartThread QueueThread;
+    vector<SmartThread> MessageThreads;
     vector<QueuedSet> MessageQueue;
-    
+
     void HandleMessageFromQueue();
 
 protected:

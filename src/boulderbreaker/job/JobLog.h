@@ -14,11 +14,9 @@ private:
     vector<Argument> Output;
 
 public:
-    JobLog() {};
-    ~JobLog() {};
-    int GetType() const
+    string GetType() const
     {
-        return 0;
+        return "JobLog";
     }
     
     void Execute(vector<Argument>& Inputs)
@@ -44,33 +42,10 @@ public:
         return false;
     }
 
-    int GetSuccess() const
-    {
-        return Success;
-    }
-
-    void SetSuccess(int Success)
-    {
-        this->Success = Success;
-    }
-
-    string GetUniqueDescriptor() const
-    {
-        return UniqueDescriptor;
-    }
-
-    void SetUniqueDescriptor(string UniqueDescriptor)
-    {
-        this->UniqueDescriptor = UniqueDescriptor;
-    }
-
-    vector<Argument> GetOutput() const
-    {
-        return Output;
-    }
-
     IJob* Clone()
     {
         return (IJob*) DBG_NEW JobLog();
     }
+
+    ~JobLog() {};
 };

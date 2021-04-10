@@ -45,6 +45,8 @@ private:
     unordered_map<string, shared_ptr<ISerializer>> CollectiveSerializers;
 
     vector<unique_ptr<IFunctionCore>> FunctionCores;
+    
+    vector<shared_ptr<IJob>> DispatchedJobs;
 
     unordered_map<int, GridConnection> Members;
     vector<int> AvailableMemberSlots;
@@ -78,6 +80,9 @@ public:
     string GetName() { return Name; };
 
     void ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath);
+    void ReportOutput(string JobDescriptor, vector<Argument>& Output);
+    void RemoveJob(string JobDescriptor);
+    int RouteMessageToSelf(unique_ptr<IMessage>& Message, GridConnection& Sender);
 
     void AddCollectiveParser(shared_ptr<IParser>& Parser);
     void AddCollectiveSerializer(shared_ptr<ISerializer>& Serializer);
@@ -98,7 +103,10 @@ public:
     unordered_map<int, GridConnection>::iterator GridNode::GetClientsBegin();
     unordered_map<int, GridConnection>::iterator GridNode::GetClientsEnd();
 
-    void SendJobToMembers();
+    vector<shared_ptr<IJob>>::iterator GridNode::GetDispatchedJobsBegin() { return DispatchedJobs.begin(); };
+    vector<shared_ptr<IJob>>::iterator GridNode::GetDispatchedJobsEnd() { return DispatchedJobs.end(); };
+
+    int SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input);
     PCPerformance GetNodePerformance() { return CurrentPerformance; };
     PCPerformance GetGridTopPerformance() { return GridTopPerformance; };
     

@@ -23,10 +23,10 @@ string SendJobSerializer::Serialize(const unique_ptr<IMessage>& Message) const
     SendJobMessage* SJMsg = (SendJobMessage*) Message.get();
 
     SeperatorBasedMessage* SPBMsg = DBG_NEW SeperatorBasedMessage();
-    SPBMsg->AddValue(to_string(SJMsg->GetJob()->GetType()));
+    SPBMsg->AddValue(SJMsg->GetJob()->GetType());
     SPBMsg->AddValue(to_string(SJMsg->GetJob()->GetSuccess()));
     SPBMsg->AddValue(SJMsg->GetJob()->GetUniqueDescriptor());
-    SPBMsg->AddValue(SJMsg->GetTargetPath().GetStrPath());
+    SPBMsg->AddValue(SJMsg->GetPathToTarget().GetStrPath());
     
     vector<Argument> Inputs = SJMsg->GetInput();
     SPBMsg->AddValue(to_string(Inputs.size()));

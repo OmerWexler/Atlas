@@ -5,11 +5,14 @@
     #include <wx/wx.h>
 #endif
 
+using namespace std;
+
 class MainFrame : public wxFrame
 {
 public:
     MainFrame();
-    DECLARE_EVENT_TABLE();
+
+DECLARE_EVENT_TABLE();
 
 private:
     wxTextCtrl* TargetIP;
@@ -26,6 +29,8 @@ private:
     wxButton* ConnectAsClientButton;
     wxButton* ListenOnTargetButton;
     wxButton* ReloadNodeButton;
+    wxButton* SendJobButton;
+    wxStaticBox* JobsListSizer;
 
     wxStaticText* NodeCPUCores;
     wxStaticText* NodeCPUFrequency;
@@ -57,6 +62,8 @@ private:
     void ReloadConnectionsDisplay(wxCommandEvent& event);
     void UpdateCurrentPerformance(wxCommandEvent& event);
     void UpdateTopPerformance(wxCommandEvent& event);
+    void SendJob(wxCommandEvent& event);
+    void UpdateJobList(wxCommandEvent& event);
 
     bool Close(bool force=false);	
 };
@@ -68,3 +75,4 @@ wxDECLARE_EVENT(EVT_ADMIN_DISCONNECTED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_NODE_CONNECTIONS_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_UPDATE_CURRENT_PERFORMANCE, wxCommandEvent);
 wxDECLARE_EVENT(EVT_UPDATE_TOP_PERFORMANCE, wxCommandEvent);
+wxDECLARE_EVENT(EVT_UPDATE_JOB_LIST, wxCommandEvent);

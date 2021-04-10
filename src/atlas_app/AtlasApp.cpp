@@ -13,7 +13,7 @@ bool AtlasApp::OnInit()
     wxXmlResource::Get()->InitAllHandlers();
     wxXmlResource::Get()->Load("Atlas.xrc");
 
-    frame = new MainFrame();
+    frame = DBG_NEW MainFrame();
     frame->Show(true);
 
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);

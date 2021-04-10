@@ -2,30 +2,25 @@
 
 #include "JobRegistry.h"
 #include "Argument.h"
+#include "Utils.h"
 
 #include "JobLog.h"
-#include "Utils.h"
+#include "JobWait.h"
 
 #undef GetJob
 
 using namespace std;
 
-void JobRegistry::GetJob(int Type, shared_ptr<IJob>& OutJob)
+void JobRegistry::GetJob(const string Type, shared_ptr<IJob>& OutJob)
 {
     IJob* Job = nullptr;
 
-    switch (Type)
-    {
-    case 0:
+    if (Type =="JobLog")
         Job = (IJob*) DBG_NEW JobLog();
-        break;
     
-    case -1:
-    default:
-        Job = nullptr;
-        break;
-    }
-
+    if (Type == "JobWait")
+        Job = (IJob*) DBG_NEW JobWait();
+    
     if (Job != nullptr)
     {
         OutJob.reset(Job);

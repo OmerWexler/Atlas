@@ -31,3 +31,4 @@ include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/resourc
 
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/log)
+include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_wait)

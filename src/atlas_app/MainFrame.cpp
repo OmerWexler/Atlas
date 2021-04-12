@@ -144,6 +144,7 @@ void MainFrame::RenameNodeAdmin(wxCommandEvent& event)
 void MainFrame::ReloadNode(wxCommandEvent& event)
 {
     Singleton<GridNode>::GetInstance().CloseNode();
+    Singleton<GridNode>::GetInstance().StartNode();
 
     ListenOnTargetButton->Enable();
     ConnectAsMemberButton->Enable();
@@ -213,6 +214,8 @@ void MainFrame::UpdateCurrentPerformance(wxCommandEvent& event)
 
     NodeMemoryLoad->SetLabelText(
         "Memory Load - " + to_string(NodePerformance.RAMPerformance.MemoryLoad) + "%");
+
+    Fit();
 }
 
 void MainFrame::UpdateTopPerformance(wxCommandEvent& event)
@@ -239,6 +242,8 @@ void MainFrame::UpdateTopPerformance(wxCommandEvent& event)
         "Memory Load - " + to_string(TopPerformance.RAMPerformance.MemoryLoad) + "%");
 
     TopPath->SetLabelText("Node Path (relative) - \"" + TopPathObj.GetStrPath() + "\"");
+
+    Fit();
 }
 
 void MainFrame::ClearArguments(wxCommandEvent& event)

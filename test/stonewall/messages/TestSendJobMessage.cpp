@@ -19,15 +19,13 @@ int TestSendJobMessage()
     Inputs.push_back(Argument("BB", true));
 
     shared_ptr<IJob> Job = shared_ptr<IJob>((IJob*) DBG_NEW JobLog());
-    Job->SetUniqueDescriptor("Test");
-    
     Job->Execute(Inputs);
     
-    unique_ptr<IMessage> UMsg(ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Inputs, "TestPath/", Job->GetOutput()));
+    unique_ptr<IMessage> UMsg(ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Inputs, Path("TestPath/"), Job->GetOutput()));
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJSEPB0@@@0@@@Test@@@TestPath@@@2@@@AAA@@@0@@@BB@@@1@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJSEPBTestPath@@@JobLog@@@0@@@" + Job->GetUniqueDescriptor() + "@@@@@@2@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }

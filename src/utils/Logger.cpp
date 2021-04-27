@@ -7,10 +7,9 @@
 #include <string>
 #include <ctime>
 
-
 using namespace std;
 
-#ifdef DEBUG
+#ifndef NDEBUG
     string Logger::GetTime()
     {
         time_t Now = time(0);

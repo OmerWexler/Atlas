@@ -2,7 +2,6 @@
 
 #include "IJob.h"
 #include "utils.h"
-#include <wx/dialog.h>
 
 using namespace std;
 
@@ -11,7 +10,6 @@ class JobWait: IJob
 private:
     int Success = 0;
     string UniqueDescriptor = "";
-    wxDialog* CurrentWindow;
     bool ShouldRun;
 
 public: 

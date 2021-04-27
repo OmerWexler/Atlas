@@ -24,7 +24,7 @@ private:
     SOCKET Socket = INVALID_SOCKET;
     struct addrinfo ServerAddressHints;
 
-    // 0 = Blocked
+    // 0 = Blocking
     // 1 = Non Blocking
     u_long BlockMode = 0;
     string Name = "";

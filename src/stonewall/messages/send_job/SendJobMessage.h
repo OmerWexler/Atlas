@@ -20,9 +20,9 @@ private:
 public:
     const static string TYPE;
 
-    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path& PathToTarget);
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path PathToTarget);
     SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, vector<Argument>& Output);
-    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path& PathToTarget, vector<Argument>& Output);
+    SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path PathToTarget, vector<Argument>& Output);
     string GetType() const override;
     shared_ptr<IJob>& GetJob();
     

@@ -45,6 +45,12 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringSerializer.cpp
     
+    ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/RSAEncryptionModule.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/euclid.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/mpuint.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/random.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/rsa.cpp
+
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic/BasicServer.cpp
 
@@ -52,12 +58,11 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/JobRegistry.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/PCPerformance.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_wait/JobWait.cpp
 )
 
 set(
     APP_SOURCES
-
-    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_wait/JobWait.cpp
 
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridConnection.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid/GridNode.cpp

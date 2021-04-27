@@ -39,7 +39,8 @@ MainFrame::MainFrame()
     JobTypeChoice = XRCCTRL(*this, "JobTypeChoice", wxChoice);
     
     vector<wxString> JobList{};
-    JobRegistry::GetJobList(JobList);
+    JobList.push_back("JobWait");
+    JobList.push_back("JobLog");
     JobTypeChoice->Set(JobList);
 
     AddArgumentButton = XRCCTRL(*this, "AddArgumentButton", wxButton);

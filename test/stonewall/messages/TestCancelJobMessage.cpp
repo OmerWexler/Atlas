@@ -11,12 +11,12 @@ int TestCancelJobMessage()
 {
     CancelJobParser Parser = CancelJobParser();
     CancelJobSerializer Serializer = CancelJobSerializer();
-    CancelJobMessage* Msg = DBG_NEW CancelJobMessage("ABCD");
+    CancelJobMessage* Msg = DBG_NEW CancelJobMessage("ABC_ABC_ABC_ABC_", "A/");
     
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "CJABCD")
+    if (SMsg != "CJABC_ABC_ABC_ABC_A")
     {
         return -1;
     }
@@ -31,7 +31,7 @@ int TestCancelJobMessage()
         return -1;
     }
 
-    if (Msg->GetDescriptor() != "ABCD")
+    if (Msg->GetDescriptor() != "ABC_ABC_ABC_ABC_")
     {
         return -1;
     }

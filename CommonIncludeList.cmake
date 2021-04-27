@@ -17,6 +17,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/set_name)
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string)
 
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms)
+include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/encryption)
 include_directories(${CMAKE_SOURCE_DIR}/src/stonewall/comms/basic)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/grid)
 include_directories(${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources)

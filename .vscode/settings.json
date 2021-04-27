@@ -79,6 +79,8 @@
         "string_view": "cpp",
         "xmemory0": "cpp",
         "xxatomic": "cpp",
-        "xthread": "cpp"
+        "xthread": "cpp",
+        "random": "cpp",
+        "*.inc": "cpp"
     }
 }

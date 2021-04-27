@@ -18,14 +18,14 @@ int TestSendJobOutputMessage()
     Output.push_back(Argument("AAA", false));
     Output.push_back(Argument("BB", true));
 
-    JobLog Job = JobLog();
+    JobLog Job{};
     Job.SetUniqueDescriptor("Test");
     
-    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobOutputMessage(Job.GetUniqueDescriptor(), Output));
+    unique_ptr<IMessage> UMsg((IMessage*) DBG_NEW SendJobOutputMessage(Job.GetUniqueDescriptor(), Path(), Output));
     SendJobOutputMessage* SJOMsg = (SendJobOutputMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJOSEPBTest@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJOSEPBTest@@@@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }

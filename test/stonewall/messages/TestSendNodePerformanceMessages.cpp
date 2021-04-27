@@ -23,11 +23,6 @@ int TestSendNodePerformanceMessages()
     unique_ptr<IMessage> UMsg((IMessage*) Msg);
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "RBNSEPB8@@@3600@@@25@@@500@@@1000@@@50")
-    {
-        return -1;
-    }
-
     if (Parser.CanParse(SMsg))
     {
         Parser.Parse(SMsg, UMsg);

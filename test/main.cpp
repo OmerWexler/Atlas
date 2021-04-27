@@ -7,6 +7,7 @@
 #include "WinPerformanceAnalyzerTest.cpp"
 #include "TestSendJobMessage.cpp"
 #include "TestSendJobOutputMessage.cpp"
+#include "TestEncryptionModule.cpp"
 #include "Logger.h"
 #include "Utils.h"
 
@@ -20,7 +21,7 @@ int main(int argc, char** argv)
 {   
     Utils::SetupMemoryCheck();
     Singleton<Logger>::GetInstance().SetLogLevel(L_DEBUG);
-    Singleton<Logger>::GetInstance().SetLogFileName("E:\\Desktop\\2021 Cyber Project\\Atlas\\build\\test\\Debug", "Tests.txt");
+    Singleton<Logger>::GetInstance().SetLogFileName("", "Tests.txt");
 
     int ExitCode = 0;
     
@@ -63,6 +64,10 @@ int main(int argc, char** argv)
 
         case 8:
             ExitCode = WinPerformanceAnalyzerTest();
+            break;
+
+        case 9:
+            ExitCode = TestEncryptionModule();
             break;
 
         default:
@@ -122,6 +127,12 @@ int main(int argc, char** argv)
         
         Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
         ExitCode = WinPerformanceAnalyzerTest();
+        if (ExitCode != 0)
+            return ExitCode;
+        printf("\n");
+        
+        Singleton<Logger>::GetInstance().Info("Starting TestEncryptionModule...");
+        ExitCode = TestEncryptionModule();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");

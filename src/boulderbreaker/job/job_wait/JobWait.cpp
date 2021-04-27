@@ -2,16 +2,10 @@
 
 #include "JobWait.h"
 
-#include "AtlasApp.h"
-#include "MainFrame.h"
-
-#include "wx/xrc/xmlres.h"
-
 string JobWait::GetType() const
 {
     return "JobWait";
 }
-
 
 bool IsNumber(const string& s)
 {

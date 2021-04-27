@@ -4,7 +4,7 @@
 
 const string SendJobMessage::TYPE = "SendJob";
 
-SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path& PathToTarget)
+SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path PathToTarget)
 {
     this->Job = Job;
     this->Input = Input;
@@ -18,7 +18,7 @@ SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, v
     this->Output = Output;
 }
 
-SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path& PathToTarget, vector<Argument>& Output)
+SendJobMessage::SendJobMessage(shared_ptr<IJob>& Job, vector<Argument>& Input, Path PathToTarget, vector<Argument>& Output)
 {
     this->Job = Job;
     this->Input = Input;

@@ -47,6 +47,7 @@ private:
     vector<unique_ptr<IFunctionCore>> FunctionCores;
     
     vector<shared_ptr<IJob>> DispatchedJobs;
+    vector<shared_ptr<IJob>> LocalJobs;
 
     unordered_map<int, GridConnection> Members;
     vector<int> AvailableMemberSlots;
@@ -104,6 +105,11 @@ public:
 
     vector<shared_ptr<IJob>>::iterator GridNode::GetDispatchedJobsBegin() { return DispatchedJobs.begin(); };
     vector<shared_ptr<IJob>>::iterator GridNode::GetDispatchedJobsEnd() { return DispatchedJobs.end(); };
+
+    void RegisterLocalJob(shared_ptr<IJob>& Job);
+    void RemoveLocalJob(string Descriptor);
+    vector<shared_ptr<IJob>>::iterator GridNode::GetLocalJobsBegin() { return LocalJobs.begin(); };
+    vector<shared_ptr<IJob>>::iterator GridNode::GetLocalJobsEnd() { return LocalJobs.end(); };
 
     int SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input);
     PCPerformance GetNodePerformance() { return CurrentPerformance; };

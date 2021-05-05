@@ -51,6 +51,8 @@ void JobCore::SendJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection& 
         {
             shared_ptr<IJob>& Job = SJMsg->GetJob();
             LocalJobs[Job->GetUniqueDescriptor()] = Job;
+            Singleton<GridNode>::GetInstance().RegisterLocalJob(Job);
+
             Job->StartASync(SJMsg->GetInput());
         }
         else // Target is a member Node
@@ -134,6 +136,14 @@ void JobCore::CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection
             }
         }
     }
+    else if (PathToTarget.size() > 0 && PathToTarget[PathToTarget.size() - 1] == CurrentNodeName)
+    {
+        PathToTarget.RemoveFromEnd();
+        if (LocalJobs.find(Descriptor) != LocalJobs.end())
+        {
+            LocalJobs[Descriptor]->Kill();
+        }
+    }
     else
     {
         Singleton<Logger>::GetInstance().Warning(
@@ -193,6 +203,11 @@ void JobCore::Periodic()
             auto OutputMsg = ATLS_CREATE_UNIQUE_MSG(SendJobOutputMessage, It->second->GetUniqueDescriptor(), It->second->GetPathToTarget(), It->second->GetOutput());
             QueueMessage(OutputMsg, GridConnection());
 
+            if (wxGetApp().GetMainFrame())
+            {
+                wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
+                wxQueueEvent(wxGetApp().GetMainFrame(), event);
+            }
             It = LocalJobs.erase(It);
         }
         else

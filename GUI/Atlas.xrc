@@ -494,13 +494,30 @@
                             </object>
                         </object>
                     </object>
+                </object>
+            </object>
+            <object class="sizeritem">
+                <flag>wxGROW</flag>
+                <border>5</border>
+                <option>1</option>
+                <object class="wxBoxSizer">
+                    <orient>wxVERTICAL</orient>
                     <object class="sizeritem">
                         <flag>wxGROW|wxALL</flag>
                         <border>5</border>
                         <option>1</option>
                         <object class="wxStaticBoxSizer" name="JobsListSizer">
                             <orient>wxVERTICAL</orient>
-                            <label>Jobs</label>
+                            <label>Sent Jobs</label>
+                        </object>
+                    </object>
+                    <object class="sizeritem">
+                        <flag>wxGROW|wxALL</flag>
+                        <border>5</border>
+                        <option>1</option>
+                        <object class="wxStaticBoxSizer" name="LocalJobsListSizer">
+                            <orient>wxVERTICAL</orient>
+                            <label>Local Running Jobs</label>
                         </object>
                     </object>
                 </object>

@@ -13,10 +13,6 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameparser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/reject_name/RejectNameSerializer.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceMessage.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceParser.cpp
-    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/request_node_performance/RequestNodePerformanceSerializer.cpp
-    
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceSerializer.cpp

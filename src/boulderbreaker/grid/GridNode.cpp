@@ -408,7 +408,7 @@ void GridNode::RemoveJob(string JobDescriptor)
     auto& Iterator = DispatchedJobs.begin();
     while (Iterator != DispatchedJobs.end())
     {
-        if (Iterator->get()->GetUniqueDescriptor() == JobDescriptor)
+        if (!Iterator->get() || Iterator->get()->GetUniqueDescriptor() == JobDescriptor)
         {
             Iterator = DispatchedJobs.erase(Iterator);
         }
@@ -419,6 +419,37 @@ void GridNode::RemoveJob(string JobDescriptor)
     if (wxGetApp().GetMainFrame())
     {
         wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+}
+
+void GridNode::RegisterLocalJob(shared_ptr<IJob>& Job) 
+{ 
+    LocalJobs.push_back(Job); 
+
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
+        wxQueueEvent(wxGetApp().GetMainFrame(), event);
+    }
+}
+
+void GridNode::RemoveLocalJob(string Descriptor)
+{
+    auto& Iterator = LocalJobs.begin();
+    while (Iterator != LocalJobs.end())
+    {
+        if (Iterator->get()->GetUniqueDescriptor() == Descriptor)
+        {
+            Iterator = LocalJobs.erase(Iterator);
+        }
+        else
+            Iterator++;
+    }
+
+    if (wxGetApp().GetMainFrame())
+    {
+        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }

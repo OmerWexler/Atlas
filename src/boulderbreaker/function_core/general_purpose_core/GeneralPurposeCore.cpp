@@ -64,7 +64,13 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
         auto& End = Singleton<GridNode>::GetInstance().GetMembersEnd();
         NameAccepted = true;
 
-        while(Iterator != End)
+        if (Singleton<GridNode>::GetInstance().GetName() == NewName)
+        {
+            Singleton<Logger>::GetInstance().Info("Rejected request to rename " + OriginalName + " to - " + NewName);
+            NameAccepted = false;
+        }
+
+        while(Iterator != End && NameAccepted)
         {
             if (Iterator->second.GetName() == NewName)
             {
@@ -78,7 +84,7 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
         Iterator = Singleton<GridNode>::GetInstance().GetClientsBegin();
         End = Singleton<GridNode>::GetInstance().GetClientsEnd();
 
-        while(Iterator != End)
+        while(Iterator != End && NameAccepted)
         {
             if (Iterator->second.GetName() == NewName)
             {

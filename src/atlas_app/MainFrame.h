@@ -34,6 +34,7 @@ private:
     wxButton* SendJobButton;
 
     wxStaticBox* JobsListSizer;
+    wxStaticBox* LocalJobsListSizer;
     wxChoice* JobTypeChoice;
     wxButton* AddArgumentButton;
     wxButton* ClearArgumentButton;
@@ -77,6 +78,7 @@ private:
     void AddArgument(wxCommandEvent& event);
     void ClearArguments(wxCommandEvent& event);
     void UpdateJobList(wxCommandEvent& event);
+    void UpdateLocalJobList(wxCommandEvent& event);
 
     bool Close(bool force=false);	
 };
@@ -89,3 +91,4 @@ wxDECLARE_EVENT(EVT_NODE_CONNECTIONS_CHANGED, wxCommandEvent);
 wxDECLARE_EVENT(EVT_UPDATE_CURRENT_PERFORMANCE, wxCommandEvent);
 wxDECLARE_EVENT(EVT_UPDATE_TOP_PERFORMANCE, wxCommandEvent);
 wxDECLARE_EVENT(EVT_UPDATE_JOB_LIST, wxCommandEvent);
+wxDECLARE_EVENT(EVT_UPDATE_LOCAL_JOB_LIST, wxCommandEvent);

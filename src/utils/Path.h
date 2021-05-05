@@ -64,6 +64,11 @@ public:
         return VecPath.size();
     }
 
+    string GetLast()
+    {
+        return VecPath.back();
+    }
+
     string GetStrPath()
     {
         string StrPath = "";

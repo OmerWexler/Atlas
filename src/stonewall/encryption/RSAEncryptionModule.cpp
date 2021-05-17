@@ -4,10 +4,11 @@
 #include <string>
 
 #include "Singleton.h"
+#include <iostream>
 #include "Logger.h"
 
-const unsigned int RSAEncryptionModule::KeySize = 512 / 16; // BitNum / bit in short
-const unsigned int RSAEncryptionModule::BlockSize = 155;
+const unsigned int RSAEncryptionModule::KeySize = 256 / 16; // BitNum / bit in short
+const unsigned int RSAEncryptionModule::BlockSize = 78; // Number of digits of the number 2^(KeySize * 16)
 
 RSAEncryptionModule::RSAEncryptionModule() : PublicKey(KeySize), PrivateKey(KeySize)
 {}
@@ -46,6 +47,7 @@ void RSAEncryptionModule::Encrypt(string& Target)
     Singleton<Logger>::GetInstance().Debug("Encryption - " + Target);
 
     string TruncatedTarget = "";
+    string Addition = "";
     Target = "";
 
     while (AsciiTarget.size() > 0)
@@ -70,13 +72,15 @@ void RSAEncryptionModule::Encrypt(string& Target)
         }
         else
         {
-            while (AsciiTarget.size() < BlockSize / 2)
+            Singleton<Logger>::GetInstance().Debug("Clear");
+
+            while (AsciiTarget.length() < BlockSize / 2)
             {
                 AsciiTarget += "9";
             }
-
-            Singleton<Logger>::GetInstance().Debug("Clear");
+            
             Singleton<Logger>::GetInstance().Debug("Ascii - " + AsciiTarget);
+            
             CTarget = AsciiTarget.c_str();
             Source.scan(CTarget);
 
@@ -85,13 +89,21 @@ void RSAEncryptionModule::Encrypt(string& Target)
 
         if (Source > PublicKey.Modulus)
         {
-            printf("Fuck");
+            Singleton<Logger>::GetInstance().Debug("Fuckkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk --------------------------------------");
+            system("pause");
+            Source.value[Source.length - 1] = 0;
         }
+
         RSALib::EncryptDecrypt(Result, Source, PublicKey.Exponent, PublicKey.Modulus);
 
         Result.edit(CResult);
-        Target += string(CResult);
-        Singleton<Logger>::GetInstance().Debug("Target - " + Target);
+        Addition = string(CResult);
+
+        while (Addition.length() < BlockSize - 1)
+            Addition += "@";
+        
+        Target += Addition;
+        Singleton<Logger>::GetInstance().Debug("Target Added - " + Addition);
         Singleton<Logger>::GetInstance().Debug("");
     }
 
@@ -113,6 +125,7 @@ void RSAEncryptionModule::Decrypt(string& Target)
 
     string AsciiTarget = "";
     string TruncatedTarget = "";
+    string Addition = "";
 
     Singleton<Logger>::GetInstance().Debug("");
     Singleton<Logger>::GetInstance().Debug("");
@@ -128,6 +141,9 @@ void RSAEncryptionModule::Decrypt(string& Target)
             Singleton<Logger>::GetInstance().Debug("Target - " + Target);
 
             TruncatedTarget = Target.substr(0, BlockSize - 1);
+
+            while (TruncatedTarget.back() == '@')
+                TruncatedTarget.pop_back();
 
             Singleton<Logger>::GetInstance().Debug("Trunc - " + TruncatedTarget);
 
@@ -150,9 +166,13 @@ void RSAEncryptionModule::Decrypt(string& Target)
         RSALib::EncryptDecrypt(Result, Source, PrivateKey.Exponent, PrivateKey.Modulus);
 
         Result.edit(CResult);
+        Addition = string(CResult);
 
-        AsciiTarget += string(CResult);
-        Singleton<Logger>::GetInstance().Debug("Ascii Target - " + AsciiTarget);
+        while (Addition.length() < BlockSize / 2)
+            Addition = "0" + Addition;
+
+        AsciiTarget += Addition;
+        Singleton<Logger>::GetInstance().Debug("Ascii Added - " + Addition);
         Singleton<Logger>::GetInstance().Debug("");
     }
 
@@ -161,7 +181,7 @@ void RSAEncryptionModule::Decrypt(string& Target)
     while (AsciiTarget.size() > 0)
     {
         NextCharSize = stoi(AsciiTarget.substr(0, 1));
-        if (NextCharSize == 9)
+        if (NextCharSize == 9 || NextCharSize == 0)
             break;
         
         Target += (char)(unsigned short)(stoi(AsciiTarget.substr(1, NextCharSize)));

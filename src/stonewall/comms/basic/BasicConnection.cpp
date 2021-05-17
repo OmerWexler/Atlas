@@ -123,7 +123,7 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
     string SMsg = Serializers[Msg->GetType()]->Serialize(Msg);
     string SMsgSize = to_string(SMsg.length());
 
-    for(int i = SMsgSize.length(); i < NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
+    for(size_t i = SMsgSize.length(); i < NUM_OF_BYTES_IN_MESSAGE_LEN; i++)
     {
         SMsgSize = "0" + SMsgSize;
     }

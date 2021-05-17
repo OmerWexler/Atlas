@@ -36,7 +36,8 @@ public:
             if (PollFrequency == ST_SINGLE_CALL)
             {
                 TempThread = thread(Runnable, Args...);
-                TempThread.join();
+                if (TempThread.joinable())
+                    TempThread.join();
             }
             else
             {

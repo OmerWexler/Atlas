@@ -31,39 +31,39 @@ int main(int argc, char** argv)
         switch (TestID)
         {
         case 0:
-            ExitCode = TestWinSocketCommunications();
+            // ExitCode = TestWinSocketCommunications();
             break;
 
         case 1:
-            ExitCode = TestBasicCommunications();
+            // ExitCode = TestBasicCommunications();
             break;
         
         case 2:
-            ExitCode = TestSeperatorBasedMessages();
+            // ExitCode = TestSeperatorBasedMessages();
             break;
 
         case 3:
-            ExitCode = TestSendJobPolicyMessages();
+            // ExitCode = TestSendJobPolicyMessages();
             break;
 
         case 4:
-            ExitCode = TestCancelJobMessage();
+            // ExitCode = TestCancelJobMessage();
             break;
 
         case 5:
-            ExitCode = TestSendNodePerformanceMessages();
+            // ExitCode = TestSendNodePerformanceMessages();
             break;
 
         case 6:
-            ExitCode = TestSendJobMessage();
+            // ExitCode = TestSendJobMessage();
             break;
 
         case 7:
-            ExitCode = TestSendJobOutputMessage();
+            // ExitCode = TestSendJobOutputMessage();
             break;
 
         case 8:
-            ExitCode = WinPerformanceAnalyzerTest();
+            // ExitCode = WinPerformanceAnalyzerTest();
             break;
 
         case 9:
@@ -77,59 +77,59 @@ int main(int argc, char** argv)
     else 
     {
 
-        Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
-        ExitCode = TestWinSocketCommunications();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
+        // ExitCode = TestWinSocketCommunications();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
 
-        Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
-        ExitCode = TestBasicCommunications();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
+        // ExitCode = TestBasicCommunications();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
     
-        Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
-        ExitCode = TestSeperatorBasedMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
+        // ExitCode = TestSeperatorBasedMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
-        ExitCode = TestSendJobPolicyMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
+        // ExitCode = TestSendJobPolicyMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
-        ExitCode = TestCancelJobMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
+        // ExitCode = TestCancelJobMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendNodePerformanceMessages...");
-        ExitCode = TestSendNodePerformanceMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendNodePerformanceMessages...");
+        // ExitCode = TestSendNodePerformanceMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
-        ExitCode = TestSendJobMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
+        // ExitCode = TestSendJobMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
-        ExitCode = TestSendJobOutputMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
+        // ExitCode = TestSendJobOutputMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
-        ExitCode = WinPerformanceAnalyzerTest();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
+        // ExitCode = WinPerformanceAnalyzerTest();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
         Singleton<Logger>::GetInstance().Info("Starting TestEncryptionModule...");
         ExitCode = TestEncryptionModule();

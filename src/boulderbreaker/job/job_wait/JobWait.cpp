@@ -47,7 +47,7 @@ void JobWait::Execute(vector<Argument>& Input)
 
 int JobWait::Kill()
 {
-    Output.push_back(Argument("Was killed.txt", true));
+    Output.push_back(Argument("Was killed", false));
     m_IsAlive = false;
     m_IsDone = true;
     

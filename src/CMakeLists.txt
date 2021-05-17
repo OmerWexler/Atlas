@@ -10,6 +10,7 @@ add_executable(
 
 target_link_libraries(Atlas PUBLIC wx::net wx::core wx::base wx::aui wx::html wx::xrc)
 target_link_libraries(Atlas PUBLIC ${wxWidgets_LIBRARIES})
+# target_link_libraries(Atlas PUBLIC Qt-Secret)
 
 add_custom_command(
     TARGET Atlas

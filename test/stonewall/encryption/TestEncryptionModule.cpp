@@ -1,24 +1,31 @@
 #include <string>
 #include "RSAEncryptionModule.h"
 
+#include "Singleton.h"
+#include "Logger.h"
+
+#include <iostream>
+
 using namespace std;
 
 int TestEncryptionModule() 
 {
     RSAEncryptionModule EModule = RSAEncryptionModule();
-    EModule.GenerateKeys();
-
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 50; i++)
     {
-        string InitialMessage = "\"|{}\":>>PL+NT)@#YGMSGejg15j21985jtpase9ng[\"NM{PL{\"|AauifhuiabefipabefSagfeagggggggggggggggadgergageeg4g43t2j58 yht823ghtpowngs  ";
+        EModule.GenerateKeys();
+        string InitialMessage = "\"|{}\":>>PL+NT)@#YGMSGejg15j21985jtpa1-3856-293780ug34h-q8gj8mb---8v---- ----h---82---3-yt2-3y h8f-hidosahfnupiunffFUPIFFBNFFFffPUIBFIUPB@(*!{PG )#*_@ GB_) #@Y*_# Y% *()@#) se9n";
         string Message = InitialMessage.substr(0);
         
         EModule.Encrypt(Message);
         EModule.Decrypt(Message);
         
         if (InitialMessage != Message)
-            return 1;
-        
+        {
+            Singleton<Logger>::GetInstance().Debug("Message Mismatch");
+            system("pause");
+        }
+
         InitialMessage = "\"|{}\":>>PL+NT)@#YGMSGejg15j21985jtpase9ng[\"NM{PL{\"|A+_!@(I%)$!@T{}JEWSANGFPNJMOnsungiuasdafewfasegfasegnsegF";
         Message = InitialMessage.substr(0);
         
@@ -26,8 +33,11 @@ int TestEncryptionModule()
         EModule.Decrypt(Message);
         
         if (InitialMessage != Message)
-            return 1;
-        
+        {
+            Singleton<Logger>::GetInstance().Debug("Message Mismatch");
+            system("pause");
+        }
+
         InitialMessage = "NJMOnsungiuasdafewfasegfasegnsegF";
         Message = InitialMessage.substr(0);
 
@@ -35,8 +45,12 @@ int TestEncryptionModule()
         EModule.Decrypt(Message);
         
         if (InitialMessage != Message)
-            return 1;
+        {
+            Singleton<Logger>::GetInstance().Debug("Message Mismatch");
+            system("pause");
+        }
     }
 
+    Singleton<Logger>::GetInstance().Debug("Encryption Done");
     return 0;
 }

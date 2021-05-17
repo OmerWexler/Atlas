@@ -15,5 +15,6 @@ public:
     void QueueMessage(unique_ptr<IMessage>& Message, GridConnection& Sender);
     bool IsMessageRelated(const unique_ptr<IMessage>& Message) const;
     
+    void SendNodePerformanceCallback(unique_ptr<IMessage>& Message, GridConnection& Sender);
     ~ResourceCore()=default;
 };

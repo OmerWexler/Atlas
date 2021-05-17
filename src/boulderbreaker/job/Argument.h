@@ -4,6 +4,9 @@ using namespace std;
 
 struct Argument
 {
+    string Value;
+    bool IsFile;
+
     Argument()
     {
         this->Value = "";
@@ -21,7 +24,4 @@ struct Argument
         this->Value = Value;
         this->IsFile = IsFile;
     }
-    
-    string Value;
-    bool IsFile;
 };

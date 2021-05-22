@@ -48,7 +48,7 @@ void ResourceCore::SendNodePerformanceCallback(unique_ptr<IMessage>& Message, Gr
     Singleton<GridNode>::GetInstance().ReportNewTopPerformance(TopPerformance, TopPerformancePath);
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_TOP_PERFORMANCE);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_TOP_PERFORMANCE);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }

@@ -16,6 +16,10 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_node_performance/SendNodePerformanceSerializer.cpp
+    
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_rsa_key/SendRSAKeyMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_rsa_key/SendRSAKeyParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_rsa_key/SendRSAKeySerializer.cpp
 
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job/SendJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/send_job/SendJobParser.cpp

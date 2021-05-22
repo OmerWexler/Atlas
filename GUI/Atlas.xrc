@@ -447,6 +447,7 @@
                                                 <flag>wxGROW|wxALL|wxFIXED_MINSIZE</flag>
                                                 <border>5</border>
                                                 <object class="wxCheckBox" name="IsArgumentFile">
+                                                    <hidden>1</hidden>
                                                     <label>Is File</label>
                                                     <checked>0</checked>
                                                 </object>

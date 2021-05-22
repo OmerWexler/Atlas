@@ -179,7 +179,7 @@ void MainFrame::ReloadConnectionsDisplay(wxCommandEvent& event)
 
     while (Iterator != End)
     {  
-        Banner = new wxStaticText(ClientNamesBox, wxID_ANY, wxString(Iterator->second.GetName()));
+        Banner = DBG_NEW wxStaticText(ClientNamesBox, wxID_ANY, wxString(Iterator->second.GetName()));
         ClientNamesBox->GetContainingSizer()->Add(Banner);
         Iterator++;
     }
@@ -189,7 +189,7 @@ void MainFrame::ReloadConnectionsDisplay(wxCommandEvent& event)
 
     while (Iterator != End)
     {
-        Banner = new wxStaticText(MemberNamesBox, wxID_ANY, wxString(Iterator->second.GetName()));
+        Banner = DBG_NEW wxStaticText(MemberNamesBox, wxID_ANY, wxString(Iterator->second.GetName()));
         MemberNamesBox->GetContainingSizer()->Add(Banner);
         Iterator++;
     }
@@ -270,7 +270,7 @@ void MainFrame::AddArgument(wxCommandEvent& event)
         ArgumentDescription += " (File)";
 
     ArgumentsBox->GetContainingSizer()->Add(
-        new wxStaticText(ArgumentsBox, wxID_ANY, ArgumentDescription), 
+        DBG_NEW wxStaticText(ArgumentsBox, wxID_ANY, ArgumentDescription), 
         0, wxGROW|wxALL, 2
     );
     ArgumentsBox->GetContainingSizer()->Layout();

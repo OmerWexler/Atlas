@@ -14,7 +14,7 @@ public:
     int Compare(const mpuint &) const;
     int Compare(unsigned short) const;
     unsigned length;
-    mpuint(unsigned);
+    mpuint(unsigned len);
     mpuint(const mpuint &);
     ~mpuint();
     void operator=(const mpuint &);

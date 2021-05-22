@@ -103,7 +103,7 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
 
         if (IsAdmin) 
         {
-            wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
+            wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
             if (wxGetApp().GetMainFrame())
             {
                 event->SetString(wxString(NewName + " (" + Sender.GetHost() + ":" + Sender.GetPort() + ")"));
@@ -114,7 +114,7 @@ void GeneralPurposeCore::SetNameCallback(unique_ptr<IMessage>& Message, GridConn
         {
             if (wxGetApp().GetMainFrame())
             {
-                wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+                wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
                 wxQueueEvent(wxGetApp().GetMainFrame(), event);
             }
         }
@@ -174,7 +174,7 @@ void GeneralPurposeCore::DisconnectCallback(unique_ptr<IMessage>& Message, GridC
     {
         if (wxGetApp().GetMainFrame())
         {
-            wxCommandEvent* event = new wxCommandEvent(EVT_ADMIN_DISCONNECTED);
+            wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_ADMIN_DISCONNECTED);
             wxQueueEvent(wxGetApp().GetMainFrame(), event);
         }
     }

@@ -4,24 +4,25 @@
 #include "mpuint.h"
 #include "Singleton.h"
 #include "Logger.h"
+#include "Utils.h"
 
 #pragma warning (disable : 4244)
 
 void numeric_overflow() 
 {
-    Singleton<Logger>::GetInstance().Error("Numeric Overflow - ");
+    // Singleton<Logger>::GetInstance().Error("Numeric Overflow - ");
 }
 
 mpuint::mpuint(unsigned len)
 {
     length = len;
-    value = new unsigned short[len];
+    value = DBG_NEW unsigned short[len];
 }
 
 mpuint::mpuint(const mpuint &n)
 {
     length = n.length;
-    value = new unsigned short[length];
+    value = DBG_NEW unsigned short[length];
     unsigned i;
     for (i = 0; i < length; i++)
         value[i] = n.value[i];
@@ -126,7 +127,7 @@ void mpuint::operator-=(unsigned short n)
 void mpuint::operator*=(const mpuint &n)
 {
     unsigned i;
-    unsigned short *multiplier = new unsigned short[length];
+    unsigned short *multiplier = DBG_NEW unsigned short[length];
     for (i = 0; i < length; i++)
     {
         multiplier[i] = value[i];

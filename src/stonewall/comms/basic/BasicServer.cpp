@@ -107,6 +107,8 @@ int BasicServer::AcceptConnection(string Name, BasicConnection& OutConnection)
     {
         OutConnection.AddSerializer(element.second);
     }
+
+    OutConnection.SwapKeysWithPeer();
     return 0;
 }
 

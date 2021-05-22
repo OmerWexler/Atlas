@@ -2,6 +2,8 @@
 
 #include <chrono>
 #include <thread>
+#include <random>
+#include <string>
 
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
@@ -17,6 +19,8 @@
 #pragma comment(lib, "user32.lib")
 #pragma warning( disable : 4244 ) 
 #pragma warning( disable : 4996 ) 
+#pragma warning( disable : 4267 ) 
+
 
 using namespace std;
 using namespace std::chrono;
@@ -78,5 +82,35 @@ public:
         // _CrtSetReportFile( _CRT_ASSERT, _CRTDBG_MODE_FILE );
         
         _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+    }
+
+    inline static string GenerateRandomDescriptor(size_t Length)
+    {
+        const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        random_device random_device;
+        mt19937 generator(random_device());
+        uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+
+        string random_string;
+
+        for (size_t i = 0; i < Length; ++i)
+        {
+            random_string += CHARACTERS[distribution(generator)];
+        }
+
+        return random_string;
+    }
+
+    inline static string PadInt(int Value, int Size)
+    {
+        string Padded = to_string(Value);
+
+        while (Padded.length() < Size)
+        {
+            Padded = "0" + Padded;
+        }
+
+        return Padded;
     }
 };

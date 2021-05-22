@@ -68,7 +68,7 @@ void GridNode::SetName(string Name, bool BroadcastRequest)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_NODE_NAME_CHANGED);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_NODE_NAME_CHANGED);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }
@@ -137,7 +137,7 @@ void GridNode::AddConnectionToMap(unordered_map<int, GridConnection>& Map, strin
 
     Map[NewID] = move(Connection);
     Map[NewID].SendMessage(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, Name));
-    Singleton<Logger>::GetInstance().Info(Name + " registered new connection.");
+    Singleton<Logger>::GetInstance().Info(Name + " registered DBG_NEW connection.");
 }
 
 void GridNode::AddCollectiveParser(shared_ptr<IParser>& Parser)
@@ -215,7 +215,7 @@ int GridNode::Listen(string Host, string Port)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_LISTEN_ADDRESS_CHANGED);
         event->SetString(wxString(Host + ":" + Port));
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
@@ -274,7 +274,7 @@ void GridNode::IterateOnConnectionMap(unordered_map<int, GridConnection>& Map, v
 
             if (wxGetApp().GetMainFrame())
             {
-                wxCommandEvent* event = new wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
+                wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_NODE_CONNECTIONS_CHANGED);
                 wxQueueEvent(wxGetApp().GetMainFrame(), event);
             }
             
@@ -323,7 +323,7 @@ void GridNode::ResourceManager()
     
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_CURRENT_PERFORMANCE);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_CURRENT_PERFORMANCE);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 
@@ -335,7 +335,7 @@ void GridNode::ResourceManager()
         
         if (wxGetApp().GetMainFrame())
         {
-            wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_TOP_PERFORMANCE);
+            wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_TOP_PERFORMANCE);
             wxQueueEvent(wxGetApp().GetMainFrame(), event);
         }
     }
@@ -366,7 +366,7 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_NODE_ADMIN_NAME_CHANGED);
         event->SetString(wxString("Unnamed (" + NodeAdmin.GetHost() + ":" + NodeAdmin.GetPort() + ")"));
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
@@ -384,7 +384,7 @@ int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_JOB_LIST);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 
@@ -418,7 +418,7 @@ void GridNode::RemoveJob(string JobDescriptor)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_JOB_LIST);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }
@@ -429,7 +429,7 @@ void GridNode::RegisterLocalJob(shared_ptr<IJob>& Job)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }
@@ -449,7 +449,7 @@ void GridNode::RemoveLocalJob(string Descriptor)
 
     if (wxGetApp().GetMainFrame())
     {
-        wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
+        wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 }

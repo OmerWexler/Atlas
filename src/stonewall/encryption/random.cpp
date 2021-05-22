@@ -14,6 +14,6 @@ void Random(mpuint &x)
     for (unsigned i = 0; i < x.length; i++)
     {
         srand(time(0));
-        x.value[i] = rand();
+        x.value[i] = (short)rand();
     }
 }

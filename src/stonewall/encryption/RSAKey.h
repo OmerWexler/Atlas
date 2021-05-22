@@ -1,12 +1,13 @@
 #pragma once
 
 #include "mpuint.h"
+#include "Utils.h"
 
 struct RSAKey
 {
     RSAKey() : 
-        Exponent(512),
-        Modulus(512)
+        Exponent(0),
+        Modulus(0)
     {}
     
     RSAKey(unsigned int KeyLength) : 
@@ -20,6 +21,21 @@ struct RSAKey
     {
         this->Exponent = Exponent;
         this->Modulus = Modulus;
+    }
+
+    RSAKey operator=(RSAKey& Other)
+    {
+        Exponent.length = Other.Exponent.length;
+        delete[] Exponent.value;
+        Exponent.value = DBG_NEW unsigned short[Exponent.length];
+        Exponent = Other.Exponent;
+
+        Modulus.length = Other.Modulus.length;
+        delete[] Modulus.value;
+        Modulus.value = DBG_NEW unsigned short[Modulus.length];
+        Modulus = Other.Modulus;
+
+        return *this;
     }
 
     mpuint Exponent;

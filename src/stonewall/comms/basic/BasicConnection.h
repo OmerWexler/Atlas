@@ -8,6 +8,10 @@
 #include "ISerializer.h"
 #include "IParser.h"
 
+#include "RSAKey.h"
+#include "RSAEncryptionModule.h"
+#include "SendRSAKeyParser.h"
+
 class BasicConnection
 {
 private:
@@ -18,10 +22,19 @@ private:
 
     vector<shared_ptr<IParser>> Parsers;
     unordered_map<string, shared_ptr<ISerializer>> Serializers;
+
+    bool IsEncrypted = false;
+    RSAKey PeerPublicKey;
+    RSAEncryptionModule EModule;
+
+    SendRSAKeyParser SRSAParser;
+
 public:
     BasicConnection();
     BasicConnection(unique_ptr<IConnectionSocket>& Socket);
     BasicConnection(string Name, bool Blocking);
+
+    void Construct();
 
     BasicConnection(BasicConnection&& Other);
     BasicConnection& operator=(BasicConnection&& Other);
@@ -29,6 +42,8 @@ public:
     bool operator==(BasicConnection& Other);
     
     int Connect(string Host, string Port);
+    int SwapKeysWithPeer();
+    int RegenerateKey();
     bool IsConnected() const { return ConnectionSocket->IsConnected(); };
 
     void AddParser(shared_ptr<IParser>& Parser);

@@ -176,7 +176,7 @@ void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnec
 
         if (wxGetApp().GetMainFrame())
         {
-            wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_JOB_LIST);
+            wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_JOB_LIST);
             wxQueueEvent(wxGetApp().GetMainFrame(), event);
         }
     }
@@ -205,7 +205,7 @@ void JobCore::Periodic()
 
             if (wxGetApp().GetMainFrame())
             {
-                wxCommandEvent* event = new wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
+                wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_LOCAL_JOB_LIST);
                 wxQueueEvent(wxGetApp().GetMainFrame(), event);
             }
             It = LocalJobs.erase(It);

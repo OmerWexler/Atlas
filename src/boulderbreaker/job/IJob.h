@@ -14,7 +14,6 @@ using namespace std;
 class IJob: public Cloneable<IJob*>
 {
 private:
-    string GenerateRandomDescriptor(size_t Length);
     SmartThread ASyncThread;
 
 protected:
@@ -28,7 +27,7 @@ protected:
 public: 
     static size_t RANDOM_DESCRIPTOR_LENGTH;
 
-    IJob() { UniqueDescriptor = GenerateRandomDescriptor(RANDOM_DESCRIPTOR_LENGTH); }
+    IJob() { UniqueDescriptor = Utils::GenerateRandomDescriptor(RANDOM_DESCRIPTOR_LENGTH); }
 
     virtual string GetType() const = 0;
     virtual void Execute(vector<Argument>& Input) = 0;

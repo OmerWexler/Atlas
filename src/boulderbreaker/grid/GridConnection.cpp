@@ -120,6 +120,9 @@ int GridConnection::Connect(string Host, string Port, bool IsWorker, string Node
     {
         Connection.AddParsers(Parsers);
         Connection.AddSerializers(Serializers);
+
+        SwapKeys();
+
         Connection.Send(ATLS_CREATE_UNIQUE_MSG(SendJobPolicyMessage, IsWorker));
         Connection.Send(ATLS_CREATE_UNIQUE_MSG(SetNameMessage, NodeName));
     }
@@ -138,6 +141,14 @@ int GridConnection::SendMessage(const unique_ptr<IMessage>& Msg)
 int GridConnection::RecvMessage(unique_ptr<IMessage>& Msg)
 {
     return Connection.Recv(Msg);
+}
+
+void GridConnection::SwapKeys()
+{
+    int Result = -1;
+    Connection.SendRSAKey();
+    while (Result <= 0 && !Connection.IsEncrypted())
+        Connection.RecvRSAKey();
 }
 
 int GridConnection::Disconnect()

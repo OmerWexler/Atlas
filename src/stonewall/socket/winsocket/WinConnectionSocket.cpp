@@ -164,6 +164,7 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
     else
     {
         int WSALastError = WSAGetLastError();
+        Result = WSALastError;
         if (WSALastError == 10054 || WSALastError == 10038) // Disconnect
         {
             Connected = false;

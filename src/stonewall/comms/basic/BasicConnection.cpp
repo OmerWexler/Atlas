@@ -70,6 +70,7 @@ BasicConnection& BasicConnection::operator=(BasicConnection&& Other)
 
     PeerPublicKey = Other.PeerPublicKey;
     EModule = Other.EModule;
+    m_IsEncrypted = Other.m_IsEncrypted;
 
     return *this;
 }
@@ -85,7 +86,7 @@ void BasicConnection::SetName(string NewName)
     this->ConnectionSocket->SetName(NewName);
 }
 
-int BasicConnection::SwapKeysWithPeer()
+int BasicConnection::SendRSAKey()
 {
     if (!EModule.IsInitiated())
         EModule.GenerateKeys();
@@ -96,35 +97,20 @@ int BasicConnection::SwapKeysWithPeer()
     if (Result < 0)
         return Result;
 
-    Result = Recv(PublicKeyMessage);
-    if (Result < 0)
-        return Result;
-
-    PeerPublicKey = ((SendRSAKeyMessage*)PublicKeyMessage.get())->GetKey();
-
-    IsEncrypted = true;
-    
     return 0;
 }
 
-int BasicConnection::RegenerateKey()
+void BasicConnection::RegenerateKey()
 {
     EModule.GenerateKeys();
     unique_ptr<IMessage> PublicKeyMessage = ATLS_CREATE_UNIQUE_MSG(SendRSAKeyMessage, EModule.GetPublicKey());
-
-    IsEncrypted = false;
-
-    return Send(PublicKeyMessage);
+    m_IsEncrypted = false;
 }
 
 int BasicConnection::Connect(string Host, string Port)
 {
     int Result = ConnectionSocket->Connect(Host, Port);
-
-    if (Result != 0)
-        return Result;
-    
-    return SwapKeysWithPeer();
+    return Result;
 }
 
 void BasicConnection::AddParser(shared_ptr<IParser>& Parser)
@@ -175,7 +161,7 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
     }
 
     string SMsg = Serializers[Msg->GetType()]->Serialize(Msg);
-    if (IsEncrypted)
+    if (m_IsEncrypted)
         EModule.Encrypt(SMsg, PeerPublicKey);
     
     string SMsgSize = Utils::PadInt(SMsg.length(), NUM_OF_BYTES_IN_MESSAGE_LEN);
@@ -183,20 +169,66 @@ int BasicConnection::Send(const unique_ptr<IMessage>& Msg)
     return ConnectionSocket->Send(SMsgSize + SMsg);
 }
 
-int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
+int BasicConnection::RecvRSAKey()
 {
     string SMsg;
     int Result;
 
     Result = ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
-    if (Result < 0)
+    if (Result <= 0)
         return Result;
     
     Result = ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
-    if (Result < 0)
+    if (Result <= 0)
+        return Result;
+
+    if (SRSAParser.CanParse(SMsg))
+    {
+        unique_ptr<IMessage> KeyMessage = unique_ptr<IMessage>();
+        SRSAParser.Parse(SMsg, KeyMessage);
+        PeerPublicKey = ((SendRSAKeyMessage*)KeyMessage.get())->GetKey();
+
+        m_IsEncrypted = true;
+
+        return 0;
+    }
+    else
+    {
+        for (shared_ptr<IParser> parser : Parsers)
+        {
+            if (parser->CanParse(SMsg))
+            {
+                unique_ptr<IMessage> OutMsg = unique_ptr<IMessage>();
+                parser->Parse(SMsg, OutMsg);
+                MessageBuffer.push_back(unique_ptr<IMessage>(nullptr));
+                MessageBuffer.back().reset(OutMsg.release());
+            }
+        }
+    }
+
+    return -1;
+}
+
+int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
+{
+    if (MessageBuffer.size() > 0)
+    {
+        OutMsg.reset(MessageBuffer.back().release());
+        MessageBuffer.pop_back();
+    }
+
+    string SMsg;
+    int Result;
+
+    Result = ConnectionSocket->Recv(SMsg, NUM_OF_BYTES_IN_MESSAGE_LEN);
+    if (Result <= 0)
         return Result;
     
-    if (IsEncrypted)
+    Result = ConnectionSocket->Recv(SMsg, atoi(SMsg.c_str()));
+    if (Result <= 0)
+        return Result;
+    
+    if (m_IsEncrypted)
         EModule.Decrypt(SMsg);
 
     if (SRSAParser.CanParse(SMsg))
@@ -205,7 +237,7 @@ int BasicConnection::Recv(unique_ptr<IMessage>& OutMsg)
         SRSAParser.Parse(SMsg, KeyMessage);
         PeerPublicKey = ((SendRSAKeyMessage*)KeyMessage.get())->GetKey();
 
-        IsEncrypted = true;
+        m_IsEncrypted = true;
 
         return Recv(OutMsg);
     }

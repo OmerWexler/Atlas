@@ -41,6 +41,7 @@ public:
     int Connect(string Host, string Port, bool IsWorker, string NodeName);
     bool IsConnected() const { return Connection.IsConnected(); };
 
+    void SwapKeys();
     int SendMessage(const unique_ptr<IMessage>& Msg);
     int RecvMessage(unique_ptr<IMessage>& Msg);
 

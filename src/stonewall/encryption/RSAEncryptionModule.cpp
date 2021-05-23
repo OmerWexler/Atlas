@@ -168,7 +168,5 @@ void RSAEncryptionModule::Decrypt(string& Target)
         AsciiTarget = AsciiTarget.substr(1 + NextCharSize);
     }   
 
-    Singleton<Logger>::GetInstance().Debug("Done - " + Target);
-
     delete [] CResult;
 }

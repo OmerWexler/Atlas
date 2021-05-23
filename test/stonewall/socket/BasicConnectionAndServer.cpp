@@ -33,8 +33,11 @@ int TestBasicCommunications()
 
     unique_ptr<IMessage> Msg;
     
-    Connection.Recv(Msg);
-    ServerConnection.Recv(Msg);
+    Connection.SendRSAKey();
+    ServerConnection.SendRSAKey();
+    
+    Connection.RecvRSAKey();
+    ServerConnection.RecvRSAKey();
 
     Msg.reset((IMessage*) DBG_NEW SimpleStringMessage("Hello"));
     Connection.Send(Msg);
@@ -44,10 +47,13 @@ int TestBasicCommunications()
     Connection.Recv(Msg);
 
     Connection.RegenerateKey();
-    ServerConnection.RegenerateKey();
+    Connection.SendRSAKey();
 
-    Connection.Recv(Msg);
-    ServerConnection.Recv(Msg);
+    ServerConnection.RegenerateKey();
+    ServerConnection.SendRSAKey();
+
+    Connection.RecvRSAKey();
+    ServerConnection.RecvRSAKey();
 
     Msg.reset((IMessage*) DBG_NEW SimpleStringMessage("Hello"));
     Connection.Send(Msg);

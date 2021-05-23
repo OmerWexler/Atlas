@@ -229,8 +229,9 @@ void GridNode::ConnectionListenerFunc()
     int Result = NodeServer.AcceptConnection("", NewConnection);
     if (Result != 0)
         return;
-
+    
     GridConnection NewGridConnection = move(GridConnection(NewConnection));
+    NewGridConnection.SwapKeys();
 
     unique_ptr<IMessage> Msg;
     NewGridConnection.SetName("Unnamed");

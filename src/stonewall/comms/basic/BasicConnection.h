@@ -7,6 +7,7 @@
 #include "IConnectionSocket.h"
 #include "ISerializer.h"
 #include "IParser.h"
+#include "IMessage.h"
 
 #include "RSAKey.h"
 #include "RSAEncryptionModule.h"
@@ -23,11 +24,13 @@ private:
     vector<shared_ptr<IParser>> Parsers;
     unordered_map<string, shared_ptr<ISerializer>> Serializers;
 
-    bool IsEncrypted = false;
+    bool m_IsEncrypted = false;
     RSAKey PeerPublicKey;
     RSAEncryptionModule EModule;
 
     SendRSAKeyParser SRSAParser;
+
+    vector<unique_ptr<IMessage>> MessageBuffer;
 
 public:
     BasicConnection();
@@ -42,8 +45,8 @@ public:
     bool operator==(BasicConnection& Other);
     
     int Connect(string Host, string Port);
-    int SwapKeysWithPeer();
-    int RegenerateKey();
+    int SendRSAKey();
+    void RegenerateKey();
     bool IsConnected() const { return ConnectionSocket->IsConnected(); };
 
     void AddParser(shared_ptr<IParser>& Parser);
@@ -54,6 +57,9 @@ public:
     
     int Send(const unique_ptr<IMessage>& Msg);
     int Recv(unique_ptr<IMessage>& OutMsg);
+    int RecvRSAKey();
+
+    bool IsEncrypted() { return m_IsEncrypted; }
     
     void SetName(string NewName);
     string GetName() { return this->Name; };

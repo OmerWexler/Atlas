@@ -8,6 +8,7 @@
 #include "TestSendJobMessage.cpp"
 #include "TestSendJobOutputMessage.cpp"
 #include "TestEncryptionModule.cpp"
+#include "JobSubprocessTest.cpp"
 #include "Logger.h"
 #include "Utils.h"
 
@@ -70,6 +71,10 @@ int main(int argc, char** argv)
             ExitCode = TestEncryptionModule();
             break;
 
+        case 10:
+            ExitCode = JobSubprocessTest();
+            break;
+
         default:
             break;
         }
@@ -79,12 +84,6 @@ int main(int argc, char** argv)
 
         Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
         ExitCode = TestWinSocketCommunications();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
-
-        Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
-        ExitCode = TestBasicCommunications();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");
@@ -125,12 +124,24 @@ int main(int argc, char** argv)
             return ExitCode;
         printf("\n");
         
+        Singleton<Logger>::GetInstance().Info("Starting JobSubprocessTest...");
+        ExitCode = JobSubprocessTest();
+        if (ExitCode != 0)
+            return ExitCode;
+        printf("\n");
+
         Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
         ExitCode = WinPerformanceAnalyzerTest();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");
         
+        Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
+        ExitCode = TestBasicCommunications();
+        if (ExitCode != 0)
+            return ExitCode;
+        printf("\n");
+
         Singleton<Logger>::GetInstance().Info("Starting TestEncryptionModule...");
         ExitCode = TestEncryptionModule();
         if (ExitCode != 0)

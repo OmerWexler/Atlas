@@ -3,11 +3,15 @@
 #include "IJob.h"
 #include "utils.h"
 
+#include "SmartSubprocess.h"
+
 using namespace std;
 
-class JobWait: IJob
+class JobSubprocess: IJob
 {
 private:
+    SmartSubprocess SP;
+
     bool ShouldRun;
 
 public: 
@@ -16,7 +20,7 @@ public:
     bool IsInputValid(vector<Argument>& Input);
     int Kill();
 
-    IJob* Clone() { return (IJob*) DBG_NEW JobWait(); }
+    IJob* Clone() { return (IJob*) DBG_NEW JobSubprocess(); }
 
-    ~JobWait() { Kill(); };
+    ~JobSubprocess() { Kill(); };
 };

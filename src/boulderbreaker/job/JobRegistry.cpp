@@ -6,6 +6,7 @@
 
 #include "JobLog.h"
 #include "JobWait.h"
+#include "JobSubprocess.h"
 
 #undef GetJob
 
@@ -15,11 +16,14 @@ bool JobRegistry::GetJob(const string Type, shared_ptr<IJob>& OutJob)
 {
     IJob* Job = nullptr;
 
-    if (Type =="JobLog")
+    if (Type =="Job Log")
         Job = (IJob*) DBG_NEW JobLog();
     
-    if (Type == "JobWait")
+    if (Type == "Job Wait")
         Job = (IJob*) DBG_NEW JobWait();
+    
+    if (Type == "Job Subprocess")
+        Job = (IJob*) DBG_NEW JobSubprocess();
     
     if (Job != nullptr)
     {

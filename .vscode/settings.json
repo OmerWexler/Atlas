@@ -82,5 +82,13 @@
         "xthread": "cpp",
         "random": "cpp",
         "*.inc": "cpp"
-    }
+    },
+    "cSpell.ignoreWords": [
+        "jeli",
+        "lpstartupinfoa",
+        "seeki",
+        "seeko",
+        "startf",
+        "usestdhandles"
+    ]
 }

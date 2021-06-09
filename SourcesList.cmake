@@ -1,5 +1,7 @@
 set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/utils/Logger.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils/subprocess/SmartSubprocess.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils/File.cpp
 
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobMessage.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/cancel_job/CancelJobparser.cpp
@@ -59,6 +61,7 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/performance_analyzer/win_performance_analyzer/WinPerformanceAnalyzer.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/resources/PCPerformance.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_wait/JobWait.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/job/job_subprocess/JobSubprocess.cpp
 )
 
 set(

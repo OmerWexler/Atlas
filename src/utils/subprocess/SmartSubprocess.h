@@ -50,7 +50,7 @@ public:
 
     int Run();
     
-    void Kill();
+    int Kill();
     bool IsAlive() { return m_IsAlive; }
     bool IsDone() { return m_IsDone; }
     

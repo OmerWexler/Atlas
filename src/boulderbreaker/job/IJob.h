@@ -39,22 +39,22 @@ public:
     void StartASync(vector<Argument>& Input);
 
     void SetUniqueDescriptor(string UniqueDescriptor) { this->UniqueDescriptor = UniqueDescriptor; };
-    string GetUniqueDescriptor() { return UniqueDescriptor; };
+    virtual string GetUniqueDescriptor() { return UniqueDescriptor; };
     
     void SetSuccess(int Success) { this->Success = Success; };
-    int GetSuccess() { return Success; };
+    virtual int GetSuccess() { return Success; };
     
     void SetPathToTarget(Path PathToTarget) { this->PathToTarget = PathToTarget; };
-    Path& GetPathToTarget() { return PathToTarget; }
+    virtual Path& GetPathToTarget() { return PathToTarget; }
     
     void SetOutput(vector<Argument> Output) { this->Output = Output; };
-    vector<Argument> GetOutput() { return Output; };
+    virtual vector<Argument> GetOutput() { return Output; };
 
     void SetIsAlive(bool IsAlive) { this->m_IsAlive = IsAlive; }
-    bool IsAlive() { return m_IsAlive; }
+    virtual bool IsAlive() { return m_IsAlive; }
     
     void SetIsDone(bool IsDone) { this->m_IsDone = IsDone; }
-    bool IsDone() { return m_IsDone; }
+    virtual bool IsDone() { return m_IsDone; }
 
     virtual ~IJob();
 };

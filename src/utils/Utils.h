@@ -4,6 +4,7 @@
 #include <thread>
 #include <random>
 #include <string>
+#include <fstream>
 
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
@@ -112,5 +113,11 @@ public:
         }
 
         return Padded;
+    }
+
+    inline static bool FileExists(string Name)  
+    {
+        ifstream f(Name.c_str());
+        return f.good();
     }
 };

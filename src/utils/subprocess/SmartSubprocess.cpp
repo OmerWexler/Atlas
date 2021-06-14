@@ -149,18 +149,20 @@ void SmartSubprocess::PeriodicFunc()
     }
 }
 
-void SmartSubprocess::Kill()
+int SmartSubprocess::Kill()
 {
+    DWORD lpExitCode = 0;
+    TerminateProcess(pi.hProcess, lpExitCode);
+        
     /*
      * Cleanup. As mentioned, Windows does this automagically when our process
      * exits, but it is good style to do it explicitly. 
      */
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    CloseHandle(OutStreamRead);
-    CloseHandle(InStreamWrite);
-    
-    CloseHandle(hJob);
+    try { CloseHandle(pi.hThread); } catch(...) {}
+    try { CloseHandle(pi.hProcess); } catch(...) {}
+    try { CloseHandle(OutStreamRead); } catch(...) {}
+    try { CloseHandle(InStreamWrite); } catch(...) {}
+    try { CloseHandle(hJob); } catch(...) {}
 
     while (!m_IsDone)
         Utils::CPSleep(PollRate);
@@ -170,6 +172,8 @@ void SmartSubprocess::Kill()
 
     if (OutFile.IsOpen())
         OutFile.Close();
+    
+    return lpExitCode;
 }
 
 string SmartSubprocess::GetOutput()

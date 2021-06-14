@@ -81,7 +81,8 @@
         "xxatomic": "cpp",
         "xthread": "cpp",
         "random": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "filesystem": "cpp"
     },
     "cSpell.ignoreWords": [
         "jeli",

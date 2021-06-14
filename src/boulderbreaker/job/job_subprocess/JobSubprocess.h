@@ -14,11 +14,16 @@ private:
 
     bool ShouldRun;
 
+    string ProcessFileType(string ModuleName);
+    string FindModule(string ModuleName);
+
 public: 
     string GetType() const;
     void Execute(vector<Argument>& Input);
     bool IsInputValid(vector<Argument>& Input);
     int Kill();
+
+    bool IsDone() override;
 
     IJob* Clone() { return (IJob*) DBG_NEW JobSubprocess(); }
 

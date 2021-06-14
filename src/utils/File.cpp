@@ -46,10 +46,11 @@ void File::Seeko(ios_base::seekdir Base, int Delta)
 
 void File::Close()
 {
-    Stream->close();
+    if (IsOpen())
+        Stream->close();
 }
 
 bool File::IsOpen()
 {
-    return Stream->is_open();
+    return Stream && Stream->is_open();
 }

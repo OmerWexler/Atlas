@@ -164,9 +164,6 @@ int SmartSubprocess::Kill()
     try { CloseHandle(InStreamWrite); } catch(...) {}
     try { CloseHandle(hJob); } catch(...) {}
 
-    while (!m_IsDone)
-        Utils::CPSleep(PollRate);
-    
     if (Periodic.GetIsRunning())
         Periodic.Stop();
 

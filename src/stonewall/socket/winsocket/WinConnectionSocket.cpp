@@ -171,7 +171,7 @@ int WinConnectionSocket::Recv(string& Buffer, int Size)
         }
         else if (WSALastError == 10035) // Non blocking
         {
-
+            Result = -10035;
         }
         else
         {

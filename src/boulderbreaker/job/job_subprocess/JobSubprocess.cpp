@@ -13,7 +13,7 @@ namespace fs = std::experimental::filesystem;
 
 string JobSubprocess::GetType() const
 {
-    return "JobSubprocess";
+    return "Job Subprocess";
 }
 
 bool JobSubprocess::IsInputValid(vector<Argument>& Input)

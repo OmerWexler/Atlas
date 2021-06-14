@@ -16,7 +16,7 @@ private:
 public:
     string GetType() const
     {
-        return "JobLog";
+        return "Job Log";
     }
     
     void Execute(vector<Argument>& Inputs)

@@ -69,11 +69,11 @@ int JobSubprocessTest()
 
     // return 0;
 
-    SmartSubprocess SP = SmartSubprocess("TestRun", "C:\\Windows\\System32\\Notepad.exe", "");
+    // SmartSubprocess SP = SmartSubprocess("TestRun", "C:\\Windows\\System32\\Notepad.exe", "");
 
-    int Result = SP.Run();
+    // int Result = SP.Run();
 
-    SP.Kill();
+    // SP.Kill();
     
     return 0;
 }

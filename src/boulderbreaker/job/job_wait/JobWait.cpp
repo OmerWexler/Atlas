@@ -4,7 +4,7 @@
 
 string JobWait::GetType() const
 {
-    return "JobWait";
+    return "Job Wait";
 }
 
 bool IsNumber(const string& s)

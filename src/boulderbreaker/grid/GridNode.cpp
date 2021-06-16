@@ -310,6 +310,9 @@ int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
 
 void GridNode::ResourceManager()
 {
+    if (!m_IsWorker)
+        return;
+    
     PCPerformance NodePerformance = PCPerformance();
 
     PerformanceAnalyzer.LoadDryStats(NodePerformance);
@@ -328,7 +331,7 @@ void GridNode::ResourceManager()
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
 
-    if (Members.size() == 0) // No member to compare preformance to
+    if (Members.size() == 0 && m_IsWorker) // No members to compare preformance to
     {
         TopPerformancePath = Path(Name);
         GridTopPerformance = NodePerformance;
@@ -341,9 +344,19 @@ void GridNode::ResourceManager()
         }
     }
 
-    if (NodeAdmin.IsConnected() && IsWorker && Members.size() == 0) // If is a grid leaf and connected to admin as worker
+    auto Msg = ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NodePerformance, Path(Name));
+    
+    if (NodeAdmin.IsConnected() && m_IsWorker && Members.size() == 0) // If is a grid leaf and connected to admin as worker
     {
-        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NodePerformance, Path(Name)));
+        NodeAdmin.SendMessage(Msg);
+    }
+
+    if (Members.size() == 0)
+    {
+        for (auto& Client: Clients)
+        {
+            Client.second.SendMessage(Msg);
+        }
     }
 }
 
@@ -363,7 +376,7 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
     
     NodeAdmin = move(NewConnection);
     
-    this->IsWorker = IsWorker;
+    this->m_IsWorker = IsWorker;
 
     if (wxGetApp().GetMainFrame())
     {
@@ -397,10 +410,17 @@ void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewN
     TopPerformancePath = NewNodePath;
     GridTopPerformance = NewPerformance;
 
+    Path NewPathFromAdmin = NewNodePath;
+    auto Msg = ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin);
+
     if (NodeAdmin.IsConnected())
     {
-        Path NewPathFromAdmin = NewNodePath;
-        NodeAdmin.SendMessage(ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin));
+        NodeAdmin.SendMessage(Msg);
+    }
+
+    for (auto& Client: Clients)
+    {
+        Client.second.SendMessage(Msg);
     }
 }
 
@@ -566,6 +586,10 @@ void GridNode::CloseNode()
     DisconnectMembers();
     CloseServer();
     StopPeriodics();
+
+    TopPerformancePath = Path();
+    GridTopPerformance = PCPerformance();
+    m_IsWorker = true;
 }
 
 GridNode::~GridNode()

@@ -42,51 +42,62 @@ void JobCore::SendJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection& 
     string CurrentNodeName = Singleton<GridNode>::GetInstance().GetName();
     SendJobMessage* SJMsg = (SendJobMessage*) Message.get();
     Path& PathToTarget = SJMsg->GetPathToTarget();
-
+    GridConnection& Admin = Singleton<GridNode>::GetInstance().GetAdmin();
+    
     if (PathToTarget.size() > 0 && PathToTarget[0] == CurrentNodeName)
     {
         PathToTarget.RemoveFromStart();
-        
-        if (PathToTarget.size() == 0) // Target is this Node
-        {
-            shared_ptr<IJob>& Job = SJMsg->GetJob();
-            LocalJobs[Job->GetUniqueDescriptor()] = Job;
-            Singleton<GridNode>::GetInstance().RegisterLocalJob(Job);
-
-            Job->StartASync(SJMsg->GetInput());
-        }
-        else // Target is a member Node
-        {   
-            int TargetID = -1;
-            auto& It = Singleton<GridNode>::GetInstance().GetMembersBegin();
-            auto& End = Singleton<GridNode>::GetInstance().GetMembersEnd();
-
-            while (It != End)
-            {
-                if (It->second.GetName() == PathToTarget[0])
-                {
-                    TargetID = It->first;
-                    break;
-                }
-
-                It++;
-            }
-
-            if (TargetID != -1)
-            {
-                Singleton<GridNode>::GetInstance().GetMember(TargetID).SendMessage(Message);
-            }
-            else
-            {
-                Singleton<Logger>::GetInstance().Warning(
-                    "Got a SendJob message with an unmatching path.\nNode name - " + CurrentNodeName + "\nPath - " + PathToTarget.GetStrPath());
-            }
-        }
     }
     else
     {
         Singleton<Logger>::GetInstance().Warning(
             "Got a SendJob message with an unmatching path.\n Node name - " + CurrentNodeName + "\nPath - " + PathToTarget.GetStrPath());
+    }
+
+    if (!Singleton<GridNode>::GetInstance().IsWorker())
+    {
+        // Client should distribute to admin
+        if (PathToTarget.size() > 0 && Admin.GetName() == PathToTarget[0])
+        {
+            Admin.SendMessage(Message);
+            return;
+        }
+    }
+
+    if (PathToTarget.size() == 0) // Target is this Node
+    {
+        shared_ptr<IJob>& Job = SJMsg->GetJob();
+        LocalJobs[Job->GetUniqueDescriptor()] = Job;
+        Singleton<GridNode>::GetInstance().RegisterLocalJob(Job);
+
+        Job->StartASync(SJMsg->GetInput());
+    }
+    else // Target is a member Node
+    {   
+        int TargetID = -1;
+        auto& It = Singleton<GridNode>::GetInstance().GetMembersBegin();
+        auto& End = Singleton<GridNode>::GetInstance().GetMembersEnd();
+
+        while (It != End)
+        {
+            if (It->second.GetName() == PathToTarget[0])
+            {
+                TargetID = It->first;
+                break;
+            }
+
+            It++;
+        }
+
+        if (TargetID != -1)
+        {
+            Singleton<GridNode>::GetInstance().GetMember(TargetID).SendMessage(Message);
+        }
+        else
+        {
+            Singleton<Logger>::GetInstance().Warning(
+                "Got a SendJob message with an unmatching path.\nNode name - " + CurrentNodeName + "\nPath - " + PathToTarget.GetStrPath());
+        }
     }
 }
 
@@ -96,7 +107,8 @@ void JobCore::CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection
     string Descriptor = CJMsg->GetDescriptor();
     Path& PathToTarget = CJMsg->GetPathToTarget();
     string CurrentNodeName = Singleton<GridNode>::GetInstance().GetName();
- 
+    GridConnection& Admin = Singleton<GridNode>::GetInstance().GetAdmin();
+    
     if (PathToTarget.size() > 0 && PathToTarget[0] == CurrentNodeName)
     {
         PathToTarget.RemoveFromStart();
@@ -129,6 +141,10 @@ void JobCore::CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection
             {
                 Singleton<GridNode>::GetInstance().GetMember(TargetID).SendMessage(Message);
             }
+            else if (PathToTarget[0] == Admin.GetName())
+            {
+                Admin.SendMessage(Message);
+            }
             else
             {
                 Singleton<Logger>::GetInstance().Warning(
@@ -136,7 +152,7 @@ void JobCore::CancelJobMessageFunc(unique_ptr<IMessage>& Message, GridConnection
             }
         }
     }
-    else if (PathToTarget.size() > 0 && PathToTarget[PathToTarget.size() - 1] == CurrentNodeName)
+    else if (PathToTarget.size() > 0 && PathToTarget.GetLast() == CurrentNodeName)
     {
         PathToTarget.RemoveFromEnd();
         if (LocalJobs.find(Descriptor) != LocalJobs.end())
@@ -156,6 +172,7 @@ void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnec
     SendJobOutputMessage* SJOMsg = (SendJobOutputMessage*) Message.get();
     Path& PathToTarget = SJOMsg->GetPathToTarget();
     string CurrentNodeName = Singleton<GridNode>::GetInstance().GetName();
+    GridConnection& Admin = Singleton<GridNode>::GetInstance().GetAdmin();
 
     if (PathToTarget.size() == 1 && PathToTarget[0] == CurrentNodeName) // Current node is owner
     {
@@ -185,8 +202,26 @@ void JobCore::SendJobOutputMessageFunc(unique_ptr<IMessage>& Message, GridConnec
         if (PathToTarget.size() > 0)
             PathToTarget.RemoveFromEnd();
         
-        if (Singleton<GridNode>::GetInstance().GetAdmin().IsConnected())
-            Singleton<GridNode>::GetInstance().GetAdmin().SendMessage(Message);
+        string SenderName = PathToTarget.GetLast();
+
+        if (Admin.IsConnected() && SenderName == Admin.GetName())
+            Admin.SendMessage(Message);
+
+        else
+        {
+            auto& It = Singleton<GridNode>::GetInstance().GetClientsBegin();
+            auto& End = Singleton<GridNode>::GetInstance().GetClientsEnd();
+
+            while (It != End)
+            {
+                if (It->second.GetName() == SenderName)
+                {
+                    It->second.SendMessage(Message);
+                }
+
+                It++;
+            }
+        }
     }
 }
 

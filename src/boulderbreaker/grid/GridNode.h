@@ -26,7 +26,7 @@ private:
     int BACK_LOG = 5;
     
     string Name;
-    bool IsWorker;
+    bool m_IsWorker = true;
     BasicServer NodeServer;
     GridConnection NodeAdmin;
 
@@ -79,6 +79,8 @@ public:
 
     void SetName(string Name, bool BroadcastRequest=true);
     string GetName() { return Name; };
+    
+    bool IsWorker() { return m_IsWorker; };
 
     void ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath);
     void RemoveJob(string JobDescriptor);

@@ -20,5 +20,5 @@ public:
 
     string GetType() const override;
     PCPerformance& GetNodePerformance();
-    Path& GetPath();
+    Path GetPath();
 };

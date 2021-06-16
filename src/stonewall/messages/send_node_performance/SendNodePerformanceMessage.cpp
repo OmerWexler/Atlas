@@ -27,7 +27,7 @@ PCPerformance& SendNodePerformanceMessage::GetNodePerformance()
     return NodePerformance;
 }
 
-Path& SendNodePerformanceMessage::GetPath()
+Path SendNodePerformanceMessage::GetPath()
 {
     return NodePath;
 }

@@ -25,7 +25,7 @@ int TestSendJobMessage()
     SendJobMessage* SJMsg = (SendJobMessage*) UMsg.get();
 
     string SMsg = Serializer.Serialize(UMsg);
-    if (SMsg != "SJSEPBTestPath@@@JobLog@@@0@@@" + Job->GetUniqueDescriptor() + "@@@@@@2@@@AAA@@@0@@@BB@@@1")
+    if (SMsg != "SJSEPBTestPath@@@Job Log@@@0@@@" + Job->GetUniqueDescriptor() + "@@@@@@2@@@AAA@@@0@@@BB@@@1")
     {
         return -1;
     }

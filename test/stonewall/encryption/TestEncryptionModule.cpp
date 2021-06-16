@@ -23,7 +23,6 @@ int TestEncryptionModule()
         if (InitialMessage != Message)
         {
             Singleton<Logger>::GetInstance().Debug("Message Mismatch");
-            system("pause");
         }
 
         InitialMessage = "\"|{}\":>>PL+NT)@#YGMSGejg15j21985jtpase9ng[\"NM{PL{\"|A+_!@(I%)$!@T{}JEWSANGFPNJMOnsungiuasdafewfasegfasegnsegF";
@@ -35,7 +34,6 @@ int TestEncryptionModule()
         if (InitialMessage != Message)
         {
             Singleton<Logger>::GetInstance().Debug("Message Mismatch");
-            system("pause");
         }
 
         InitialMessage = "NJMOnsungiuasdafewfasegfasegnsegF";
@@ -47,7 +45,6 @@ int TestEncryptionModule()
         if (InitialMessage != Message)
         {
             Singleton<Logger>::GetInstance().Debug("Message Mismatch");
-            system("pause");
         }
     }
 

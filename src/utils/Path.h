@@ -34,6 +34,12 @@ public:
         }
     }
 
+    Path& operator=(Path& Other)
+    {
+        VecPath = Other.VecPath;
+        return *this;
+    }
+
     void AddToEnd(string Addition)
     {
         VecPath.push_back(Addition);

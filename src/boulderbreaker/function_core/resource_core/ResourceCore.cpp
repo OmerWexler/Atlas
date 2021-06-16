@@ -21,10 +21,13 @@ void ResourceCore::QueueMessage(unique_ptr<IMessage>& Message, GridConnection& S
 
 void ResourceCore::SendNodePerformanceCallback(unique_ptr<IMessage>& Message, GridConnection& Sender)
 {
+    GridConnection& Admin = Singleton<GridNode>::GetInstance().GetAdmin();
+
     SendNodePerformanceMessage* SNPMsg = (SendNodePerformanceMessage*) Message.get();
     Sender.SetTopPerformance(SNPMsg->GetNodePerformance());
 
     Path SenderPath = SNPMsg->GetPath();
+
     SenderPath.AddToStart(Singleton<GridNode>::GetInstance().GetName());
     
     Sender.SetTopPerformancePath(SenderPath);
@@ -43,6 +46,12 @@ void ResourceCore::SendNodePerformanceCallback(unique_ptr<IMessage>& Message, Gr
             TopPerformancePath = Iterator->second.GetTopPerformancePath();
         }
         Iterator++;
+    }
+
+    if (Sender == Admin && Admin.GetTopPerformance() > TopPerformance)
+    {
+        TopPerformance = Admin.GetTopPerformance();
+        TopPerformancePath = Admin.GetTopPerformancePath();
     }
 
     Singleton<GridNode>::GetInstance().ReportNewTopPerformance(TopPerformance, TopPerformancePath);

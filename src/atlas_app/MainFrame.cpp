@@ -161,6 +161,7 @@ void MainFrame::ReloadNode(wxCommandEvent& event)
 
     ReloadConnectionsDisplay(event);
     UpdateJobList(event);
+    RenameLocalNode(event);
 }
 
 void MainFrame::AdminDisconnected(wxCommandEvent& event)

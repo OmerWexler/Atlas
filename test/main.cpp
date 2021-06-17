@@ -9,6 +9,7 @@
 #include "TestSendJobOutputMessage.cpp"
 #include "TestEncryptionModule.cpp"
 #include "JobSubprocessTest.cpp"
+#include "FileTest.cpp"
 #include "Logger.h"
 #include "Utils.h"
 
@@ -75,6 +76,10 @@ int main(int argc, char** argv)
             ExitCode = JobSubprocessTest();
             break;
 
+        case 11:
+            ExitCode = FileTest();
+            break;
+
         default:
             break;
         }
@@ -82,68 +87,74 @@ int main(int argc, char** argv)
     else 
     {
 
-        Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
-        ExitCode = TestWinSocketCommunications();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestWinSocketCommunications...");
+        // ExitCode = TestWinSocketCommunications();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
     
-        Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
-        ExitCode = TestSeperatorBasedMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSeperatorBasedMessages...");
+        // ExitCode = TestSeperatorBasedMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
-        ExitCode = TestSendJobPolicyMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobPolicyMessages...");
+        // ExitCode = TestSendJobPolicyMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
-        ExitCode = TestCancelJobMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestCancelJobMessage...");
+        // ExitCode = TestCancelJobMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendNodePerformanceMessages...");
-        ExitCode = TestSendNodePerformanceMessages();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendNodePerformanceMessages...");
+        // ExitCode = TestSendNodePerformanceMessages();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
-        ExitCode = TestSendJobMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobMessage...");
+        // ExitCode = TestSendJobMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
-        ExitCode = TestSendJobOutputMessage();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestSendJobOutputMessage...");
+        // ExitCode = TestSendJobOutputMessage();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting JobSubprocessTest...");
-        ExitCode = JobSubprocessTest();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting JobSubprocessTest...");
+        // ExitCode = JobSubprocessTest();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
 
-        Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
-        ExitCode = WinPerformanceAnalyzerTest();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting WinPerformanceAnalyzerTest...");
+        // ExitCode = WinPerformanceAnalyzerTest();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
         
-        Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
-        ExitCode = TestBasicCommunications();
-        if (ExitCode != 0)
-            return ExitCode;
-        printf("\n");
+        // Singleton<Logger>::GetInstance().Info("Starting TestBasicCommunications...");
+        // ExitCode = TestBasicCommunications();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
+
+        // Singleton<Logger>::GetInstance().Info("Starting TestEncryptionModule...");
+        // ExitCode = TestEncryptionModule();
+        // if (ExitCode != 0)
+        //     return ExitCode;
+        // printf("\n");
 
         Singleton<Logger>::GetInstance().Info("Starting TestEncryptionModule...");
-        ExitCode = TestEncryptionModule();
+        ExitCode = FileTest();
         if (ExitCode != 0)
             return ExitCode;
         printf("\n");

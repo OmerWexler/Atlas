@@ -38,7 +38,7 @@ void SmartSubprocess::Create(string Name, string Executeable, string CMDInput)
 
 int SmartSubprocess::RedirectOutput(string OutFileName)
 {
-    OutFile.Create(OutFileName, ios::out);
+    OutFile.Create(OutFileName, "w");
 
     if (OutFile.IsOpen())
         return 0;
@@ -145,7 +145,7 @@ void SmartSubprocess::PeriodicFunc()
         OutStream += Read;
         
         if (OutFile.IsOpen())
-            OutFile.Write(Read);
+            OutFile.Write(Read, dwRead);
     }
 }
 

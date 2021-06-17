@@ -295,8 +295,6 @@ void MainFrame::SendJob(wxCommandEvent& event)
             JobArguments
         );
 
-        JobArguments.clear();
-        ArgumentsBox->GetContainingSizer()->Clear(true);
         Fit();
     }
 }

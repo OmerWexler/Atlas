@@ -30,6 +30,7 @@ public:
     IJob() { UniqueDescriptor = Utils::GenerateRandomDescriptor(RANDOM_DESCRIPTOR_LENGTH); }
 
     virtual string GetType() const = 0;
+    virtual void PrepareJobToSend(vector<Argument>& Input) {};
     virtual void Execute(vector<Argument>& Input) = 0;
     virtual bool IsInputValid(vector<Argument>& Input) = 0;
     virtual int Kill() = 0;

@@ -8,21 +8,25 @@ using namespace std;
 class File
 {
 private:
-    unique_ptr<fstream> Stream;
+    FILE* hFile;
+    int MaxIndex;
+    int ReadIndex;
+
+    bool m_IsOpen = false;
 
 public:
     File() {};
 
-    File(string Path, ios::openmode mode);
-    void Create(string Path, ios::openmode mode);
+    File(string Path, string mode);
+    File(string Path, string mode, bool mkdir);
 
-    File& operator=(const File&& Other);
+    void Create(string Path, string mode);
+    void Create(string Path, string mode, bool mkdir);
 
-    void Write(string In);
-    void Read(string& out, int size);
+    File& operator=(File&& Other);
 
-    void Seeki(ios_base::seekdir Base, int Delta);
-    void Seeko(ios_base::seekdir Base, int Delta);
+    void Write(string In, int Size);
+    int Read(string& out, int Size);
 
     void Close();
 

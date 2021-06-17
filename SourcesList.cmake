@@ -47,6 +47,14 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringParser.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/messages/simple_string/SimpleStringSerializer.cpp
     
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file/TransferFileMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file/TransferFileParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file/TransferFileSerializer.cpp
+    
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file_block/TransferFileBlockMessage.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file_block/TransferFileBlockParser.cpp
+    ${CMAKE_SOURCE_DIR}/src/stonewall/messages/transfer_file_block/TransferFileBlockSerializer.cpp
+    
     ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/RSAEncryptionModule.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/euclid.cpp
     ${CMAKE_SOURCE_DIR}/src/stonewall/encryption/mpuint.cpp
@@ -74,6 +82,7 @@ set(
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/job_core/JobCore.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/general_purpose_core/GeneralPurposeCore.cpp
     ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/resource_core/ResourceCore.cpp
+    ${CMAKE_SOURCE_DIR}/src/boulderbreaker/function_core/file_core/FileCore.cpp
 
     ${CMAKE_SOURCE_DIR}/src/atlas_app/MainFrame.cpp
     ${CMAKE_SOURCE_DIR}/src/atlas_app/AtlasApp.cpp

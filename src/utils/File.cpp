@@ -2,55 +2,84 @@
 
 #include "File.h"
 #include "Utils.h"
+#include <filesystem>
+#include <windows.h>
 
-File::File(string Path, ios::openmode Mode)
+namespace fs = std::experimental::filesystem;
+
+File::File(string Path, string Mode)
 {
     Create(Path, Mode);
 }
 
-void File::Create(string Path, ios::openmode Mode)
+File::File(string Path, string Mode, bool mkdir)
 {
-    Stream = unique_ptr<fstream>(DBG_NEW fstream());
-
-    Stream->open(Path, ios::out);
-    Stream.reset(DBG_NEW fstream(Path));
+    Create(Path, Mode, mkdir);
 }
 
-void File::Write(string In)
+void File::Create(string Path, string Mode)
 {
-    if (Stream)
-        (*Stream.get()) << In;
+    Create(Path, Mode, false);
 }
 
-void File::Read(string& Out, int size)
+void File::Create(string Path, string Mode, bool mkdir)
 {
-    Out = "";
-    char ch;
+    m_IsOpen = false;
 
-    while (!Stream->eof() && Out.length() < size)
-    {
-        (*Stream.get()) >> ch;
-        Out += ch;
-    }
+    if (IsOpen())
+        Close();
+    
+    if (mkdir)
+        CreateDirectoryA(fs::path(Path).parent_path().string().c_str(), NULL);
+    
+    hFile = fopen(Path.c_str(), Mode.c_str());
+    if (!hFile)
+        return;
+    
+    fseek(hFile, 0, SEEK_END);
+    MaxIndex = ftell(hFile);
+    rewind(hFile);
+
+    ReadIndex = 0;
+    if (hFile)
+        m_IsOpen = true;
 }
 
-void File::Seeki(ios_base::seekdir Base, int Delta)
+File& File::operator=(File&& Other)
 {
-    Stream->seekg(Base, Delta);
+    hFile = Other.hFile;
+    Other.hFile = nullptr;
+    
+    m_IsOpen = Other.m_IsOpen;
+    MaxIndex = Other.MaxIndex;
+    ReadIndex = Other.ReadIndex;
+
+    return *this;
 }
 
-void File::Seeko(ios_base::seekdir Base, int Delta)
+void File::Write(string In, int Size)
 {
-    Stream->seekp(Base, Delta);
+    if (IsOpen())
+        fwrite(In.c_str(), sizeof(char), Size, hFile);
+}
+
+int File::Read(string& Out, int Size)
+{
+    char* buffer = (char*) malloc (sizeof(char)*Size);
+    
+    int Read = fread(buffer, 1, Size, hFile);
+    Out.assign(buffer, Read);
+
+    return Read;
 }
 
 void File::Close()
 {
-    if (IsOpen())
-        Stream->close();
+    if (hFile && m_IsOpen)
+        fclose(hFile);
 }
 
 bool File::IsOpen()
 {
-    return Stream && Stream->is_open();
+    return hFile && m_IsOpen;
 }

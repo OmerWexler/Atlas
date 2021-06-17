@@ -10,6 +10,9 @@ using namespace std;
 class JobSubprocess: IJob
 {
 private:
+    static const string ARG_OVERRIDE_FILE;
+    static const string ARG_SEND_FILE;
+
     SmartSubprocess SP;
 
     bool ShouldRun;
@@ -19,6 +22,7 @@ private:
 
 public: 
     string GetType() const;
+    void PrepareJobToSend(vector<Argument>& Input);
     void Execute(vector<Argument>& Input);
     bool IsInputValid(vector<Argument>& Input);
     int Kill();

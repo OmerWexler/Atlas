@@ -94,6 +94,7 @@ public:
     void StartNode();
 
     int ConnectToNode(string Host, string Port, bool IsWorker);
+    void SendFile(string Filepath, string DestPath, Path TargetNode);
 
     GridConnection& GetAdmin() { return NodeAdmin; };
 

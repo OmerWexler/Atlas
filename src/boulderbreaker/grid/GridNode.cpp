@@ -11,6 +11,8 @@
 #include "SendJobOutputSerializer.h"
 #include "SetNameSerializer.h"
 #include "RejectNameSerializer.h"
+#include "TransferFileSerializer.h"
+#include "TransferFileBlockSerializer.h"
 
 #include "SendJobPolicyParser.h"
 #include "DisconnectParser.h"
@@ -20,6 +22,8 @@
 #include "SendJobOutputParser.h"
 #include "SetNameParser.h"
 #include "RejectNameParser.h"
+#include "TransferFileParser.h"
+#include "TransferFileBlockParser.h"
 
 #include "SendJobPolicyMessage.h"
 #include "DisconnectMessage.h"
@@ -28,16 +32,20 @@
 #include "CancelJobMessage.h"
 #include "SendJobOutputMessage.h"
 #include "SetNameMessage.h"
+#include "TransferFileMessage.h"
+#include "TransferFileBlockMessage.h"
 
 #include "ASyncFunctionCore.h"
 
 #include "JobCore.h"
 #include "GeneralPurposeCore.h"
 #include "ResourceCore.h"
+#include "FileCore.h"
 
 #include "Utils.h"
 #include "Logger.h"
 #include "Path.h"
+#include "File.h"
 
 #include "AtlasApp.h"
 #include "MainFrame.h"
@@ -101,6 +109,8 @@ void GridNode::Init()
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SendJobOutputParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(SetNameParser));
     AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(RejectNameParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(TransferFileParser));
+    AddCollectiveParser(ATLS_CREATE_SHARED_PRSR(TransferFileBlockParser));
 
     CollectiveSerializers = unordered_map<string, shared_ptr<ISerializer>>();
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobPolicySerializer));
@@ -111,11 +121,14 @@ void GridNode::Init()
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SendJobOutputSerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(SetNameSerializer));
     AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(RejectNameSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(TransferFileSerializer));
+    AddCollectiveSerializer(ATLS_CREATE_SHARED_SRLZR(TransferFileBlockSerializer));
 
     FunctionCores = vector<unique_ptr<IFunctionCore>>();
     AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(JobCore, Name + " - JobCore"));
     AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(GeneralPurposeCore));
     AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(ResourceCore));
+    AddFunctionCore(ATLS_CREATE_UNIQUE_CORE(FileCore, Name + " - FileCore"));
 
     TopPerformancePath = Path();
     TopPerformancePath.AddToEnd(Name);
@@ -391,6 +404,8 @@ int GridNode::ConnectToNode(string Host, string Port, bool IsWorker)
 int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
 {
     Job->SetPathToTarget(TopPerformancePath);
+    Job->PrepareJobToSend(Input);
+
     unique_ptr<IMessage> Msg = ATLS_CREATE_UNIQUE_MSG(SendJobMessage, Job, Input, TopPerformancePath);
     DispatchedJobs.push_back(Job);
     
@@ -403,6 +418,27 @@ int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
     }
 
     return Result;
+}
+
+void GridNode::SendFile(string SourcePath, string DestPath, Path TargetNode)
+{
+    int DataRead;
+    int WriteIndex = 1;
+    string DataBlock;
+    File Src{SourcePath, "rb"};
+
+    DataRead = Src.Read(DataBlock, TransferFileMessage::BLOCK_SIZE);
+    RouteMessageToSelf(ATLS_CREATE_UNIQUE_MSG(TransferFileMessage, DestPath, TargetNode, DataBlock), GridConnection());
+        
+    DataRead = Src.Read(DataBlock, TransferFileMessage::BLOCK_SIZE);
+    while (DataRead == TransferFileMessage::BLOCK_SIZE)
+    {
+        RouteMessageToSelf(ATLS_CREATE_UNIQUE_MSG(TransferFileBlockMessage, DestPath, TargetNode, WriteIndex, false, DataBlock), GridConnection());
+        DataRead = Src.Read(DataBlock, TransferFileMessage::BLOCK_SIZE);
+        WriteIndex++;
+    }
+
+    RouteMessageToSelf(ATLS_CREATE_UNIQUE_MSG(TransferFileBlockMessage, DestPath, TargetNode, WriteIndex, true, DataBlock), GridConnection());
 }
 
 void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath)

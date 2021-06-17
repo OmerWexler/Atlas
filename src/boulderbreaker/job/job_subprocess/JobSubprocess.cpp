@@ -4,12 +4,17 @@
 #define SYSTEM_PATH_SEP ';'
 
 #include "JobSubprocess.h"
+#include "Singleton.h"
+#include "GridNode.h"
 #include "windows.h"
 
 #include <filesystem>
 #include <cstdlib>
 
 namespace fs = std::experimental::filesystem;
+
+const string JobSubprocess::ARG_OVERRIDE_FILE = "-oif";
+const string JobSubprocess::ARG_SEND_FILE = "-sif";
 
 string JobSubprocess::GetType() const
 {
@@ -74,6 +79,32 @@ string JobSubprocess::FindModule(string ModuleName)
     }
     
     return "";
+}
+
+void JobSubprocess::PrepareJobToSend(vector<Argument>& Input)
+{
+    for (Argument Arg: Input)
+    {
+        bool ShouldSendFile = false;
+        string Filename;
+
+        if (Arg.Value.substr(0, ARG_OVERRIDE_FILE.length()) == ARG_OVERRIDE_FILE)
+        {
+            Filename = Arg.Value.substr(ARG_OVERRIDE_FILE.length());
+            ShouldSendFile = true;
+        }
+
+        if (Arg.Value.substr(0, ARG_SEND_FILE.length()) == ARG_SEND_FILE)
+        {
+            Filename = Arg.Value.substr(ARG_SEND_FILE.length() + 1);
+            ShouldSendFile = true;
+        }
+
+        if (ShouldSendFile)
+        {
+            Singleton<GridNode>::GetInstance().SendFile(Filename, UniqueDescriptor + "\\" + fs::path(Filename).filename().string(), PathToTarget);
+        }
+    }
 }
 
 void JobSubprocess::Execute(vector<Argument>& Input)

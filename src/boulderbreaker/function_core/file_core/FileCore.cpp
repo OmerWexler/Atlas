@@ -10,8 +10,6 @@
 
 #undef SendMessage
 
-unordered_map<string, FileBundle> FileCore::LocalFiles = unordered_map<string, FileBundle>();
-
 string FileCore::GetType() const
 {
     return "FileCore";

@@ -166,11 +166,6 @@ string JobSubprocess::ParseArg(string Arg)
 
 void JobSubprocess::Execute(vector<Argument>& Input)
 {
-    while (FileCore::LocalFiles.size() > 0)
-    {
-
-    }
-    
     string Args = "";
     string OutFileName = UniqueDescriptor + "\\OutputStream.txt";
     string Module = ProcessFileType(Input[0].Value);

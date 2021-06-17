@@ -19,6 +19,7 @@ struct FileBundle
 class FileCore: public ASyncFunctionCore
 {
 private:
+    unordered_map<string, FileBundle> LocalFiles;
     void TransferFileMessageFunc(unique_ptr<IMessage>& Message, GridConnection& Sender, bool IsExistingBlock);
 
 protected:
@@ -26,8 +27,6 @@ protected:
     void Periodic();
 
 public:
-    static unordered_map<string, FileBundle> LocalFiles;
-
     FileCore(string Name, float PollFrequency): ASyncFunctionCore(Name, PollFrequency) {};
     FileCore(string Name): ASyncFunctionCore(Name, DEFAULT_POLL_FREQUENCY) {};
 

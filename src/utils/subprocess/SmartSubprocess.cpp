@@ -38,7 +38,7 @@ void SmartSubprocess::Create(string Name, string Executeable, string CMDInput)
 
 int SmartSubprocess::RedirectOutput(string OutFileName)
 {
-    OutFile.Create(OutFileName, "w");
+    OutFile.Create(OutFileName, "w", true);
 
     if (OutFile.IsOpen())
         return 0;

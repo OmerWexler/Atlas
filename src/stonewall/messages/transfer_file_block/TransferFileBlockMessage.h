@@ -24,7 +24,7 @@ public:
     string GetType() const { return TYPE; }
 
     string GetFilepath() { return Filepath; };
-    Path GetPathToTarget() { return PathToTarget; };
+    Path& GetPathToTarget() { return PathToTarget; };
     int GetWriteIndex() { return WriteIndex; };
     bool IsEnd() { return m_IsEnd; };
     string GetDataBlock() { return DataBlock; };

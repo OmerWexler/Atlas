@@ -25,8 +25,8 @@ string TransferFileBlockSerializer::Serialize(const unique_ptr<IMessage>& Messag
     SPBMsg->AddValue(TFBMsg->GetFilepath());
     SPBMsg->AddValue(TFBMsg->GetPathToTarget().GetStrPath());
     SPBMsg->AddValue(Utils::PadInt(TFBMsg->GetWriteIndex(), 6));
-    SPBMsg->AddValue(TFBMsg->GetDataBlock());
     SPBMsg->AddValue(TFBMsg->IsEnd() ? "1" : "0");
+    SPBMsg->AddValue(TFBMsg->GetDataBlock());
     
     string SMsg = "" + HEADER;
     SMsg += SPBSerializer.Serialize(unique_ptr<IMessage>((IMessage*) SPBMsg));

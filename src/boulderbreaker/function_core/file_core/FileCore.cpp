@@ -10,6 +10,8 @@
 
 #undef SendMessage
 
+unordered_map<string, FileBundle> FileCore::LocalFiles = unordered_map<string, FileBundle>();
+
 string FileCore::GetType() const
 {
     return "FileCore";
@@ -38,7 +40,7 @@ void FileCore::TransferFileMessageFunc(unique_ptr<IMessage>& Message, GridConnec
 
     TransferFileMessage* TFMsg;
     TransferFileBlockMessage* TFBMsg;
-    Path& PathToTarget = Path();
+    Path PathToTarget = Path();
 
     if (IsExistingBlock)
     {
@@ -52,9 +54,19 @@ void FileCore::TransferFileMessageFunc(unique_ptr<IMessage>& Message, GridConnec
     }
 
     
-    if (PathToTarget.size() > 0 && PathToTarget[0] == CurrentNodeName)
+    if (PathToTarget.size() > 1 && PathToTarget[0] == CurrentNodeName)
     {
         PathToTarget.RemoveFromStart();
+        if (IsExistingBlock)
+        {
+            TFBMsg = (TransferFileBlockMessage*) Message.get();
+            TFBMsg->GetPathToTarget().RemoveFromStart();
+        }
+        else
+        {
+            TFMsg = (TransferFileMessage*) Message.get();
+            TFMsg->GetPathToTarget().RemoveFromStart();
+        }
     }
     else
     {
@@ -72,7 +84,7 @@ void FileCore::TransferFileMessageFunc(unique_ptr<IMessage>& Message, GridConnec
         }
     }
 
-    if (PathToTarget.size() == 0) // Target is this Node
+    if (PathToTarget.size() == 1 && CurrentNodeName == PathToTarget[0]) // Target is this Node
     {
         if (IsExistingBlock)
         {
@@ -81,10 +93,7 @@ void FileCore::TransferFileMessageFunc(unique_ptr<IMessage>& Message, GridConnec
                 LocalFiles[FilePath] = FileBundle();
                 
             FileBundle& Bundle = LocalFiles[FilePath];
-            if (Bundle.NextWriteIndex == TFBMsg->GetWriteIndex() && Bundle.File.IsOpen())
-                Bundle.File.Write(TFBMsg->GetDataBlock(), TFBMsg->GetDataBlock().length());
-            else
-                Bundle.QueuedDataBlocks[TFBMsg->GetWriteIndex()] = TFBMsg->GetDataBlock();
+            Bundle.QueuedDataBlocks[TFBMsg->GetWriteIndex()] = TFBMsg->GetDataBlock();
 
             if (TFBMsg->IsEnd())
             {
@@ -174,7 +183,12 @@ void FileCore::Periodic()
 
 void FileCore::StopCore()
 {
+    ASyncFunctionCore::StopCore();
 
+    for (auto& Bundle: LocalFiles)
+    {
+        Bundle.second.File.Close();
+    }
 }
 
 bool FileCore::IsMessageRelated(const unique_ptr<IMessage>& Message) const

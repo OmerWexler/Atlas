@@ -19,6 +19,7 @@ private:
 
     string ProcessFileType(string ModuleName);
     string FindModule(string ModuleName);
+    string ParseArg(string Arg);
 
 public: 
     string GetType() const;

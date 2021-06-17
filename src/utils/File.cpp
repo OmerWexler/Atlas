@@ -65,11 +65,15 @@ void File::Write(string In, int Size)
 
 int File::Read(string& Out, int Size)
 {
+    if (!IsOpen())
+        return -1;
+    
     char* buffer = (char*) malloc (sizeof(char)*Size);
     
     int Read = fread(buffer, 1, Size, hFile);
     Out.assign(buffer, Read);
 
+    free(buffer);
     return Read;
 }
 

@@ -25,5 +25,5 @@ public:
 
     string GetFilepath() { return Filepath; };
     string GetDataBlock() { return DataBlock; };
-    Path GetPathToTarget() { return PathToTarget; };
+    Path& GetPathToTarget() { return PathToTarget; };
 };

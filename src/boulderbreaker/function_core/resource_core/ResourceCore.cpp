@@ -47,7 +47,7 @@ void ResourceCore::SendNodePerformanceCallback(unique_ptr<IMessage>& Message, Gr
         }
         Iterator++;
     }
-
+    
     if (Sender == Admin && Admin.GetTopPerformance() > TopPerformance)
     {
         TopPerformance = Admin.GetTopPerformance();

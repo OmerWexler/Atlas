@@ -6,6 +6,7 @@
 #include "JobSubprocess.h"
 #include "Singleton.h"
 #include "GridNode.h"
+#include "FileCore.h"
 #include "windows.h"
 
 #include <filesystem>
@@ -28,6 +29,19 @@ bool JobSubprocess::IsInputValid(vector<Argument>& Input)
 
 string JobSubprocess::ProcessFileType(string ModuleName) 
 {
+    string Filename;
+    if (ModuleName.substr(0, ARG_OVERRIDE_FILE.length()) == ARG_OVERRIDE_FILE)
+    {
+        Filename = ModuleName.substr(ARG_OVERRIDE_FILE.length() + 1);
+        ModuleName = UniqueDescriptor + "\\" + fs::path(Filename).filename().string();
+    }
+
+    if (ModuleName.substr(0, ARG_SEND_FILE.length()) == ARG_SEND_FILE)
+    {
+        Filename = ModuleName.substr(ARG_SEND_FILE.length() + 1);
+        ModuleName = Filename;
+    }
+
     if (fs::path(ModuleName).extension().string() == ".exe")
         return ModuleName;
     
@@ -77,42 +91,89 @@ string JobSubprocess::FindModule(string ModuleName)
             break;
         }
     }
+
+    // Check local cache
+    if (Utils::FileExists(UniqueDescriptor + "\\" + Basename))
+    {
+        Output.push_back(Argument("Module was found in local Atlas cache.", false));
+        return UniqueDescriptor + "\\" + Basename;
+    }
     
     return "";
 }
 
 void JobSubprocess::PrepareJobToSend(vector<Argument>& Input)
 {
-    for (Argument Arg: Input)
+    for (int i = 0; i < Input.size(); i++)
     {
         bool ShouldSendFile = false;
         string Filename;
+        
+        Argument Arg = Input[i];
 
         if (Arg.Value.substr(0, ARG_OVERRIDE_FILE.length()) == ARG_OVERRIDE_FILE)
         {
-            Filename = Arg.Value.substr(ARG_OVERRIDE_FILE.length());
+            Filename = Arg.Value.substr(ARG_OVERRIDE_FILE.length() + 1);
+
+            if (i == 0) // Executeable
+            {
+                Filename = ProcessFileType(Filename);
+            }
+
+            Filename = FindModule(Filename);
             ShouldSendFile = true;
         }
 
         if (Arg.Value.substr(0, ARG_SEND_FILE.length()) == ARG_SEND_FILE)
         {
             Filename = Arg.Value.substr(ARG_SEND_FILE.length() + 1);
+
+            if (i == 0) // Executeable
+            {
+                Filename = ProcessFileType(Filename);
+            }
+
+            Filename = FindModule(Filename);
             ShouldSendFile = true;
         }
 
         if (ShouldSendFile)
         {
-            Singleton<GridNode>::GetInstance().SendFile(Filename, UniqueDescriptor + "\\" + fs::path(Filename).filename().string(), PathToTarget);
+            int Result = Singleton<GridNode>::GetInstance().SendFile(Filename, UniqueDescriptor + "\\" + fs::path(Filename).filename().string(), PathToTarget);
+            if (Result != 0)
+                Output.push_back(Argument("Error: Couldn't open input file - " + Filename, false));
         }
     }
 }
 
+string JobSubprocess::ParseArg(string Arg)
+{
+    string Filename;
+    if (Arg.substr(0, ARG_OVERRIDE_FILE.length()) == ARG_OVERRIDE_FILE)
+    {
+        Filename = Arg.substr(ARG_OVERRIDE_FILE.length());
+        return UniqueDescriptor + "\\" + fs::path(Filename).filename().string();
+    }
+
+    if (Arg.substr(0, ARG_SEND_FILE.length()) == ARG_SEND_FILE)
+    {
+        Filename = Arg.substr(ARG_SEND_FILE.length() + 1);
+        return Filename;
+    }
+
+    return Arg;
+}
+
 void JobSubprocess::Execute(vector<Argument>& Input)
 {
-    string Args = "";
-    string OutFileName = UniqueDescriptor + ".txt";
-    string Module = ProcessFileType(Input[0].Value);
+    while (FileCore::LocalFiles.size() > 0)
+    {
 
+    }
+    
+    string Args = "";
+    string OutFileName = UniqueDescriptor + "\\OutputStream.txt";
+    string Module = ProcessFileType(Input[0].Value);
 
     if (fs::path(Module).extension().string() == ".py")
     {
@@ -123,7 +184,7 @@ void JobSubprocess::Execute(vector<Argument>& Input)
     Module = FindModule(Module);
 
     for (int i = 1; i < Input.size(); i++)
-        Args += " " + Input[i].Value;
+        Args += " " + ParseArg(Input[i].Value);
     
     SP.Create("Remote Job - JobSubprocess", Module, Args);
     int Result = SP.RedirectOutput(OutFileName);

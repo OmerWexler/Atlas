@@ -322,10 +322,7 @@ int GridNode::RecvAndRerouteMessage(GridConnection& Connection)
 }
 
 void GridNode::ResourceManager()
-{
-    if (!m_IsWorker)
-        return;
-    
+{   
     PCPerformance NodePerformance = PCPerformance();
 
     PerformanceAnalyzer.LoadDryStats(NodePerformance);
@@ -343,6 +340,9 @@ void GridNode::ResourceManager()
         wxCommandEvent* event = DBG_NEW wxCommandEvent(EVT_UPDATE_CURRENT_PERFORMANCE);
         wxQueueEvent(wxGetApp().GetMainFrame(), event);
     }
+
+    if (!m_IsWorker)
+        return;
 
     if (Members.size() == 0 && m_IsWorker) // No members to compare preformance to
     {
@@ -420,12 +420,15 @@ int GridNode::SendJobToMembers(shared_ptr<IJob>& Job, vector<Argument>& Input)
     return Result;
 }
 
-void GridNode::SendFile(string SourcePath, string DestPath, Path TargetNode)
+int GridNode::SendFile(string SourcePath, string DestPath, Path TargetNode)
 {
     int DataRead;
     int WriteIndex = 1;
     string DataBlock;
     File Src{SourcePath, "rb"};
+
+    if (!Src.IsOpen())
+        return -1;
 
     DataRead = Src.Read(DataBlock, TransferFileMessage::BLOCK_SIZE);
     RouteMessageToSelf(ATLS_CREATE_UNIQUE_MSG(TransferFileMessage, DestPath, TargetNode, DataBlock), GridConnection());
@@ -439,6 +442,8 @@ void GridNode::SendFile(string SourcePath, string DestPath, Path TargetNode)
     }
 
     RouteMessageToSelf(ATLS_CREATE_UNIQUE_MSG(TransferFileBlockMessage, DestPath, TargetNode, WriteIndex, true, DataBlock), GridConnection());
+
+    return 0;
 }
 
 void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewNodePath)
@@ -449,7 +454,7 @@ void GridNode::ReportNewTopPerformance(PCPerformance& NewPerformance, Path& NewN
     Path NewPathFromAdmin = NewNodePath;
     auto Msg = ATLS_CREATE_UNIQUE_MSG(SendNodePerformanceMessage, NewPerformance, NewPathFromAdmin);
 
-    if (NodeAdmin.IsConnected())
+    if (m_IsWorker && NodeAdmin.IsConnected())
     {
         NodeAdmin.SendMessage(Msg);
     }
